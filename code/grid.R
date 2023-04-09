@@ -34,3 +34,8 @@ GRID = st_make_grid(CITYlimit_meters,
   st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
 mapview::mapview(GRID, alpha.regions = 0.1)
+
+
+# OSM -----------------------------------------------------------------------------------------
+
+
