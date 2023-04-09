@@ -8,10 +8,12 @@ library(sf)
 
 # Get a polygon with the city boundaries ------------------------------------------------------
 
-MUNICIPIOSgeo = readRDS(url("https://github.com/U-Shift/SiteSelection/releases/download/0.1/MUNICIPIOSgeo.Rds")) # 
-
 CITY = "Lisboa" # change here the city 
+
+# MUNICIPIOSgeo = readRDS(url("https://github.com/U-Shift/SiteSelection/releases/download/0.1/MUNICIPIOSgeo.Rds")) # Lisbon Metro
+MUNICIPIOSgeo = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CAOP_municipios.gpkg") # Portugal
 CITYlimit = MUNICIPIOSgeo %>% filter(Concelho == CITY)
+
 
 plot(CITYlimit)
 
