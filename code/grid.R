@@ -23,12 +23,12 @@ cellsize = c(500, 500) #500x500m
 
 GRID = st_make_grid(CITYlimit_meters,
                     cellsize = cellsize,
-                    offset = st_bbox(CITYlimit_meters)[c("xmin", "ymin")], #bb ist not created correctly! rxplore how to cover properly
-                    # what = "polygons",
-                    # n = c(1, 1),
                     square = TRUE #FALSE = hexagons
-                    ) 
-plot(CITYlimit_meters)
-plot(GRID, add = TRUE)
+                    ) %>% 
+  st_intersection(CITYlimit_meters) %>%
+  st_sf() %>% #convert sfc to sf
+  st_cast() %>% 
+  mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
+  st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
-#bbox ist not created correctly! rxplore how to cover properly
+mapview::mapview(GRID, alpha.regions = 0.1)
