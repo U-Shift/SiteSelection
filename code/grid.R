@@ -21,7 +21,7 @@ plot(CITYlimit)
 # Make a grid that covers the city polygon ----------------------------------------------------
 
 CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
-cellsize = c(500, 500) #500x500m
+cellsize = c(200, 200) #200x200m
 
 GRID = st_make_grid(CITYlimit_meters,
                     cellsize = cellsize,
@@ -33,9 +33,6 @@ GRID = st_make_grid(CITYlimit_meters,
   mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
   st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
-mapview::mapview(GRID, alpha.regions = 0.1)
-
-
-# OSM -----------------------------------------------------------------------------------------
+mapview::mapview(GRID, alpha.regions = 0.2)
 
 
