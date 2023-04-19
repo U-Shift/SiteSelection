@@ -15,3 +15,6 @@ plot(CELL_candidates["geometry"]) # zero results
 # LANDUSE
 # density -> higher than mean(density)
 # entropy -> hiher than 0.5 (in 4 land uses, have at least 2)
+
+# TIME
+# traffic -> ?
