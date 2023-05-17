@@ -37,3 +37,4 @@ rsconnect/
 
 # data export folder
 database/
+traffic.log
