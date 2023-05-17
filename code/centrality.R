@@ -71,7 +71,7 @@ graph = graph %>%
 
 graph %>%  activate(nodes) %>%  as_tibble() %>% select(degree) %>% summary()
 graph %>%  activate(nodes) %>%  as_tibble() %>% select(betweenness) %>% summary()
-graph %>%  activate(nodes) %>%  as_tibble() %>% select(closeness) %>% summary() # humm, very small?
+graph %>%  activate(nodes) %>%  as_tibble() %>% select(closeness) %>% summary() 
 
 # check if makes sence -------------------------------------------------------
 
@@ -99,7 +99,7 @@ centrality_nodes = graph %>%
   st_as_sf()
 
 st_write(centrality_nodes, "database/centrality_nodes_lisbon.gpkg", delete_dsn = TRUE)
-rm(nodes, edges)
+rm(nodes, edges, graph)
 
 # match with grid ---------------------------------------------------------
 
@@ -114,11 +114,11 @@ summary(centrality_grid$degree)
 
 summary(centrality_grid$betweenness)
 # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-# 0.0000000 0.0008968 0.0062970 0.0443742 0.0402143 1.0000000 
+# 0.0000000 0.0008927 0.0062594 0.0437132 0.0390560 1.0000000 
 
 summary(centrality_grid$closeness) 
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.0000  0.4256  0.5759  0.5850  0.7531  1.0000 
+# 0.0000  0.4245  0.5714  0.5838  0.7534  1.0000 
 
 centrality_grid = centrality_grid %>% 
   st_drop_geometry() %>% 
@@ -126,3 +126,14 @@ centrality_grid = centrality_grid %>%
   summarise(degree = mean(degree),
             betweenness = mean(betweenness),
             closeness = mean(closeness))
+
+
+# > summary(centrality_grid$degree)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0000  0.1667  0.2143  0.2043  0.2500  0.5000 
+# > summary(centrality_grid$betweenness)
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+# 0.000000 0.003806 0.014951 0.039523 0.046678 0.563534 
+# > summary(centrality_grid$closeness) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.06735 0.41570 0.54937 0.56308 0.72837 0.99501 

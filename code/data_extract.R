@@ -39,26 +39,26 @@ library(stplanr)
 CITY = "Lisboa"
 BBOX = st_as_sfc(st_bbox(CITYlimit)) #see grid.R
 
-# Extract the OSM network from geofabrik
-road_osm = oe_get(CITY, # donwload the match (Lisbon will dwonload wtinre Portugal)
-                    boundary = BBOX, # crop the results only to the city limit
-                    provider = "geofabrik",
-                    stringsAsFactors = FALSE,
-                    quiet = FALSE,
-                    force_download = TRUE,
-                    force_vectortranslate = TRUE, # as shp
-                    download_directory = "database/"
-                    ) #218 MB! May2023
-st_write(road_osm, "database/geofabrik_portugal-latest.gpkg")
+# # Extract the OSM network from geofabrik
+# road_osm = oe_get(CITY, # donwload the match (Lisbon will dwonload wtinre Portugal)
+#                     boundary = BBOX, # crop the results only to the city limit
+#                     provider = "geofabrik",
+#                     stringsAsFactors = FALSE,
+#                     quiet = FALSE,
+#                     force_download = TRUE,
+#                     force_vectortranslate = TRUE, # as shp
+#                     download_directory = "database/"
+#                     ) #218 MB! May2023
+# st_write(road_osm, "database/geofabrik_portugal-latest.gpkg", delete_dsn = TRUE)
 
 # filter some unwanted road links
 road_osm = st_read("database/geofabrik_portugal-latest.gpkg")
 road_network = road_osm %>% 
   dplyr::filter(highway %in% c('motorway',"motorway_link",'primary', "primary_link",
                                'secondary',"secondary_link", "trunk", 'trunk_link',
-                               "tertiary", "tertiary_link", "pedestrian",
+                               "tertiary", "tertiary_link", 
                                "residential", "living_street", "unclassified", "service")
-                | man_made %in% c("bridge")) #remove: cycleway
+                | man_made %in% c("bridge")) #remove: cycleway, pedestrian
 
 # crop to city limits, with a buffer of 100m
 road_network = st_intersection(road_network, geo_buffer(CITYlimit, dist=100)) 
@@ -91,15 +91,15 @@ st_write(road_network, "database/lisbon_network.gpkg", delete_dsn = TRUE)
 # http://plugins.qgis.org/plugins/disconnected-islands/
 #  
 # select all that connect (select by attributes all  "networkGrp" =0) and eport selected features
-# the trick is, when expoerting, do not export field "fid", and rename fid bellow to "fid_2",
-# otherwise the clean prossess cannot save the output
+# the trick is, when exporting, do not export field "fid", and rename fid bellow to "fid_2",
+# otherwise the clean process cannot save the output
 # export as "network_groups-gpkg"
 #
 # v.clean
 # select other hidden options: break, snap, rmdangle, rmdupl
 #
 # tolerance for each
-# 0,0.00000100, 0.00000100, 0
+# 0, 0.00000100, 0.00000100, 0
 #
 # save output as "network_vclean.gpkg"
 
@@ -107,12 +107,5 @@ road_network = st_read("database/lisbon_network_vclean.gpkg")
 
 # upload to Assets
 piggyback::pb_upload("database/lisbon_network_vclean.gpkg")# not working, upload manually
-
-
-
-
-
-
-# download GTFS -------------------------------------------------------------------------------
 
 
