@@ -80,8 +80,33 @@ road_network = road_network %>% select(osm_id, highway, geometry) # keep some va
 
 st_write(road_network, "database/lisbon_network.gpkg", delete_dsn = TRUE)
 
+
+
+# CONTINUE IN QGIS ----------------------------------------------------------------------------
+
+# READ VERY CAREFULLY
+# open QGIS with Grass
+
+# run plugin
+# http://plugins.qgis.org/plugins/disconnected-islands/
+#  
+# select all that connect (select by attributes all  "networkGrp" =0) and eport selected features
+# the trick is, when expoerting, do not export field "fid", and rename fid bellow to "fid_2",
+# otherwise the clean prossess cannot save the output
+# export as "network_groups-gpkg"
+#
+# v.clean
+# select other hidden options: break, snap, rmdangle, rmdupl
+#
+# tolerance for each
+# 0,0.00000100, 0.00000100, 0
+#
+# save output as "network_vclean.gpkg"
+
+road_network = st_read("database/lisbon_network_vclean.gpkg")
+
 # upload to Assets
-piggyback::pb_upload("database/lisbon_network.gpkg")# not working, upload manually
+piggyback::pb_upload("database/lisbon_network_vclean.gpkg")# not working, upload manually
 
 
 
