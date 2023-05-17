@@ -103,37 +103,33 @@ rm(nodes, edges, graph)
 
 # match with grid ---------------------------------------------------------
 
-centrality_grid = st_join(centrality_nodes, st_transform(GRID, 3857), join = st_intersects) %>% 
-  mutate(betweenness = rescale(betweenness),
-         closeness = rescale(closeness),
-         degree = rescale(degree))
-
-summary(centrality_grid$degree)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.0000  0.1250  0.2500  0.2176  0.2500  1.0000 
-
-summary(centrality_grid$betweenness)
-# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-# 0.0000000 0.0008927 0.0062594 0.0437132 0.0390560 1.0000000 
-
-summary(centrality_grid$closeness) 
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.0000  0.4245  0.5714  0.5838  0.7534  1.0000 
-
-centrality_grid = centrality_grid %>% 
+centrality_grid = st_join(centrality_nodes,
+                          st_transform(GRID, 3857),
+                          join = st_intersects) %>% 
   st_drop_geometry() %>% 
   group_by(ID) %>% 
   summarise(degree = mean(degree),
             betweenness = mean(betweenness),
-            closeness = mean(closeness))
+            closeness = mean(closeness)) %>% 
+  mutate(degree = rescale(degree),
+         betweenness = rescale(betweenness),
+         closeness = rescale(closeness)
+         )
+
+summary(centrality_grid$degree)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0000  0.1250  0.2500  0.2176  0.2500  1.0000 
+# 0.0000  0.3333  0.4286  0.4089  0.5000  1.0000 
+
+summary(centrality_grid$betweenness)
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0000000 0.0008968 0.0062977 0.0443808 0.0402014 1.0000000 
+# 0.000000 0.006586 0.026042 0.067994 0.081303 1.000000 
+
+summary(centrality_grid$closeness) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0000  0.4256  0.5759  0.5850  0.7531  1.0000 
+# 0.0000  0.3748  0.5200  0.5338  0.7105  1.0000 
 
 
-# > summary(centrality_grid$degree)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.0000  0.1667  0.2143  0.2043  0.2500  0.5000 
-# > summary(centrality_grid$betweenness)
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.000000 0.003806 0.014951 0.039523 0.046678 0.563534 
-# > summary(centrality_grid$closeness) 
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.06735 0.41570 0.54937 0.56308 0.72837 0.99501 
+saveRDS(centrality_grid, "database/centrality_grid.Rds")
