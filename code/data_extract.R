@@ -56,9 +56,9 @@ road_osm = st_read("database/geofabrik_portugal-latest.gpkg")
 road_network = road_osm %>% 
   dplyr::filter(highway %in% c('motorway',"motorway_link",'primary', "primary_link",
                                'secondary',"secondary_link", "trunk", 'trunk_link',
-                               "tertiary", "tertiary_link", 
+                               "tertiary", "tertiary_link", "pedestrian",
                                "residential", "living_street", "unclassified", "service")
-                | man_made %in% c("bridge")) #remove: cycleway, pedestrian
+                | man_made %in% c("bridge")) #remove: cycleway,
 
 # crop to city limits, with a buffer of 100m
 road_network = st_intersection(road_network, geo_buffer(CITYlimit, dist=100)) 
@@ -105,7 +105,7 @@ st_write(road_network, "database/lisbon_network.gpkg", delete_dsn = TRUE)
 
 road_network = st_read("database/lisbon_network_vclean.gpkg")
 
-# upload to Assets
-piggyback::pb_upload("database/lisbon_network_vclean.gpkg")# not working, upload manually
+# # upload to Assets
+# piggyback::pb_upload("database/lisbon_network_vclean.gpkg")# not working, upload manually
 
 
