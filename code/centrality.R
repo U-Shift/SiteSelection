@@ -6,9 +6,8 @@ library(ggplot2)
 library(sfnetworks)
 library(tidygraph)
 library(scales)
-road_network = st_read("database/lisbon_network.gpkg") #or https://github.com/U-Shift/SiteSelection/releases/download/0.1/lisbon_network.gpkg
+road_network = st_read("database/lisbon_network_vclean.gpkg") #or https://github.com/U-Shift/SiteSelection/releases/download/0.1/lisbon_network_vclean.gpkg
 road_network = st_transform(road_network, 3857) # Project
-
 
 # create a road network graph ------------------------------------------------------------
 
@@ -43,9 +42,9 @@ target_nodes = nodes %>%
 edges = edges %>%
   mutate(from = source_nodes, to = target_nodes)
 
-
+# This may be unecessary, already done in qgis?
 # Remove duplicate nodes. It may happen that more than one edge starts or finishes at a node. 
-nodes <- nodes %>%
+nodes = nodes %>%
   distinct(nodeID, .keep_all = TRUE) %>%
   select(-c(edgeID, start_end)) %>%
   st_as_sf(coords = c('X', 'Y')) %>%
@@ -55,20 +54,24 @@ nodes <- nodes %>%
 # Convert Sticky Geometry (sf) and Linestring geometries into a tbl_graph
 graph = tbl_graph(nodes = nodes, edges = as_tibble(edges), directed = FALSE)
 
-graph = graph %>%
-  activate(edges) %>%
-  mutate(length = st_length(geom))
-
 
 
 # closeness, betweenness and centrality degree ------------------------------
 
-# only needed for the nodes
+graph = graph %>%
+  activate(edges) %>%
+  mutate(length = st_length(geom))
+
+# get values  - takes some time!
 graph = graph %>%
   activate(nodes) %>%
   mutate(degree = centrality_degree()) %>%
   mutate(betweenness = centrality_betweenness(weights = length)) %>% 
-  mutate(closeness = centrality_closeness(weights = length)) #not as expected
+  mutate(closeness = centrality_closeness(weights = length))
+
+graph %>%  activate(nodes) %>%  as_tibble() %>% select(degree) %>% summary()
+graph %>%  activate(nodes) %>%  as_tibble() %>% select(betweenness) %>% summary()
+graph %>%  activate(nodes) %>%  as_tibble() %>% select(closeness) %>% summary() # humm, very small?
 
 # check if makes sence -------------------------------------------------------
 
@@ -107,15 +110,15 @@ centrality_grid = st_join(centrality_nodes, st_transform(GRID, 3857), join = st_
 
 summary(centrality_grid$degree)
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.0000  0.2000  0.4000  0.3212  0.4000  1.0000 
+# 0.0000  0.1250  0.2500  0.2176  0.2500  1.0000 
 
 summary(centrality_grid$betweenness)
-#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.000000 0.001445 0.010110 0.056437 0.051371 1.000000  
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0000000 0.0008968 0.0062970 0.0443742 0.0402143 1.0000000 
 
-summary(centrality_grid$closeness) #não parece estar bem!
-#   Min.  1st Qu.   Median     Mean    3rd Qu.     Max.     NA's 
-# 0.000000 0.000000 0.000000 0.000634 0.000000 1.000000       27
+summary(centrality_grid$closeness) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.0000  0.4256  0.5759  0.5850  0.7531  1.0000 
 
 centrality_grid = centrality_grid %>% 
   st_drop_geometry() %>% 
