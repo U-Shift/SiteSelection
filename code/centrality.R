@@ -6,7 +6,16 @@ library(ggplot2)
 library(sfnetworks)
 library(tidygraph)
 library(scales)
+
+# Rede limpa como estava no email rosa
 road_network = st_read("database/lisbon_network_vclean.gpkg") #or https://github.com/U-Shift/SiteSelection/releases/download/0.1/lisbon_network_vclean.gpkg
+
+# # TESTE bpol https://sdna-open.readthedocs.io/en/latest/step_by_step_guides.html#osm-step-by-step
+# road_network = st_read("database/lisbon_network_vclean_bpol.gpkg")
+# 
+# # TESTE rede gabriel
+# road_network = st_read("database/old_network/RedeViariaLisboa_osm_Setores/RedeViariaLisboa_osm_Setores.shp")
+
 road_network = st_transform(road_network, 3857) # Project
 
 # create a road network graph ------------------------------------------------------------
@@ -60,6 +69,7 @@ graph = tbl_graph(nodes = nodes, edges = as_tibble(edges), directed = FALSE)
 
 graph = graph %>%
   activate(edges) %>%
+  # mutate(length = st_length(geometry)) #no shp do gabriel tem outro nome
   mutate(length = st_length(geom))
 
 # get values  - takes some time!
@@ -99,6 +109,7 @@ centrality_nodes = graph %>%
   st_as_sf()
 
 st_write(centrality_nodes, "database/centrality_nodes_lisbon.gpkg", delete_dsn = TRUE)
+st_write(centrality_nodes, "database/centrality_nodes_lisbon_bpol.gpkg", delete_dsn = TRUE)
 rm(nodes, edges, graph)
 
 # match with grid ---------------------------------------------------------
@@ -120,16 +131,21 @@ summary(centrality_grid$degree)
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 # 0.0000  0.1250  0.2500  0.2176  0.2500  1.0000 
 # 0.0000  0.3333  0.4286  0.4089  0.5000  1.0000 
+# 0.0000  0.3333  0.4167  0.4020  0.5000  1.0000  bpol
+# 0.0000  0.3438  0.4500  0.4222  0.5000  1.0000 gabriel
 
 summary(centrality_grid$betweenness)
 # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 # 0.0000000 0.0008968 0.0062977 0.0443808 0.0402014 1.0000000 
 # 0.000000 0.006586 0.026042 0.067994 0.081303 1.000000 
+# 0.000000 0.006803 0.026460 0.066408 0.080722 1.000000 bpol
+# 0.00000 0.00876 0.03295 0.07747 0.10250 1.00000  gabriel
 
 summary(centrality_grid$closeness) 
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 # 0.0000  0.4256  0.5759  0.5850  0.7531  1.0000 
 # 0.0000  0.3748  0.5200  0.5338  0.7105  1.0000 
-
+# 0.0000  0.3774  0.5291  0.5379  0.7093  1.0000 bpol
+# 0.0000000 0.0000016 0.0000025 0.0014170 0.0000033 1.0000000  gabriel
 
 saveRDS(centrality_grid, "database/centrality_grid.Rds")
