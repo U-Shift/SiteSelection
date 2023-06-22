@@ -108,9 +108,11 @@ centrality_nodes = graph %>%
   as_tibble() %>%
   st_as_sf()
 
+
 st_write(centrality_nodes, "database/centrality_nodes_lisbon.gpkg", delete_dsn = TRUE)
 st_write(centrality_nodes, "database/centrality_nodes_lisbon_bpol.gpkg", delete_dsn = TRUE)
 rm(nodes, edges, graph)
+
 
 # match with grid ---------------------------------------------------------
 

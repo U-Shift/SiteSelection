@@ -10,13 +10,13 @@ st_write(CELL_candidates, "database/CELL_candidates.gpkg")
 plot(CELL_candidates["degree"]) 
 plot(CELL_candidates["betweenness"]) 
 plot(CELL_candidates["closeness"]) 
-
+mapview::mapview(CELL_candidates["closeness"])
 
 # Filter in thresholds #for Lisbon. Adjust for other places?
 CELL_candidates = CELL_candidates %>% 
-  filter(degree >= 0.5, #1088 
-         betweenness >= 0.25 & betweenness <= 0.75, #207 #too high
-         # closeness >= 0.25 & closeness <= 0.75 #2135 #too high
+  filter(degree >= summary(centrality_grid$degree)[[4]], #1088 média 
+         betweenness >= quantile(centrality_grid$betweenness, 0.40) & betweenness <= quantile(centrality_grid$betweenness, 0.60), #207 #too high
+         closeness >= quantile(centrality_grid$closeness, 0.10) & closeness <= quantile(centrality_grid$closeness, 0.7) #2135 #too high
          ) 
 # 56 results
 # 42 results

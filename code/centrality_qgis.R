@@ -57,6 +57,10 @@ centrality_nodes = st_read("database/centrality_nodes_lisbon_vclean_vcentrality.
 #   mutate(degree = rescale(degree),
 #          betweenness = rescale(betweenness),
 #          closeness = rescale(closeness))
+
+centrality_nodes = centrality_nodes %>%
+  filter(closeness>0.03) # remove outliers ??? <<<<<<<<<<<<<<<<<<<<<<<<<<<
+
          
 centrality_grid = st_join(centrality_nodes, #WGS84
                           GRID,
