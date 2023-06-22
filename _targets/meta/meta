@@ -1,0 +1,17 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+candidates|function|9c2f95a20efa2e79|||||||||||||||
+candidates_centrality|stem|7acd9197210c6b38|32a003424464448b|efd602a4cfe6d84f|1808904783||t19530.7581877457s|38297fcd51d621ea|12948|rds|local|vector|||0.074||
+centrality_grid|stem|6342ca5e17747ffc|87bea58679d3cd99|1a3b225312813867|-566180540||t19530.7581868197s|4b69b02805ecfaba|61904|rds|local|vector|||0.367||
+centrality_nodes|stem|40386ce4e7e76882|62843af5c1f97221|89007da6e79a679e|394101546||t19530.7048038473s|da1738e5e34c4afc|656242|rds|local|vector|||242.143|1m22mThere was 1 warning in mutate.1m22m36mℹ39m In argument nodeID  group_indices., factorxy, levels  uniquexy.Caused by warning1m22m33m39m The ... argument of group_indices is deprecated as of dplyr 1.0.0.36mℹ39m Please group_by first|
+CITYlimit|stem|1c218ee35cc673f9|63838c4fde770748|86c89a8d9f6274c8|-2106860492||t19530.707047256s|105202423f442177|17134|rds|local|vector|||11.87||
+find_candidates|function|7e189432bb2af073|||||||||||||||
+get_centrality|function|5a353921bc764dd5|||||||||||||||
+get_centrality_grid|function|fa5e655d4eb190c1|||||||||||||||
+get_citylimit|function|31337691086f1b9c|||||||||||||||
+get_osm|function|74bdbcddbe8a1612|||||||||||||||
+grid|stem|a83f224241dbdc3c|4993cb656ea72c08|da45c7583b167b25|-491095951||t19530.7581818658s|4e83371ec19ebad4|20643|rds|local|vector|||0.853||
+grid_centrality|stem|d36ea1299fa8d732|d5b7005e54af8958|5ac6925e2d6d5771|-873626440||t19530.6801894964s|44e327d1ee1978d7|43|rds|local|vector|||0.396||
+grid_centrality_values|stem|fe4429b76362a57f|d5b7005e54af8958|d6e6ec3634fdbb80|215759028||t19530.6901541384s|4dec3046e7fc7d3e|61170|rds|local|vector|||0.389||
+grid_values|stem|d36ea1299fa8d732|d5b7005e54af8958|de1934b4cb1177f3|-1403192273||t19530.6760630171s|44e327d1ee1978d7|43|rds|local|vector|||0.395||
+make_grid|function|3a5ce63068889f36|||||||||||||||
+road_network|stem|c947d0351df945fb|719b85284effe12a|6a79a635137902ea|254940301||t19530.7071678619s|64b2e49173091e07|1579337|rds|local|vector|||10.143|attribute variables are assumed to be spatially constant throughout all geometries|
