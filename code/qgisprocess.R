@@ -33,6 +33,9 @@ qgis_configure()
 # algorithms = qgis_algorithms()
 # algorithms %>% filter(grepl(pattern = "clean", x = algorithm, ignore.case = TRUE))
 
+#delete exiting outputs
+file.remove("database/road_network_clean.shp")
+
 qgis_show_help("grass7:v.clean")
 
 input = road_network %>% 
@@ -58,11 +61,38 @@ output = qgis_run_algorithm(
   # 'GRASS_VECTOR_EXPORT_NOCAT':False
 )
 
-road_network_clean = sf::st_read(output[["output"]][1])
+road_network_clean = sf::st_read(output[["output"]][1]) %>% select(-c(fid, fid_2))
+st_write(road_network_clean, "database/road_network_clean.gpkg", delete_dsn = TRUE)
 
 # see trafficcalmr::osm_consolidate as an option!
 # https://saferactive.github.io/trafficalmr/reference/osm_consolidate.html
 # remotes::install_github("saferactive/trafficalmr")
 # road_network_clean_consolidate = road_network_clean %>% st_transform(3857) %>% trafficalmr::osm_consolidate(200)
 # osm_tags missing here, not working!
+
+qgis_show_help("grass7:v.net.centrality")
+
+file.remove("database/centrality_nodes.gpkg")
+input = st_read("database/road_network_clean.gpkg")
+
+output_centrality = qgis_run_algorithm(
+  algorithm = "grass7:v.net.centrality",
+  input = input, 
+  degree = "degree",
+  closeness = "closeness",
+  betweenness = "betweenness",
+  '-a' = TRUE,
+  # output = qgis_tmp_vector(),
+  output = "database/centrality_nodes.gpkg", # in this case it cannot be shp otherwise we need to make variables names shorter than 10chr
+  error = qgis_tmp_vector(),
+  iterations = 1000,
+  error= 0.1,
+  '-g' = FALSE,
+  GRASS_SNAP_TOLERANCE_PARAMETER = -1,
+  GRASS_MIN_AREA_PARAMETER = 0.0001,
+  GRASS_OUTPUT_TYPE_PARAMETER = 0,
+  GRASS_VECTOR_EXPORT_NOCAT = FALSE
+)
+
+centrality_nodes = sf::st_read(output_centrality[["output"]][1]) %>% select(-eigenvector)
 
