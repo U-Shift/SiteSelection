@@ -34,7 +34,7 @@ st_write(road_network, "database/road_network_dirty_nopeds.gpkg",  delete_dsn = 
 # select all that connect (select by attributes all  "networkGrp" =0) and eport selected features
 # the trick is, when exporting, do not export field "fid", and rename fid bellow to "fid_2",
 # otherwise the clean process cannot save the output
-# export as "network_groups-gpkg"
+# export as "network_groups.gpkg"
 #
 # v.clean
 # select other hidden options: break, snap, rmdangle, rmdupl, bpol
