@@ -36,10 +36,10 @@ qgis_configure()
 qgis_show_help("grass7:v.clean")
 
 input = road_network %>% 
-  mutate(fid = as.integer(1:nrow(road_network))) %>% 
-  st_write("database/road_network.geojson", fid_column_name = "fid", delete_dsn = TRUE)
+  mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
+  st_write("database/road_network.shp", delete_dsn = TRUE)
 
-input = "database/road_network.geojson"
+input = st_read("database/road_network.shp") #because of the fid column
 
 output = qgis_run_algorithm(
   algorithm = "grass7:v.clean",
@@ -47,7 +47,7 @@ output = qgis_run_algorithm(
   type = c(0, 1, 2, 3, 4, 5, 6), 
   tool = c(0, 1, 2, 6, 8), #break, snap, rmdangle, rmdupl, bpol
   threshold = c("0", "0.00000100", "0.00000100", "0", "0"), 
-  output = qgis_tmp_vector(),
+  output = "database/road_network_clean.shp", # need to be defined otherwise it saves in tmp.gpkg and makes the error with fid (# ERROR 1: failed to execute insert : UNIQUE constraint failed: outpute935bd152d284569afb314c88e8fce09.fid)
   error = qgis_tmp_vector(),
   GRASS_OUTPUT_TYPE_PARAMETER = "auto"
   # 'GRASS_REGION_PARAMETER':None, 
@@ -58,7 +58,11 @@ output = qgis_run_algorithm(
   # 'GRASS_VECTOR_EXPORT_NOCAT':False
 )
 
-road_network_clean = sf::st_read(output[[1]][1])
+road_network_clean = sf::st_read(output[["output"]][1])
 
 # see trafficcalmr::osm_consolidate as an option!
 # https://saferactive.github.io/trafficalmr/reference/osm_consolidate.html
+# remotes::install_github("saferactive/trafficalmr")
+# road_network_clean_consolidate = road_network_clean %>% st_transform(3857) %>% trafficalmr::osm_consolidate(200)
+# osm_tags missing here, not working!
+
