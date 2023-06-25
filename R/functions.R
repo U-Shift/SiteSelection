@@ -27,6 +27,19 @@ make_grid = function(CITYlimit)  {
 
 get_osm = function(CITYlimit) {
   
+  # # Extract the OSM network from geofabrik
+  # road_osm = osmextract::oe_get(CITY, # download the match (Lisbon will download entire Portugal)
+  #                     boundary = BBOX, # crop the results only to the city limit
+  #                     provider = "geofabrik",
+  #                     stringsAsFactors = FALSE,
+  #                     quiet = FALSE,
+  #                     force_download = TRUE,
+  #                     force_vectortranslate = TRUE, # as shp
+  #                     download_directory = "database"
+  #                     ) #218 MB! May2023
+  # st_write(road_osm, "database/geofabrik_portugal-latest.gpkg", delete_dsn = TRUE)
+  
+  
   BBOX = st_as_sfc(st_bbox(CITYlimit))
   
   road_osm = st_read("database/geofabrik_portugal-latest.gpkg", quiet = TRUE)
