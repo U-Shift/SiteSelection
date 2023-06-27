@@ -25,7 +25,7 @@ road_network = road_network %>% select(osm_id, highway, geometry) # keep some va
 
 st_write(road_network, "database/lisbon_network.gpkg", delete_dsn = TRUE)
 
-
+options(qgisprocess.path="/usr/bin/qgis_process.bin")
 library(qgisprocess)
 qgis_configure()
 # qgis_plugins() #não tem o disconnected islands

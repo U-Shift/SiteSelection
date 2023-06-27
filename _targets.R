@@ -10,7 +10,7 @@ library(targets)
 # Set target options:
 tar_option_set(
   packages = c("tibble", "tidyverse", "sf", "stplanr", "osmdata", "sfnetworks",
-               "tidygraph", "scales"), # packages that your targets need to run
+               "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
   format = "rds" # default storage format
   # Set other options as needed.
 )
@@ -31,23 +31,29 @@ tar_source()
 # Replace the target list below with your own:
 list(
   tar_target(
+    name = CITY,
+    command = select_city(CITY = "Lisboa")),
+  tar_target(
     name = CITYlimit,
-    command = get_citylimit(CITY = "Lisboa")),
+    command = get_citylimit(CITY)),
   tar_target(
     name = grid,
     command = make_grid(CITYlimit)),
   tar_target(
     name = road_network,
-    command = get_osm(CITYlimit)),
+    command = get_osm(CITYlimit, CITY)),
+  tar_target(
+    name = road_network_clean,
+    command = clean_osm(road_network, CITY)),
   tar_target(
     name = centrality_nodes,
-    command = get_centrality(road_network)),
+    command = get_centrality(road_network_clean, CITY)),
   tar_target(
     name = centrality_grid,
     command = get_centrality_grid(centrality_nodes, grid)),
   tar_target(
     name = candidates_centrality,
-    command = find_candidates(grid, centrality_grid)
+    command = find_candidates(grid, centrality_grid, CITY)
   )
 )
   

@@ -1,13 +1,14 @@
 library(targets)
 
-CITY == "Lisbon"
+CITY == "Lisboa"
 
-use_targets()
+use_targets() #first time use
 
 tar_manifest()
 tar_visnetwork()
 
 tar_make()
+tar_make(CITY = "Lisboa")
 
 
 tar_read()
