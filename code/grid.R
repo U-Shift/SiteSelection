@@ -33,6 +33,6 @@ GRID = st_make_grid(CITYlimit_meters,
   mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
   st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
-mapview::mapview(GRID, alpha.regions = 0.2)
+mapgrid = mapview::mapview(GRID, alpha.regions = 0.2)
 
 
