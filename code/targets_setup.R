@@ -8,7 +8,7 @@ tar_manifest()
 tar_visnetwork()
 
 tar_make()
-tar_make(CITY = "Lisboa")
+# tar_make(CITY = "Lisboa")
 
 
 tar_read()
