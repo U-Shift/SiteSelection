@@ -205,7 +205,7 @@ find_candidates = function(grid, centrality_grid, CITY) {
   candidates_centrality = left_join(st_transform(grid, 3857), centrality_grid) 
   # Filter in thresholds #for Lisbon. Adjust for other places?
   candidates_centrality = candidates_centrality %>%
-    filter(degree >= summary(centrality_grid$degree)[[4]], #1088 média
+    filter(degree >= mean(centrality_grid$degree), #1088 média
            betweenness >= quantile(centrality_grid$betweenness, 0.40, na.rm = TRUE) &
              betweenness <= quantile(centrality_grid$betweenness, 0.60, na.rm = TRUE), 
            closeness >= 0.25 & closeness <= 0.75
