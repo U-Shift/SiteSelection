@@ -38,5 +38,14 @@ tar_visnetwork()
 knitr::include_graphics("Rplot.png")
 ```
 
+And you should have something like this
+
+```{r eval=FALSE}
+tar_load(candidates_centrality)
+mapview::mapview(candidates_centrality)
+```
+```{r echo=FALSE}
+knitr::include_graphics("tar_result.png")
+```
 
 _Work in Progress_

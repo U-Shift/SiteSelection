@@ -35,4 +35,13 @@ tar_visnetwork()
 
 <img src="Rplot.png" width="1053" />
 
+And you should have something like this
+
+``` r
+tar_load(candidates_centrality)
+mapview::mapview(candidates_centrality)
+```
+
+<img src="tar_result.png" width="686" />
+
 *Work in Progress*
