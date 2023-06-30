@@ -45,31 +45,24 @@ make_grid = function(CITYlimit)  {
 
 get_osm = function(CITYlimit, CITY) {
   
-  # # Extract the OSM network from geofabrik
-  # road_osm = osmextract::oe_get(CITY, # download the match (Lisbon will download entire Portugal)
-  #                     boundary = BBOX, # crop the results only to the city limit
-  #                     provider = "geofabrik",
-  #                     stringsAsFactors = FALSE,
-  #                     quiet = FALSE,
-  #                     force_download = TRUE,
-  #                     force_vectortranslate = TRUE, # as shp
-  #                     download_directory = "database"
-  #                     ) #218 MB! May2023
-  # st_write(road_osm, "database/geofabrik_portugal-latest.gpkg", delete_dsn = TRUE)
-  
-  
-  # BBOX = st_as_sfc(st_bbox(CITYlimit))
-  
   CITYlimit = st_read(paste0("database/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+  BBOX = st_as_sfc(st_bbox(CITYlimit))
   
+  # road_osm = st_read("database/geofabrik_portugal-latest.gpkg", quiet = TRUE) #old version with osmextract
+      
+  road_osm = opq(BBOX) %>% # uses osmdata package, to extract only with BB
+    add_osm_feature(key = "highway") %>% 
+    osmdata_sf() %>% 
+    osm_poly2line() # makes roundabouts into lines
+  road_osm = road_osm$osm_lines %>%
+    select(osm_id, name, highway, geometry)
   
-  road_osm = st_read("database/geofabrik_portugal-latest.gpkg", quiet = TRUE)
-  road_network = road_osm %>% 
+  road_network = road_osm %>%
     dplyr::filter(highway %in% c('motorway',"motorway_link",'primary', "primary_link",
                                  'secondary',"secondary_link", "trunk", 'trunk_link',
                                  "tertiary", "tertiary_link", "pedestrian",
                                  "residential", "living_street", "unclassified", "service"))
-      
+  
   road_network = st_intersection(road_network, stplanr::geo_buffer(CITYlimit, dist=100)) 
   
   road_network$group = stplanr::rnet_group(road_network, d = 10) # 10m tolerance
@@ -83,8 +76,7 @@ get_osm = function(CITYlimit, CITY) {
   # road_network = st_cast(road_network, "LINESTRING") #if you don't wnat to use the previous filter
   # road_network = stplanr::rnet_breakup_vertices(road_network) # break the segments internally, conserving the brunels.
   
-  road_network = road_network %>% select(osm_id, highway, geom) # keep some variables
-  # road_network = road_network %>% select(osm_id, highway, geometry) # IF USING WINDOWS
+  road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
   
   st_write(road_network, paste0("database/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
   

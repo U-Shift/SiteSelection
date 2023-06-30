@@ -35,21 +35,31 @@ library(dplyr)
 library(sf)
 library(osmextract)
 library(stplanr)
+library(osmdata)
 
 CITY = "Lisboa"
 BBOX = st_as_sfc(st_bbox(CITYlimit)) #see grid.R
 
 # # Extract the OSM network from geofabrik
-# road_osm = oe_get(CITY, # donwload the match (Lisbon will dwonload wtinre Portugal)
-#                     boundary = BBOX, # crop the results only to the city limit
-#                     provider = "geofabrik",
-#                     stringsAsFactors = FALSE,
-#                     quiet = FALSE,
-#                     force_download = TRUE,
-#                     force_vectortranslate = TRUE, # as shp
-#                     download_directory = "database/"
-#                     ) #218 MB! May2023
-# st_write(road_osm, "database/geofabrik_portugal-latest.gpkg", delete_dsn = TRUE)
+road_osm = oe_get("Portugal", # donwload the match (Lisbon will download entire Portugal)
+                    # boundary = BBOX, # crop the results only to the city limit
+                    provider = "geofabrik",
+                    stringsAsFactors = FALSE,
+                    quiet = FALSE,
+                    force_download = TRUE,
+                    force_vectortranslate = TRUE, # as shp
+                    download_directory = "database/"
+                    ) #643 MB! June2023
+st_write(road_osm, "database/geofabrik_portugal-latest.gpkg", delete_dsn = TRUE)
+
+
+## new way using osmdata ##
+library(osmdata)
+road_osm_test = opq(BBOX) %>% 
+  add_osm_feature(key = "highway") %>% 
+  osmdata_sf()
+road_osm_test = road_osm_test %>% osm_poly2line()
+road_osm_test = road_osm_test$osm_lines %>% select(osm_id, name, highway, geometry)
 
 # filter some unwanted road links
 road_osm = st_read("database/geofabrik_portugal-latest.gpkg")

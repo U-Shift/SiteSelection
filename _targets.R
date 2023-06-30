@@ -9,7 +9,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble", "tidyverse", "sf", "stplanr", "osmdata", "sfnetworks",
+  packages = c("tibble", "tidyverse", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
                "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
   format = "rds" # default storage format
   # Set other options as needed.
@@ -32,7 +32,7 @@ tar_source()
 list(
   tar_target(
     name = CITY,
-    command = select_city(CITY = "Lisboa")),
+    command = select_city(CITY = "Almada")),
   tar_target(
     name = CITYlimit,
     command = get_citylimit(CITY)),
