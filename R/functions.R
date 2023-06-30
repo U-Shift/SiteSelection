@@ -7,7 +7,10 @@ select_city = function(CITY){
 
 get_citylimit = function(CITY) {
   MUNICIPIOSgeo = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CAOP_municipios.gpkg", quiet = TRUE) # Portugal
-  CITYlimit = MUNICIPIOSgeo %>% filter(Concelho == CITY)
+  CITYlimit = MUNICIPIOSgeo %>%
+    filter(Concelho == CITY) %>% 
+    st_collection_extract(type = "POLYGON") %>% # when the mixes lines with polygons
+    sfheaders::sf_remove_holes(close = TRUE) # when it has holes in topology
   
   output_dir = file.path("database", CITY)
     if (!dir.exists(output_dir)) {
@@ -33,6 +36,7 @@ make_grid = function(CITYlimit)  {
     mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
     select(-c(1,2)) %>% 
     st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
+    
   
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
   
@@ -99,7 +103,7 @@ clean_osm = function(road_network, CITY) {
   # qgis_show_help("grass7:v.clean")
   
   input = road_network %>% 
-    mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
+    # mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
     st_write(paste0("database/", CITY, "/road_network.shp"), delete_dsn = TRUE)
   
   input = st_read(paste0("database/", CITY, "/road_network.shp")) #because of the fid column
@@ -128,7 +132,9 @@ clean_osm = function(road_network, CITY) {
     # 'GRASS_VECTOR_EXPORT_NOCAT':False
   )
   
-  road_network_clean = sf::st_read(output[["output"]][1]) %>% select(-fid_2)
+  road_network_clean = sf::st_read(output[["output"]][1])
+  # %>% select(-fid_2)
+  
   st_write(road_network_clean, output_path, delete_dsn = TRUE)
   
   # see trafficcalmr::osm_consolidate as an option!
