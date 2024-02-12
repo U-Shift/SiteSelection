@@ -26,6 +26,7 @@ make_grid = function(CITYlimit)  {
   
   CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
   cellsize = c(200, 200) #200x200m
+  # cellsize = cellsize
   
   grid = st_make_grid(CITYlimit_meters,
                       cellsize = cellsize, 

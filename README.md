@@ -20,9 +20,25 @@ and gathers and processes information on:
 - Public Transit demand
 - POI and activities
 
-This work is part of Streets4All Project, developed at the University of
-Lisbon and at the University of Coimbra, and funded by Fundação para a
-Ciência e Tecnologia (PT).
+This work is part of [Streets4All
+Project](https://streets4all.tecnico.ulisboa.pt), developed at the
+University of Lisbon and at the University of Coimbra, and funded by
+Fundação para a Ciência e Tecnologia (PT).
+
+## Sources
+
+The SIteSelection package is based in Portuguese open datasets, such as
+census and GTFS data.
+
+Although it is easy to run for any location in Portugal, you may adapt
+the code to run at other locations (considering you have the similar
+data needed).
+
+Data needed for other locations:
+
+- Census data (population and buildings)
+- GTFS data
+- Administrative boundaries
 
 ## Setup
 
