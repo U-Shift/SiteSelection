@@ -1,0 +1,152 @@
+---
+title: "GTFS Lisboa"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### loads the package
+
+```{r}
+library(gtfstools)
+```
+
+
+##### reads the gtfs
+
+```{r}
+gtfs_Carris <- read_gtfs("Carris/gtfs_Carris.zip")
+
+gtfs_Metro <- read_gtfs("Metro/gtfs_Metro.zip")
+```
+
+Dados recolhidos no dia 01/12/2022: https://transitfeeds.com/l/671-lisbon-portugal 
+
+
+
+###### checks the tables inside the gtfs object
+
+```{r}
+names(gtfs_Metro)
+```
+```{r}
+names(gtfs_Carris)
+```
+```{r}
+summary(gtfs_Carris)
+```
+```{r}
+summary(gtfs_Metro)
+```
+
+
+
+###### Lists the first 6 rows of the stops table:
+
+```{r}
+head(gtfs_Metro$trips)
+```
+
+```{r}
+head(gtfs_Metro$frequencies)
+```
+
+
+
+### 1. **Sumário das informações**
+
+Os dados do GTFS são encontrados em formato de texto em um `ZIP file`. 
+
+A primeira coisa que o `tidytransit` faz, é juntar todas as tabelas em um só objeto no **R**, fazendo uma lista de tabelas para cada categoria.Portanto, segue o sumário dos dados e as frequências dos autocarros, respectivamente:
+
+
+```{r include=FALSE}
+#Import Libraries
+library(sf)
+library(readr)
+library(tidyverse)
+library(lubridate)
+```
+
+
+**TABELA 1:** Juntar os stops com stop_time
+
+```{r include=FALSE}
+
+Carris_stops_tabela <- gtfs_Carris$stops %>%
+  left_join(gtfs_Carris$stop_times, by="stop_id") 
+
+Metro_stops_tabela <- gtfs_Metro$stops %>%
+  left_join(gtfs_Metro$stop_times, by="stop_id") 
+```
+
+
+
+```{r include=FALSE}
+#Juntar tabela com frequencies
+
+Carris_tabela2 <- Carris_stops_tabela %>%
+  left_join(gtfs_Carris$frequencies, by = "trip_id")
+
+Metro_tabela2 <- Metro_stops_tabela %>%
+  left_join(gtfs_Metro$frequencies, by = "trip_id")
+
+```
+
+
+```{r include=FALSE}
+Carris_tabela3 <- Carris_tabela2 %>%
+left_join(gtfs_Carris$trips, by="trip_id")
+
+Metro_tabela3 <- Metro_tabela2 %>%
+left_join(gtfs_Metro$trips, by="trip_id")
+
+```
+
+```{r include=FALSE}
+Carris_tabela4 <- Carris_tabela3 %>%
+  left_join(gtfs_Carris$calendar, by = "service_id")
+
+Metro_tabela4 <- Metro_tabela3 %>%
+  left_join(gtfs_Metro$calendar, by = "service_id")
+```
+
+
+```{r include=FALSE}
+#### Tabela Final com paragens 
+
+Carris_tabela5 <- Carris_tabela4 %>%
+  left_join(gtfs_Carris$routes, by="route_id")
+
+Metro_tabela5 <- Metro_tabela4 %>%
+  left_join(gtfs_Metro$routes, by="route_id")
+```
+
+```{r}
+# excluir colunas que não possuem nada
+
+excluir <- c("stop_code", "stop_desc", "zone_id", "stop_url", "location_type", "parent_station", "stop_headsign", "pickup_type", "drop_off_type", "shape_dist_traveled", "trip_headsign", "direction_id", "block_id", "route_short_name", "route_desc","route_url", "route_color", "route_text_color")
+Carris_tabela_final <- Carris_tabela5[,!(names(Carris_tabela5)%in% excluir), drop=FALSE]
+Metro_tabela_final
+
+Metro_tabela_final <- Metro_tabela5[,!(names(Carris_tabela5)%in% excluir), drop=FALSE]
+
+Carris_tabela_final <- Carris_tabela5[,-c(2,4,7,8,9,10,15,16,17,18,25,26,27,39,41,43,44,45)] 
+Metro_tabela_final <- Metro_tabela5[,-c(2,4,7,8,9,10,15,16,17,18,25,26,27,39,41,43,44,45)] 
+```
+
+
+```{r include=FALSE}
+#### Tranformar em shapefile
+
+carris_paragens = sf::st_as_sf(Carris_tabela_final, coords = c("stop_lon", "stop_lat"), crs=4326)
+  
+sf::st_write(carris_paragens,"Carris_paragens.gpkg")
+
+write.csv(Carris_tabela_final, "Carris_paragens.csv")
+
+write.xlsx(Metro_tabela_final, "Metro_gtfs.xlsx")
+
+```
