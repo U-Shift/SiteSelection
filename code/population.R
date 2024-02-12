@@ -20,6 +20,7 @@ CENSUSpoint = CENSUSraw |>
 # In addition: Warning message:
 #   st_centroid assumes attributes are constant over geometries 
 # Error in (function (msg)  : ParseException: Unknown WKB type 12
+# Problema com multipolygon? 
 
 st_write(CENSUSpoint, "database/CENSUSpoint.gpkg")
 
