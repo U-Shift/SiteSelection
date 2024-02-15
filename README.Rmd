@@ -40,7 +40,13 @@ Data needed for other locations:
 
 ## Setup
 
-Requires [`targets`](https://books.ropensci.org/targets/) R package.
+### Requirements
+
+*   QGis and qgis_process installed and working
+*   [`targets`](https://books.ropensci.org/targets/) R package.
+*   [`siteselection`]() R package [_under development_].
+
+### Run
 
 ```{r eval=FALSE}
 library(targets)
@@ -48,17 +54,30 @@ tar_visnetwork()
 ```
 ```{r echo=FALSE}
 # requires targets
-knitr::include_graphics("Rplot.png")
+knitr::include_graphics("img/Rplot.png")
 ```
 
 And you should have something like this
 
 ```{r eval=FALSE}
+tar_make(CITY == "Lisboa")
+# let it run
+
 tar_load(candidates_centrality)
 mapview::mapview(candidates_centrality)
 ```
 ```{r echo=FALSE}
-knitr::include_graphics("tar_result.png")
+knitr::include_graphics("img/tar_result.png")
+```
+
+
+When the process is not complete, you may have an error like this
+
+```{r eval=FALSE}
+tar_visnetwork()
+```
+```{r echo=FALSE}
+knitr::include_graphics("img/tar_viz_werror.png")
 ```
 
 _Work in Progress_

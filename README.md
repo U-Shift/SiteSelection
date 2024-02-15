@@ -42,22 +42,39 @@ Data needed for other locations:
 
 ## Setup
 
-Requires [`targets`](https://books.ropensci.org/targets/) R package.
+### Requirements
+
+- QGis and qgis_process installed and working
+- [`targets`](https://books.ropensci.org/targets/) R package.
+- [`siteselection`]() R package \[*under development*\].
+
+### Run
 
 ``` r
 library(targets)
 tar_visnetwork()
 ```
 
-<img src="Rplot.png" width="1053" />
+<img src="img/Rplot.png" width="1053" />
 
 And you should have something like this
 
 ``` r
+tar_make(CITY == "Lisboa")
+# let it run
+
 tar_load(candidates_centrality)
 mapview::mapview(candidates_centrality)
 ```
 
-<img src="tar_result.png" width="686" />
+<img src="img/tar_result.png" width="686" />
+
+When the process is not complete, you may have an error like this
+
+``` r
+tar_visnetwork()
+```
+
+<img src="img/tar_viz_werror.png" width="689" />
 
 *Work in Progress*
