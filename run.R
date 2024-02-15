@@ -5,9 +5,13 @@
 # See https://books.ropensci.org/targets/hpc.html
 # to learn about your options.
 
+targets::tar_visnetwork()
+
 targets::tar_make()
 # targets::tar_make_clustermq(workers = 2) # nolint
 # targets::tar_make_future(workers = 2) # nolint
 
 
 # targets::tar_make(CITY = "Cascais", cellsize = c()
+# tar_load(candidates_centrality)
+# mapview::mapview(candidates_centrality)

@@ -12,6 +12,13 @@ get_citylimit = function(CITY) {
     st_collection_extract(type = "POLYGON") %>% # when the mixes lines with polygons
     sfheaders::sf_remove_holes(close = TRUE) # when it has holes in topology
   
+  database_dir = file.path("database")
+  if (!dir.exists(database_dir)) {
+    dir.create(database_dir)
+  } else {
+    print("Dir already exists!")
+  }
+  
   output_dir = file.path("database", CITY)
     if (!dir.exists(output_dir)) {
     dir.create(output_dir)
