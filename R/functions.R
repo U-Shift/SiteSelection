@@ -12,14 +12,7 @@ get_citylimit = function(CITY) {
     st_collection_extract(type = "POLYGON") %>% # when the mixes lines with polygons
     sfheaders::sf_remove_holes(close = TRUE) # when it has holes in topology
   
-  database_dir = file.path("database")
-  if (!dir.exists(database_dir)) {
-    dir.create(database_dir)
-  } else {
-    print("Dir already exists!")
-  }
-  
-  output_dir = file.path("database", CITY)
+  output_dir = file.path("outputdata", CITY)
     if (!dir.exists(output_dir)) {
     dir.create(output_dir)
   } else {
@@ -53,7 +46,7 @@ make_grid = function(CITYlimit)  {
 
 get_osm = function(CITYlimit, CITY) {
   
-  CITYlimit = st_read(paste0("database/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+  CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
   BBOX = st_as_sfc(st_bbox(CITYlimit))
   
   # road_osm = st_read("database/geofabrik_portugal-latest.gpkg", quiet = TRUE) #old version with osmextract
@@ -86,7 +79,7 @@ get_osm = function(CITYlimit, CITY) {
   
   road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
   
-  st_write(road_network, paste0("database/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
+  st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
   
 }
 
@@ -104,16 +97,16 @@ clean_osm = function(road_network, CITY) {
   
   input = road_network %>% 
     # mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
-    st_write(paste0("database/", CITY, "/road_network.shp"), delete_dsn = TRUE)
+    st_write(paste0("outputdata/", CITY, "/road_network.shp"), delete_dsn = TRUE)
   
-  input = st_read(paste0("database/", CITY, "/road_network.shp")) #because of the fid column
+  input = st_read(paste0("outputdata/", CITY, "/road_network.shp")) #because of the fid column
   
   #delete exiting outputs
-  if (file.exists(paste0("database/", CITY, "/road_network.shp"))){
-    file.remove(paste0("database/", CITY, "/road_network.shp"))
+  if (file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
+    file.remove(paste0("outputdata/", CITY, "/road_network.shp"))
   }
   
-  output_path = paste0("database/", CITY, "/road_network_clean.shp")
+  output_path = paste0("outputdata/", CITY, "/road_network_clean.shp")
   
   output = qgis_run_algorithm(
     algorithm = "grass7:v.clean",
@@ -151,15 +144,15 @@ get_centrality = function(road_network_clean, CITY) {
 
   # qgis_show_help("grass7:v.net.centrality")
   
-  if (file.exists(paste0("database/", CITY, "/centrality_nodes.gpkg"))){
-    file.remove(paste0("database/", CITY, "/centrality_nodes.gpkg"))
+  if (file.exists(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))){
+    file.remove(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))
   }
   
-  # input = st_read(paste0("database/", CITY, "/road_network_clean.shp"))
+  # input = st_read(paste0("outputdata/", CITY, "/road_network_clean.shp"))
   input = road_network_clean
   
   # remove previous results
-  output_path = paste0("database/", CITY, "/centrality_nodes.gpkg")
+  output_path = paste0("outputdata/", CITY, "/centrality_nodes.gpkg")
   
   output_centrality = qgis_run_algorithm(
     algorithm = "grass7:v.net.centrality",
@@ -203,7 +196,7 @@ get_centrality_grid = function(centrality_nodes, grid) {
            closeness = rescale(closeness)
     )
   
-  # saveRDS(grid_centrality, paste0("database/", CITY, "/centrality_grid".Rds"))
+  # saveRDS(grid_centrality, paste0("outputdata/", CITY, "/centrality_grid".Rds"))
   
 }
 
@@ -220,7 +213,7 @@ find_candidates = function(grid, centrality_grid, CITY) {
            # closeness >= quantile(centrality_grid$closeness, 0.25, na.rm = TRUE) & closeness <= quantile(centrality_grid$closeness, 0.75, na.rm = TRUE) #2135 #too high
     )
   
-  st_write(candidates_centrality, paste0("database/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
+  st_write(candidates_centrality, paste0("outputdata/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
 
   # map_candidates = mapview::mapview(candidates_centrality)
   

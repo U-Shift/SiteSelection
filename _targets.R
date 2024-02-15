@@ -28,11 +28,19 @@ tar_source()
 # source("R/functions.R")
 # source("other_functions.R") # Source other scripts as needed. # nolint
 
+
+# Create outuput data
+if(!file.exists("outputdata")){
+  dir.create("outputdata")
+}
+
+
 # Replace the target list below with your own:
 list(
+  # tar_target(CITY, c("Almada", "Lisboa")),
   tar_target(
     name = CITY,
-    command = select_city(CITY = "Almada")),
+    command = select_city(CITY)),
   tar_target(
     name = CITYlimit,
     command = get_citylimit(CITY)),
