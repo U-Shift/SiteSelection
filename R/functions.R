@@ -22,14 +22,14 @@ get_citylimit = function(CITY) {
   st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE)
 }
 
-make_grid = function(CITYlimit, cellsize_input)  {
+make_grid = function(CITYlimit, cellsize_input, square_input)  {
   
   CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
   # cellsize = c(200, 200) #200x200m
 
   grid = st_make_grid(CITYlimit_meters,
                       cellsize = cellsize_input, 
-                      square = TRUE #FALSE = hexagons
+                      square = square_input 
   ) %>% 
     st_sf() %>% #convert sfc to sf %>% 
     st_join(CITYlimit_meters, left = FALSE) %>% 

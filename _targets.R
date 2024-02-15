@@ -7,7 +7,7 @@
 # Set defaults HERE ######################
 CITY_input = "Almada"
 cellsize_input = c(200, 200)
-
+square_input = FALSE #TRUE = squares, FALSE = hexagons
 
 
 #########################################
@@ -56,7 +56,7 @@ list(
     command = get_citylimit(CITY)),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit, cellsize = cellsize_input)),
+    command = make_grid(CITYlimit, cellsize = cellsize_input, square = square_input)),
   tar_target(
     name = road_network,
     command = get_osm(CITYlimit, CITY)),
