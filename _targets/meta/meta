@@ -1,21 +1,21 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 candidates|function|9c2f95a20efa2e79|||||||||||||||
-candidates_centrality|stem|e3d33a4b76c5b13b|beb5619abcee056e|26417348cebce7ed|1808904783||t19535.6280759323s|f28f638e79388ba5|11552|rds|local|vector|||0.128||
-centrality_grid|stem|a2aca1ee984a0b82|87bea58679d3cd99|4cf642cf83bfcb0f|-566180540||t19535.4744239548s|4abe26d0703b3b65|64571|rds|local|vector|||0.872||
-centrality_nodes|stem|39859ae4193b0d8c|e452823588902322|0190fcd1b545828a|394101546||t19535.6280743582s|00f4b88ba7626aa7|637992|rds|local|vector|||198.314||
-CITY|stem|dc0b2670b22bbc65|710c9907461e7a3a|eef4d404328a7e2e|-584060574||t19535.6197177324s|00c37fc0166b3b11|58|rds|local|vector|||5.388||
-CITYlimit|stem|1c218ee35cc673f9|db239274ae2c370c|afa6031a9b125894|-2106860492||t19535.6204887771s|105202423f442177|17134|rds|local|vector|||8.812||
-clean_osm|function|67563599b528105e|||||||||||||||
-find_candidates|function|b014fb5a412b4787|||||||||||||||
-get_centrality|function|fd23ae35a70be420|||||||||||||||
+candidates_centrality|stem|c28f7a300f11e130|beb5619abcee056e|08d6022602e8c578|-1085204634||t19768.7557629541s|db678a3e508d3f10|8849|rds|local|vector|||0.094||
+centrality_grid|stem|e6714fd404192916|87bea58679d3cd99|0744f5b21f245ccb|1844638451||t19768.7067794972s|58aad1a6e344dc5e|40697|rds|local|vector|||0.35||
+centrality_nodes|stem|e9349c1ffb27aaa0|e452823588902322|c032d396999069f6|1967224110||t19768.7557617041s|24a509147933d6b3|326829|rds|local|vector|||44.401||
+CITY|stem|243df1f374d1caf1|f5c3340119239295|eef4d404328a7e2e|494743506||t19768.7548233622s|cc81a7537cb02258|59|rds|local|vector|||5.016||
+CITYlimit|stem|b7e58edd8be08535|db239274ae2c370c|6bb43dab5f191604|-1610475006||t19768.7548853535s|e7150d4bfec07ead|36539|rds|local|vector|||5.326|x is already of type POLYGON.|
+clean_osm|function|9a700c7342068264|||||||||||||||
+find_candidates|function|b5a12bc9a7461fe4|||||||||||||||
+get_centrality|function|9cf8a66602b9e5fe|||||||||||||||
 get_centrality_grid|function|ea22a409243f2eb5|||||||||||||||
-get_citylimit|function|c90a09a04f1cd402|||||||||||||||
-get_osm|function|82ec9209577c88da|||||||||||||||
-grid|stem|a83f224241dbdc3c|4993cb656ea72c08|da45c7583b167b25|-491095951||t19535.6255172345s|4e83371ec19ebad4|20643|rds|local|vector|||0.862||
+get_citylimit|function|759de4bdab1d75a9|||||||||||||||
+get_osm|function|8ab15074a3c999b2|||||||||||||||
+grid|stem|dbf4872f7f45093a|4993cb656ea72c08|dffa5079e943b46d|-13385730||t19768.7060093511s|f573c5c45394910e|16270|rds|local|vector|||0.868||
 grid_centrality|stem|d36ea1299fa8d732|d5b7005e54af8958|5ac6925e2d6d5771|-873626440||t19530.6801894964s|44e327d1ee1978d7|43|rds|local|vector|||0.396||
 grid_centrality_values|stem|fe4429b76362a57f|d5b7005e54af8958|d6e6ec3634fdbb80|215759028||t19530.6901541384s|4dec3046e7fc7d3e|61170|rds|local|vector|||0.389||
 grid_values|stem|d36ea1299fa8d732|d5b7005e54af8958|de1934b4cb1177f3|-1403192273||t19530.6760630171s|44e327d1ee1978d7|43|rds|local|vector|||0.395||
 make_grid|function|3a5ce63068889f36|||||||||||||||
-road_network|stem|806e644de11d55e2|b1654aa20f166426|109ae037c6d1343e|254940301||t19535.6215700173s|fec0bd8be615f9cd|1483037|rds|local|vector|||9.55|attribute variables are assumed to be spatially constant throughout all geometries|
-road_network_clean|stem|d5c411aa84fb611c|a84d98621ec92db0|0311fcbc9a69ba88|-816694152||t19535.6257777526s|2c32fe810ffc5850|1757788|rds|local|vector|||22.131|GDAL Error 1 databaseLisboaroad_network.shp does not appear to be a file or directory.|
+road_network|stem|1e3f492ba255c7fe|b1654aa20f166426|de8fc2e3a47cbeeb|-881406554||t19768.7550779942s|3848d6cca863b0f2|1152995|rds|local|vector|||16.463|attribute variables are assumed to be spatially constant throughout all geometries|
+road_network_clean|stem|871fb974458dff17|a84d98621ec92db0|1b10ec78fa65d30b|-1694479692||t19768.7552471161s|f86829838f07fd2e|950741|rds|local|vector|||14.45|GDAL Error 1 outputdataAlmadaroad_network.shp does not appear to be a file or directory.|
 select_city|function|8da887bf0b6b50a7|||||||||||||||

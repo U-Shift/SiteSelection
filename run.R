@@ -5,7 +5,7 @@
 # See https://books.ropensci.org/targets/hpc.html
 # to learn about your options.
 
-targets::tar_visnetwork()
+# targets::tar_visnetwork()
 
 targets::tar_make()
 # targets::tar_make_clustermq(workers = 2) # nolint

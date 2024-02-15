@@ -40,7 +40,7 @@ list(
   # tar_target(CITY, c("Almada", "Lisboa")),
   tar_target(
     name = CITY,
-    command = select_city(CITY)),
+    command = select_city(CITY = "Almada")),
   tar_target(
     name = CITYlimit,
     command = get_citylimit(CITY)),
