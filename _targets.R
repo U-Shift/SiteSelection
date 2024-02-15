@@ -34,19 +34,25 @@ if(!file.exists("outputdata")){
   dir.create("outputdata")
 }
 
+# Set defaults HERE ######################
+CITY_input = "Almada"
+cellsize_input = c(200, 200)
+
+
+
+#########################################
 
 # Replace the target list below with your own:
 list(
-  # tar_target(CITY, c("Almada", "Lisboa")),
   tar_target(
     name = CITY,
-    command = select_city(CITY = "Almada")),
+    command = select_city(CITY = CITY_input)),
   tar_target(
     name = CITYlimit,
     command = get_citylimit(CITY)),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit)),
+    command = make_grid(CITYlimit, cellsize = cellsize_input)),
   tar_target(
     name = road_network,
     command = get_osm(CITYlimit, CITY)),
