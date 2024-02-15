@@ -210,7 +210,11 @@ find_candidates = function(grid, centrality_grid, CITY) {
              betweenness <= quantile(centrality_grid$betweenness, 0.60, na.rm = TRUE), 
            closeness >= 0.25 & closeness <= 0.75
            # closeness >= quantile(centrality_grid$closeness, 0.25, na.rm = TRUE) & closeness <= quantile(centrality_grid$closeness, 0.75, na.rm = TRUE) #2135 #too high
-    )
+    ) |>
+    mutate(degree = round(degree, digits = 3),
+           betweenness = round(betweenness, digits = 3),
+           closeness = round(closeness, digits = 3)
+     )
   
   st_write(candidates_centrality, paste0("outputdata/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
 

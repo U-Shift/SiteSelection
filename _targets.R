@@ -3,6 +3,17 @@
 # Then follow the manual to check and run the pipeline:
 #   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline # nolint
 
+
+# Set defaults HERE ######################
+CITY_input = "Almada"
+cellsize_input = c(200, 200)
+
+
+
+#########################################
+
+
+
 # Load packages required to define the pipeline:
 library(targets)
 # library(tarchetypes) # Load other packages as needed. # nolint
@@ -34,13 +45,6 @@ if(!file.exists("outputdata")){
   dir.create("outputdata")
 }
 
-# Set defaults HERE ######################
-CITY_input = "Almada"
-cellsize_input = c(200, 200)
-
-
-
-#########################################
 
 # Replace the target list below with your own:
 list(

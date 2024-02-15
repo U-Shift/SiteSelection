@@ -12,6 +12,5 @@ targets::tar_make()
 # targets::tar_make_future(workers = 2) # nolint
 
 
-# targets::tar_make(CITY = "Cascais", cellsize = c()
 # tar_load(candidates_centrality)
 # mapview::mapview(candidates_centrality)
