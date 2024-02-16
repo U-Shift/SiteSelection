@@ -15,10 +15,27 @@ road_network = st_read("database/lisbon_network_vclean.gpkg") #or https://github
 # 
 # # TESTE rede gabriel
 # road_network = st_read("database/old_network/RedeViariaLisboa_osm_Setores/RedeViariaLisboa_osm_Setores.shp")
+# road_network = st_transform(road_network, 3857) # Project
 
-road_network = st_transform(road_network, 3857) # Project
+# TESTE rede limpa osm targets
+road_network = st_read("outputdata/Lisboa/road_network_clean.shp")
+
+
+
+net = as_sfnetwork(road_network)
+smoothed = convert(net, to_spatial_smooth)
+
+nodes_smoothed = smoothed %>%
+  activate(nodes) %>%
+  as_tibble() |> 
+  st_as_sf(coords = c('X', 'Y')) %>%
+  st_set_crs(st_crs(edges))
+
+
+
 
 # create a road network graph ------------------------------------------------------------
+
 
 edges = road_network %>%
   mutate(edgeID = c(1:n()))
@@ -58,6 +75,10 @@ nodes = nodes %>%
   select(-c(edgeID, start_end)) %>%
   st_as_sf(coords = c('X', 'Y')) %>%
   st_set_crs(st_crs(edges))
+
+
+
+
 
 
 # Convert Sticky Geometry (sf) and Linestring geometries into a tbl_graph
