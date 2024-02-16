@@ -2,7 +2,7 @@
 title: "Identifying complexity to reallocate street space: An open-source tool for Portugal"
 author:
   - name: Gabriel Valença
-    email: gabriel.valenca@tecnico.ulisboa.pt
+    email: gabrielvalenca@tecnico.ulisboa.pt
     affiliation: CERIS
     correspondingauthor: true
     # footnote: 1
@@ -47,20 +47,4 @@ output:
     citation_package: natbib
 ---
 
-Traditionally, urban road space allocation has relied on the hierarchical street classification, favoring traffic lanes in arterials and allocating more space to parking or sidewalks in local streets.
-However, a dilemma arises in more complex urban environments that face limitations in space and must accommodate both mobility and access functions.
-Additionally, these zones tend to have high intensity and fluctuation of multimodal demands, leading to underutilized spaces at certain times of the day.
-There is a potential to reallocate space dynamically over time according to fluctuations of demand, having a more efficient and just space distribution.
-We define a complex space as facing the mobility vs access dilemma, having high connectivity, having dense and diverse land use and with high levels of traffic or/and public transport at least one hour of the day.
-Zones with these characteristics tend to have scarce urban space to fulfill the street's mobility and access functions.
-
-To address this issue, we propose a site selection methodology to identify complex zones within cities on a macro scale where diverse users and demands compete for space.
-These zones require a deeper understanding of urban dynamics to prioritize sustainable transportation policy.
-The proposed methodology uses open data such as road network, information on population and transit  and trafficroad network, land use, and traffic and public transport levels of service, provided by OpenStreetMaps, national census, Google Maps API and General Transit Feed Specification (GTFS) sources.
-We propose indicators and a network flow to determine locations that we consider complex to reallocate road space.
-We developed an R package that can reproduce the proposed methodology in any location in Portugal. 
-
-In  previous work we demonstrated this application through a case study in Lisbon, offering planners a starting point to assess activities and temporal-spatial demands when reallocating road space.
-Adaptations from the initial methodology were needed due to the different contexts, and scale of analysis.
-
-This methodology could be expanded not only to other countries (as long as required data exists) but also for applications such as identifying 30km/h zones.  
+Traditionally, urban road space allocation has relied on the hierarchical street classification, favoring traffic lanes in arterials and allocating more space to parking or sidewalks in local streets. However, a dilemma arises in more complex urban environments that face limitations in space and must accommodate both mobility and access functions. Consequently, deciding how much space to allocate in complex urban areas for these functions is not always evident and requires tradeoffs. Additionally, these zones tend to have high intensity and fluctuation of multimodal demands, leading to underutilized spaces at certain times of the day. There is a potential to reallocate space dynamically over time according to fluctuations of demand, having a more efficient and just space distribution. We define a complex space as facing the mobility vs access dilemma, having high connectivity, having dense and diverse land use and with high levels of traffic or/and public transport at least one hour of the day. Zones with these characteristics tend to have scarce urban space to fulfill the street's mobility and access functions. To address this issue, we propose a site selection methodology to identify complex zones within cities on a macro scale where diverse users and demands compete for space. These zones require a deeper understanding of urban dynamics to prioritize sustainable transportation policy. The proposed methodology uses open data such as road network, information on population, land use, and transit and traffic dynamics, provided by OpenStreetMaps, national census, Google Maps API and General Transit Feed Specification (GTFS) sources. We propose indicators to determine locations that we consider complex to reallocate road space.  In previous work we demonstrated this application through a case study in Lisbon, offering planners a starting point to assess activities and temporal-spatial demands when reallocating road space. We developed an R package that can reproduce the proposed methodology in any location in Portugal. Adaptations from the initial methodology were needed due to the different contexts, and scale of analysis. This methodology could be expanded not only to other countries (as long as required data exists) but also for applications such as identifying 30km/h zones.    
