@@ -6,7 +6,7 @@
 
 # Set defaults HERE ######################
 CITY_input = "Almada"
-cellsize_input = c(200, 200)
+cellsize_input = c(300, 300)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 
 

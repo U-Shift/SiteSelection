@@ -1,11 +1,25 @@
 # functions all in one
 
+
+# select_city -------------------------------------------------------------
+
 select_city = function(CITY){
   CITY = CITY
 }
 
 
+
+# get_citylimit -----------------------------------------------------------
+
 get_citylimit = function(CITY) {
+  
+  if(file.exists(paste0("outputdata/", CITY, "/CITYlimit.geojson"))){
+    
+    CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+    
+  } else {
+  
+  
   MUNICIPIOSgeo = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CAOP_municipios.gpkg", quiet = TRUE) # Portugal
   CITYlimit = MUNICIPIOSgeo %>%
     filter(Concelho == CITY) %>% 
@@ -20,7 +34,13 @@ get_citylimit = function(CITY) {
   }
   
   st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE)
+ 
+   }
 }
+
+
+
+# make_grid ---------------------------------------------------------------
 
 make_grid = function(CITYlimit, cellsize_input, square_input)  {
   
@@ -43,7 +63,16 @@ make_grid = function(CITYlimit, cellsize_input, square_input)  {
 }
 
 
+
+# get_osm -----------------------------------------------------------------
+
 get_osm = function(CITYlimit, CITY) {
+  
+ if(file.exists(paste0("outputdata/", CITY, "/road_network.gpkg"))){
+    
+    road_network = st_read(paste0("outputdata/", CITY, "/road_network.gpkg"), quiet = TRUE)
+  
+  } else {
   
   CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
   BBOX = st_as_sfc(st_bbox(CITYlimit))
@@ -80,10 +109,20 @@ get_osm = function(CITYlimit, CITY) {
   
   st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
   
+  }
 }
 
 
+
+# clean_osm ---------------------------------------------------------------
+
 clean_osm = function(road_network, CITY) {
+  
+  if(file.exists(paste0("outputdata/", CITY, "/road_network_clean.shp"))){
+    
+    road_network_clean = sf::st_read(paste0("outputdata/", CITY, "/road_network_clean.shp"), quiet = TRUE)
+    
+  } else {
   
   options(qgisprocess.path="/usr/bin/qgis_process.bin")
   qgis_configure()
@@ -134,18 +173,30 @@ clean_osm = function(road_network, CITY) {
   # remotes::install_github("saferactive/trafficalmr")
   # road_network_clean_consolidate = road_network_clean %>% st_transform(3857) %>% trafficalmr::osm_consolidate(200)
   # osm_tags missing here, not working!
-  
+ 
+  } 
 }
 
+
+
+# get_centrality ----------------------------------------------------------
 
 get_centrality = function(road_network_clean, CITY) {
   # road_network_clean = st_transform(road_network_clean, 3857)
 
-  # qgis_show_help("grass7:v.net.centrality")
   
-  if (file.exists(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))){
-    file.remove(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))
-  }
+  if(file.exists(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))){
+    
+    centrality_nodes = sf::st_read(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"), quiet = TRUE)
+    
+  } else {
+  
+    # if (file.exists(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))){
+    # file.remove(paste0("outputdata/", CITY, "/centrality_nodes.gpkg"))
+    # }
+    
+    
+  # qgis_show_help("grass7:v.net.centrality")
   
   # input = st_read(paste0("outputdata/", CITY, "/road_network_clean.shp"))
   input = road_network_clean
@@ -176,7 +227,12 @@ get_centrality = function(road_network_clean, CITY) {
   
   st_write(centrality_nodes, output_path, delete_dsn = TRUE)
   
+  }
 }
+
+
+
+# get_centrality_grid -----------------------------------------------------
 
 get_centrality_grid = function(centrality_nodes, grid) {
   
@@ -199,6 +255,9 @@ get_centrality_grid = function(centrality_nodes, grid) {
   
 }
 
+
+
+# find_candidates ---------------------------------------------------------
 
 find_candidates = function(grid, centrality_grid, CITY) {
   
