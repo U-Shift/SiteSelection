@@ -5,10 +5,10 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Lisboa"
-cellsize_input = c(500, 500)
-square_input = FALSE #TRUE = squares, FALSE = hexagons
-
+CITY_input = "Almada"
+cellsize_input = c(200, 200)
+square_input = TRUE #TRUE = squares, FALSE = hexagons
+build_osm = TRUE #clean osm road network again?
 
 #########################################
 
@@ -62,7 +62,7 @@ list(
     command = get_osm(CITYlimit, CITY)),
   tar_target(
     name = road_network_clean,
-    command = clean_osm(road_network, CITY)),
+    command = clean_osm(road_network, CITY, build_osm)),
   tar_target(
     name = centrality_nodes,
     command = get_centrality(road_network_clean, CITY)),

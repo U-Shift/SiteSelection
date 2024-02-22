@@ -116,9 +116,10 @@ get_osm = function(CITYlimit, CITY) {
 
 # clean_osm ---------------------------------------------------------------
 
-clean_osm = function(road_network, CITY) {
+clean_osm = function(road_network, CITY, build_osm) {
   
-  if(file.exists(paste0("outputdata/", CITY, "/road_network_clean.shp"))){
+  if(build_osm == FALSE &
+     file.exists(paste0("outputdata/", CITY, "/road_network_clean.shp"))){
     
     road_network_clean = sf::st_read(paste0("outputdata/", CITY, "/road_network_clean.shp"), quiet = TRUE)
     
@@ -165,6 +166,16 @@ clean_osm = function(road_network, CITY) {
   
   road_network_clean = sf::st_read(output[["output"]][1])
   # %>% select(-fid_2)
+
+  # cleaning the unnecessary nodes, using tidygraph and sfnetworks
+  road_network_clean = as_sfnetwork(road_network_clean)
+  
+  road_network_clean = convert(road_network_clean, to_spatial_smooth) |> 
+    activate(edges) |> 
+    as_tibble() |>
+    select(cat, osm_id, highway, geometry) |>
+    mutate(edgeID = c(1:n())) |> 
+    st_as_sf()
   
   st_write(road_network_clean, output_path, delete_dsn = TRUE)
   

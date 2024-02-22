@@ -17,21 +17,6 @@ road_network = st_read("database/lisbon_network_vclean.gpkg") #or https://github
 # road_network = st_read("database/old_network/RedeViariaLisboa_osm_Setores/RedeViariaLisboa_osm_Setores.shp")
 # road_network = st_transform(road_network, 3857) # Project
 
-# TESTE rede limpa osm targets
-road_network = st_read("outputdata/Lisboa/road_network_clean.shp")
-
-
-
-net = as_sfnetwork(road_network)
-smoothed = convert(net, to_spatial_smooth)
-
-nodes_smoothed = smoothed %>%
-  activate(nodes) %>%
-  as_tibble() |> 
-  st_as_sf(coords = c('X', 'Y')) %>%
-  st_set_crs(st_crs(edges))
-
-
 
 
 # create a road network graph ------------------------------------------------------------
@@ -172,3 +157,30 @@ summary(centrality_grid$closeness)
 # 0.0000000 0.0000016 0.0000025 0.0014170 0.0000033 1.0000000  gabriel
 
 saveRDS(centrality_grid, "database/centrality_grid.Rds")
+
+
+
+
+# clean unnecessary nodes -------------------------------------------------
+
+# TESTE rede limpa osm targets
+road_network = st_read("outputdata/Lisboa/road_network_clean.shp")
+
+net = as_sfnetwork(road_network)
+
+nodes_smoothed = convert(net, to_spatial_smooth) |> 
+  activate(nodes) |> 
+  as_tibble() |> 
+  st_as_sf() |> 
+  rename(nodeID = .tidygraph_node_index)
+
+edges_smoothed = convert(net, to_spatial_smooth) |> 
+  activate(edges) |> 
+  as_tibble() |>
+  select(cat, osm_id, highway, geometry) |>
+  mutate(edgeID = c(1:n())) |> 
+  st_as_sf()
+
+mapview::mapview(edges_smoothed, zcol="edgeID")
+
+st_write(edges_smoothed, "outputdata/edges_smoothed.shp", delete_dsn = TRUE)
