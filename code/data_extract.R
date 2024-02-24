@@ -74,48 +74,35 @@ road_network = road_osm %>%
 road_network = st_intersection(road_network, geo_buffer(CITYlimit, dist=100)) 
 plot(road_network["highway"])
 
-# Clean the road network
-library(stplanr)
-road_network$group = stplanr::rnet_group(road_network, d = 10) # 10m tolerance
-# plot(lisbon_network["group"])
-road_network_groups = road_network %>% filter(group == 1) #the network with more connected segments
-
-road_network = road_osm %>% filter(osm_id %in% road_network_groups$osm_id) # get only the segments from the clean network
-
-st_geometry(road_network) # Should be "LINESTRING"
-# road_network = st_cast(road_network, "LINESTRING") #if you don't wnat to use the previous filter
-road_network = stplanr::rnet_breakup_vertices(road_network) # break the segments internally, conserving the brunels.
-
-road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
-
-st_write(road_network, "database/lisbon_network.gpkg", delete_dsn = TRUE)
 
 
 
-# CONTINUE IN QGIS ----------------------------------------------------------------------------
-
-# READ VERY CAREFULLY
-# open QGIS with Grass
-
-# run plugin
-# http://plugins.qgis.org/plugins/disconnected-islands/
-#  
-# select all that connect (select by attributes all  "networkGrp" =0) and eport selected features
-# the trick is, when exporting, do not export field "fid", and rename fid bellow to "fid_2",
-# otherwise the clean process cannot save the output
-# export as "network_groups-gpkg"
-#
-# v.clean
-# select other hidden options: break, snap, rmdangle, rmdupl
-#
-# tolerance for each
-# 0, 0.00000100, 0.00000100, 0
-#
-# save output as "network_vclean.gpkg"
-
-road_network = st_read("database/lisbon_network_vclean.gpkg")
-
-# # upload to Assets
-# piggyback::pb_upload("database/lisbon_network_vclean.gpkg")# not working, upload manually
+# download census population and buildings --------------------------------
 
 
+library(tidyverse)
+library(sf)
+
+# get census data
+download.file("https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip", "database/BGRI_CONT.zip")
+unzip("database/BGRI_CONT.zip", "BGRI21_CONT.gpkg")
+file.copy(from = "BGRI21_CONT.gpkg", to = "database/BGRI21_CONT.gpkg")
+file.remove("BGRI21_CONT.gpkg", "database/BGRI_CONT.zip")
+
+CENSUSraw = st_read("database/BGRI21_CONT.gpkg")
+
+# make centroids and select only resident population and buildings (total and exclusively residential)
+CENSUSpoint = CENSUSraw |> 
+  select(BGRI2021, DTMN21, N_INDIVIDUOS, N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_EXCLUSIV_RESID) |>
+  st_as_sf(crs = 4326)
+
+# mapview::mapview(CENSUSpoint)
+
+# label the DTMN with municipalities, to make filtering faster (instead of filter by city_limit)
+
+
+
+st_write(CENSUSpoint, "database/CENSUSpoint.gpkg")
+
+# upload to Assets
+piggyback::pb_upload("database/CENSUSpoint.gpkg") 
