@@ -1,7 +1,9 @@
 # aim: get population for each cell and then include information in the grid
 
 # density -----------------------------------------------------------------
-population
+population in grid
+population = st_read(url(""))
+
 Filtrar tabela só com população residente e lat/long (pontos)
   centroids pop  
   
