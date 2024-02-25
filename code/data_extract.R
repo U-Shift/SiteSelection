@@ -138,5 +138,5 @@ CENSUSpoint = CENSUSpoint |> left_join(BGRI_names)
 st_write(CENSUSpoint, "database/CENSUSpoint.gpkg", delete_dsn = TRUE)
 
 # upload to Assets
-guess_repo()
 piggyback::pb_upload("database/CENSUSpoint.gpkg", repo = "U-Shift/SiteSelection", tag = "0.1") 
+file.remove("database/CENSUSpolygons.gpkg")
