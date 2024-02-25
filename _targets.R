@@ -8,7 +8,7 @@
 CITY_input = "Almada"
 cellsize_input = c(200, 200)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
-build_osm = TRUE #clean osm road network again?
+build_osm = FALSE #clean osm road network again?
 
 #########################################
 

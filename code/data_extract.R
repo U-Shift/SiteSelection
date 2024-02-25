@@ -79,7 +79,6 @@ plot(road_network["highway"])
 
 # download census population and buildings --------------------------------
 
-
 library(tidyverse)
 library(sf)
 
@@ -92,17 +91,52 @@ file.remove("BGRI21_CONT.gpkg", "database/BGRI_CONT.zip")
 CENSUSraw = st_read("database/BGRI21_CONT.gpkg")
 
 # make centroids and select only resident population and buildings (total and exclusively residential)
-CENSUSpoint = CENSUSraw |> 
+CENSUSpolygons = CENSUSraw |> 
   select(BGRI2021, DTMN21, N_INDIVIDUOS, N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_EXCLUSIV_RESID) |>
-  st_as_sf(crs = 4326)
+  st_transform(4326)
+# CENSUSpoints = CENSUSpoligons |> st_centroid(of_largest_polygon = TRUE) # error! parse code 12
 
+library(qgisprocess)
+# algorithms = qgis_algorithms()
+# algorithms %>% filter(grepl(pattern = "centroid", x = algorithm, ignore.case = TRUE))
+# qgis_show_help("native:centroids")
+
+CENSUSpolygons %>%
+  st_write("database/CENSUSpolygons.gpkg", delete_dsn = TRUE)
+input = st_read("database/CENSUSpolygons.gpkg") #because of the fid column
+output_path = paste0("database/CENSUSpoint.gpkg")
+
+output = qgis_run_algorithm(
+  algorithm = "native:centroids",
+  INPUT = input,
+  OUTPUT = output_path, # need to be defined otherwise it saves in tmp.gpkg and makes the error with fid (# ERROR 1: failed to execute insert : UNIQUE constraint failed: outpute935bd152d284569afb314c88e8fce09.fid)
+)
+
+CENSUSpoint = sf::st_read(output_path)
+                            
 # mapview::mapview(CENSUSpoint)
+plot(CENSUSpoint[1,])
 
 # label the DTMN with municipalities, to make filtering faster (instead of filter by city_limit)
+# get names BGRI DTMN21
+download.file("https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/InfExtra_Municipios_Freguesias_CAOP2023.zip",
+              "database/InfExtra_Municipios_Freguesias_CAOP2023.zip")
+unzip("database/InfExtra_Municipios_Freguesias_CAOP2023.zip", "InfExtra_Municípios_Freguesias_CAOP2023.xls")
+file.copy(from = "InfExtra_Municípios_Freguesias_CAOP2023.xls", to = "database/InfExtra_Municípios_Freguesias_CAOP2023.xls")
+file.remove("InfExtra_Municípios_Freguesias_CAOP2023.xls", "database/BGRI_names.zip")
+# not extracting well..
 
+BGRI_names = readxl::read_xls("database/InfExtra_Municípios_Freguesias_CAOP2023.xls", sheet = 1)
+BGRI_names = BGRI_names |>
+  select(DICO, Designação_Município) |> 
+  rename(DTMN21 = DICO,
+         Concelho = Designação_Município) # in caps...
 
+#join names - in CAPS
+CENSUSpoint = CENSUSpoint |> left_join(BGRI_names)
 
-st_write(CENSUSpoint, "database/CENSUSpoint.gpkg")
+st_write(CENSUSpoint, "database/CENSUSpoint.gpkg", delete_dsn = TRUE)
 
 # upload to Assets
-piggyback::pb_upload("database/CENSUSpoint.gpkg") 
+guess_repo()
+piggyback::pb_upload("database/CENSUSpoint.gpkg", repo = "U-Shift/SiteSelection", tag = "0.1") 
