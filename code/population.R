@@ -36,7 +36,12 @@ population_grid =
           join = st_intersects) %>% 
   st_drop_geometry() %>% 
   group_by(ID) %>% 
-  summarise(population = sum(N_INDIVIDUOS))
+  summarise(population = sum(N_INDIVIDUOS)) |> 
+  mutate(population = scales::rescale(population)) #?
+
+# table(population_grid$population > 0.5)
+# FALSE  TRUE 
+# 1044    25 
 
 population_grid_geo = GRID |> left_join(population_grid)
 mapview::mapview(population_grid_geo, zcol="population") + mapview::mapview(CENSUScity)
