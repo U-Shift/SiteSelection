@@ -301,7 +301,7 @@ get_density_grid = function(grid, CENSUScity) {
 
 # find_candidates ---------------------------------------------------------
 
-find_candidates = function(grid, centrality_grid, density_grid, CITY) {
+find_candidates = function(grid, centrality_grid, density_grid, CITY, population_min) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -328,7 +328,8 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY) {
   candidates_density = grid |>
     # st_transform(3857) |> 
     left_join(density_grid) |> 
-    filter(population >= mean(density_grid$population)) #above mean
+    # filter(population >= mean(density_grid$population)) #above mean
+    filter(population >= population_min(density_grid$population)) #above mean
   
   st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   

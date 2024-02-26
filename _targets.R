@@ -10,6 +10,10 @@ cellsize_input = c(200, 200)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
 
+# Tresholds
+population_min = median # mean or median?
+
+
 #########################################
 
 
@@ -77,7 +81,7 @@ list(
     command = get_density_grid(grid, CENSUScity)),
   tar_target(
     name = candidates_all,
-    command = find_candidates(grid, centrality_grid, density_grid, CITY)
+    command = find_candidates(grid, centrality_grid, density_grid, CITY, population_min)
   )
 )
   

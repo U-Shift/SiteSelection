@@ -5,6 +5,7 @@
 # See https://books.ropensci.org/targets/hpc.html
 # to learn about your options.
 
+targets::tar_manifest()
 targets::tar_visnetwork()
 
 targets::tar_make()
