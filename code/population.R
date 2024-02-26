@@ -36,8 +36,8 @@ population_grid =
           join = st_intersects) %>% 
   st_drop_geometry() %>% 
   group_by(ID) %>% 
-  summarise(population = sum(N_INDIVIDUOS)) |> 
-  mutate(population = scales::rescale(population)) #?
+  summarise(population = sum(N_INDIVIDUOS))
+  # mutate(population = scales::rescale(population)) # not needed
 
 # table(population_grid$population > 0.5)
 # FALSE  TRUE 
@@ -46,6 +46,11 @@ population_grid =
 population_grid_geo = GRID |> left_join(population_grid)
 mapview::mapview(population_grid_geo, zcol="population") + mapview::mapview(CENSUScity)
 
-# selection - above mean (should be above median?)
+## selection - above mean (should be above median?)
+# summary(population_grid$population)
+# hist(population_grid$population)
+# abline(v = mean(population_grid$population), col="red")
+# abline(v = median(population_grid$population), col="blue")
+
 density_grid = population_grid_geo |> filter(population > mean(population_grid$population)) #above mean
 mapview::mapview(density_grid, zcol="population")

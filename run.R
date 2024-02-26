@@ -11,6 +11,5 @@ targets::tar_make()
 # targets::tar_make_clustermq(workers = 2) # nolint
 # targets::tar_make_future(workers = 2) # nolint
 
-
-targets::tar_load(candidates_centrality)
-mapview::mapview(candidates_centrality)
+targets::tar_load(candidates_all)
+mapview::mapview(candidates_all, zcol="population")

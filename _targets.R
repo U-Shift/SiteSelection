@@ -70,8 +70,14 @@ list(
     name = centrality_grid,
     command = get_centrality_grid(centrality_nodes, grid)),
   tar_target(
-    name = candidates_centrality,
-    command = find_candidates(grid, centrality_grid, CITY)
+    name = CENSUScity,
+    command = get_census(CITY)),
+  tar_target(
+    name = density_grid,
+    command = get_density_grid(grid, CENSUScity)),
+  tar_target(
+    name = candidates_all,
+    command = find_candidates(grid, centrality_grid, density_grid, CITY)
   )
 )
   

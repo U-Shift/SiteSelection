@@ -268,11 +268,45 @@ get_centrality_grid = function(centrality_nodes, grid) {
 
 
 
+
+
+# get_census --------------------------------------------------------------
+
+get_census = function(CITY) {
+  
+  CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg")
+  CENSUScity = CENSUSpoint |> filter(Concelho == toupper(CITY))
+  
+  # saveRDS(CENSUScity, paste0("outputdata/", CITY, "/CENSUScity.Rds"))
+}
+
+
+# density_grid ------------------------------------------------------------
+
+get_density_grid = function(grid, CENSUScity) {
+  
+  # CENSUScity = readRDS(paste0("outputdata/", CITY, "/CENSUScity.Rds"))
+  
+  density_grid = 
+    st_join(CENSUScity |> select(BGRI2021, N_INDIVIDUOS, geom),
+            grid,
+            join = st_intersects) %>% 
+    st_drop_geometry() %>% 
+    group_by(ID) %>% 
+    summarise(population = sum(N_INDIVIDUOS))
+  
+}
+
+
+
 # find_candidates ---------------------------------------------------------
 
-find_candidates = function(grid, centrality_grid, CITY) {
+find_candidates = function(grid, centrality_grid, density_grid, CITY) {
   
-  candidates_centrality = left_join(st_transform(grid, 3857), centrality_grid) 
+  # centrality
+  candidates_centrality = grid |> 
+    # st_transform(3857) |> 
+    left_join(centrality_grid) 
   # Filter in thresholds #for Lisbon. Adjust for other places?
   candidates_centrality = candidates_centrality %>%
     filter(degree >= mean(centrality_grid$degree), #1088 média
@@ -285,10 +319,28 @@ find_candidates = function(grid, centrality_grid, CITY) {
            betweenness = round(betweenness, digits = 3),
            closeness = round(closeness, digits = 3)
      )
-  
-  st_write(candidates_centrality, paste0("outputdata/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
 
   # map_candidates = mapview::mapview(candidates_centrality)
+  st_write(candidates_centrality, paste0("outputdata/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
+  
+  
+  # density
+  candidates_density = grid |>
+    # st_transform(3857) |> 
+    left_join(density_grid) |> 
+    filter(population >= mean(density_grid$population)) #above mean
+  
+  st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
+  
+  
+  # all candidates
+  candidates_all = grid |> 
+    left_join(candidates_centrality |> st_drop_geometry()) |> 
+    left_join(candidates_density |> st_drop_geometry()) |> 
+    filter(!is.na(degree)) |> 
+    filter(!is.na(population))
+  
+  # mapview::mapview(candidates_all)
+  st_write(candidates_all, paste0("outputdata/", CITY, "/candidates_all.gpkg"), delete_dsn = TRUE)
   
 }
-
