@@ -301,7 +301,8 @@ get_density_grid = function(grid, CITYcensus) {
 
 # find_candidates ---------------------------------------------------------
 
-find_candidates = function(grid, centrality_grid, density_grid, CITY, population_min) {
+find_candidates = function(grid, centrality_grid, density_grid, CITY,
+                           population_min, degree_min, betweeness_range, closeness_range) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -309,10 +310,10 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY, population
     left_join(centrality_grid) 
   # Filter in thresholds #for Lisbon. Adjust for other places?
   candidates_centrality = candidates_centrality %>%
-    filter(degree >= mean(centrality_grid$degree), #1088 média
-           betweenness >= quantile(centrality_grid$betweenness, 0.40, na.rm = TRUE) &
-             betweenness <= quantile(centrality_grid$betweenness, 0.60, na.rm = TRUE), 
-           closeness >= 0.25 & closeness <= 0.75
+    filter(degree >= degree_min(centrality_grid$degree), #1088 média
+           betweenness >= quantile(centrality_grid$betweenness, betweeness_range, na.rm = TRUE) &
+             betweenness <= quantile(centrality_grid$betweenness, 1-betweeness_range, na.rm = TRUE), 
+           closeness >= closeness_range & closeness <= 1-closeness_range
            # closeness >= quantile(centrality_grid$closeness, 0.25, na.rm = TRUE) & closeness <= quantile(centrality_grid$closeness, 0.75, na.rm = TRUE) #2135 #too high
     ) |>
     mutate(degree = round(degree, digits = 3),
