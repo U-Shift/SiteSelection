@@ -275,20 +275,20 @@ get_centrality_grid = function(centrality_nodes, grid) {
 get_census = function(CITY) {
   
   CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg")
-  CENSUScity = CENSUSpoint |> filter(Concelho == toupper(CITY))
+  CITYcensus = CENSUSpoint |> filter(Concelho == toupper(CITY))
   
-  # saveRDS(CENSUScity, paste0("outputdata/", CITY, "/CENSUScity.Rds"))
+  # saveRDS(CITYcensus, paste0("outputdata/", CITY, "/CITYcensus.Rds"))
 }
 
 
 # density_grid ------------------------------------------------------------
 
-get_density_grid = function(grid, CENSUScity) {
+get_density_grid = function(grid, CITYcensus) {
   
-  # CENSUScity = readRDS(paste0("outputdata/", CITY, "/CENSUScity.Rds"))
+  # CITYcensus = readRDS(paste0("outputdata/", CITY, "/CITYcensus.Rds"))
   
   density_grid = 
-    st_join(CENSUScity |> select(BGRI2021, N_INDIVIDUOS, geom),
+    st_join(CITYcensus |> select(BGRI2021, N_INDIVIDUOS, geom),
             grid,
             join = st_intersects) %>% 
     st_drop_geometry() %>% 

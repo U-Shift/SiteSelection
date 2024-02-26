@@ -30,7 +30,7 @@ tar_option_set(
   format = "rds", # default storage format
   storage = "worker",
   retrieval = "worker",
-  controller = crew_controller_local(workers = 3)
+  controller = crew_controller_local(workers = 3) #change here number of paralell process
   # Set other options as needed.
 )
 
@@ -80,11 +80,11 @@ list(
     name = centrality_grid,
     command = get_centrality_grid(centrality_nodes, grid)),
   tar_target(
-    name = CENSUScity,
+    name = CITYcensus,
     command = get_census(CITY)),
   tar_target(
     name = density_grid,
-    command = get_density_grid(grid, CENSUScity)),
+    command = get_density_grid(grid, CITYcensus)),
   tar_target(
     name = candidates_all,
     command = find_candidates(grid, centrality_grid, density_grid, CITY, population_min)
