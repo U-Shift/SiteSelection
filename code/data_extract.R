@@ -140,3 +140,54 @@ st_write(CENSUSpoint, "database/CENSUSpoint.gpkg", delete_dsn = TRUE)
 # upload to Assets
 piggyback::pb_upload("database/CENSUSpoint.gpkg", repo = "U-Shift/SiteSelection", tag = "0.1") 
 file.remove("database/CENSUSpolygons.gpkg")
+
+
+
+# download OSM buildings and services -------------------------------------
+
+library(osmdata)
+library(sf)
+CITY = "Lisboa"
+
+## new way using osmdata ##
+osm_points_amenity = opq(CITY) |> 
+  add_osm_feature(key = "amenity", value = c("atm", "bank", "hospital", "pharmacy", "veterinary",
+                                             "restaurant", "pub", "cafe", "bar",
+                                             "college", "university", "kindergarten", "school",
+                                             "library", "cinema", "theatre",
+                                             "police", "fire_station", "courthouse", "post_office")) |>
+  osmdata_sf()
+osm_points_building = opq(CITY) |> 
+  add_osm_feature(key = "building") |> 
+  osmdata_sf()
+osm_points_shop = opq(CITY) |> 
+  add_osm_feature(key = "shop") |>
+  osmdata_sf()
+
+bulding_values = c("apartments", "detached", "house", "residential",
+            "hotel", "commercial", "office", "retail", "supermarket", "warehouse",
+            "religious", "cathedral", "chapel", "church", "synagogue", "temple",
+            "government", "hospital", "firestation", "museum", "school", "transportation", "university",
+            "stadium")
+  
+  # add_osm_feature(key = "helthcare") |> #nothing
+  # add_osm_feature(key = "sport") |> 
+  # add_osm_feature(key = "tourism") |>
+  # add_osm_feature(key = "leisure", value = c("park", "playground", "garden", "dog_park")) |> 
+  osmdata_sf()
+table(osm_points$osm_points$building)
+table(osm_points$osm_polygons$building)
+table(osm_points$osm_points$tourism)
+table(osm_points$osm_polygons$tourism)
+
+mapview::mapview(osm_points_amenity$osm_polygons) +
+  mapview::mapview(osm_points_building$osm_polygons, col.regions = "red") +
+  mapview::mapview(osm_points_shop$osm_polygons, col.regions = "darkgreen")
+
+############################## CONTINUAR AQUI ----------------------------------------------------------
+
+
+
+
+road_osm_test = road_osm_test %>% osm_poly2line()
+road_osm_test = road_osm_test$osm_lines %>% select(osm_id, name, highway, geometry)
