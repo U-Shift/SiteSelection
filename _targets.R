@@ -6,12 +6,12 @@
 
 # Set defaults HERE ######################
 CITY_input = "Almada"
-cellsize_input = c(200, 200)
+cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
-build_osm = FALSE #clean osm road network again?
+build_osm = TRUE #clean osm road network again?
 
 # Tresholds
-population_min = median # mean or median?
+population_min = mean # mean or median?
 
 
 #########################################
@@ -20,13 +20,17 @@ population_min = median # mean or median?
 
 # Load packages required to define the pipeline:
 library(targets)
+library(crew)
 # library(tarchetypes) # Load other packages as needed. # nolint
 
 # Set target options:
 tar_option_set(
   packages = c("tibble", "tidyverse", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
                "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
-  format = "rds" # default storage format
+  format = "rds", # default storage format
+  storage = "worker",
+  retrieval = "worker",
+  controller = crew_controller_local(workers = 3)
   # Set other options as needed.
 )
 
@@ -66,7 +70,9 @@ list(
     command = get_osm(CITYlimit, CITY)),
   tar_target(
     name = road_network_clean,
-    command = clean_osm(road_network, CITY, build_osm)),
+    command = clean_osm(road_network, CITY, build_osm),
+    # deployment = "worker", #paralell processing
+  ),
   tar_target(
     name = centrality_nodes,
     command = get_centrality(road_network_clean, CITY)),
