@@ -147,7 +147,7 @@ file.remove("database/CENSUSpolygons.gpkg")
 
 library(osmdata)
 library(sf)
-CITY = "Lisboa"
+CITY = "Almada"
 
 ## new way using osmdata ##
 osm_points_amenity = opq(CITY) |> 
@@ -157,12 +157,69 @@ osm_points_amenity = opq(CITY) |>
                                              "library", "cinema", "theatre",
                                              "police", "fire_station", "courthouse", "post_office")) |>
   osmdata_sf()
-osm_points_building = opq(CITY) |> 
-  add_osm_feature(key = "building") |> 
-  osmdata_sf()
+nrow(osm_points_amenity$osm_points)
+nrow(osm_points_amenity$osm_polygons)
+point_amenity = osm_points_amenity$osm_points |> filter(amenity %in%  c("atm", "bank", "hospital", "pharmacy", "veterinary",
+                                                                        "restaurant", "pub", "cafe", "bar",
+                                                                        "college", "university", "kindergarten", "school",
+                                                                        "library", "cinema", "theatre",
+                                                                        "police", "fire_station", "courthouse", "post_office"))
+
+centroid_amenity = osm_points_amenity$osm_polygons |> st_centroid()
+point_amenity = point_amenity |> bind_rows(centroid_amenity)
+mapview::mapview(point_amenity)
+table(point_amenity$amenity)
+
+# select few columns
+point_amenity = point_amenity |>
+  select(osm_id, amenity, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+
+# remove the ones with the same address and housenumber and amenity
+amenity_NA = point_amenity |> 
+  filter(is.na(amenity) | is.na(address) | is.na(housenumber))
+amenity_distinct = point_amenity |> 
+  distinct(amenity, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(amenity) & !is.na(address) & !is.na(housenumber))
+point_amenity_clean = rbind(amenity_NA, amenity_distinct)  
+# verify
+# point_amenity_toomuch = anti_join(point_amenity |> st_drop_geometry(), point_amenity_clean |> st_drop_geometry())
+rm(amenity_NA, amenity_distinct)
+
 osm_points_shop = opq(CITY) |> 
   add_osm_feature(key = "shop") |>
   osmdata_sf()
+point_shop = osm_points_shop$osm_points
+centroid_shop = osm_points_shop$osm_polygons |> st_centroid()
+point_shop = point_shop |> bind_rows(centroid_shop)
+mapview::mapview(point_shop)
+table(point_shop$shop)
+# select few columns
+point_shop = point_shop |>
+  select(osm_id, shop, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and shop
+shop_NA = point_shop |> 
+  filter(is.na(shop) | is.na(address) | is.na(housenumber))
+shop_distinct = point_shop |> 
+  distinct(shop, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(shop) & !is.na(address) & !is.na(housenumber))
+point_shop_clean = rbind(shop_NA, shop_distinct)  
+rm(shop_NA, shop_distinct)
+
+############################## CONTINUAR AQUI ----------------------------------------------------------
+
+
+
+
 
 bulding_values = c("apartments", "detached", "house", "residential",
             "hotel", "commercial", "office", "retail", "supermarket", "warehouse",
@@ -170,7 +227,7 @@ bulding_values = c("apartments", "detached", "house", "residential",
             "government", "hospital", "firestation", "museum", "school", "transportation", "university",
             "stadium")
   
-  # add_osm_feature(key = "helthcare") |> #nothing
+  # add_osm_feature(key = "helthcare") |> 
   # add_osm_feature(key = "sport") |> 
   # add_osm_feature(key = "tourism") |>
   # add_osm_feature(key = "leisure", value = c("park", "playground", "garden", "dog_park")) |> 
@@ -184,7 +241,7 @@ mapview::mapview(osm_points_amenity$osm_polygons) +
   mapview::mapview(osm_points_building$osm_polygons, col.regions = "red") +
   mapview::mapview(osm_points_shop$osm_polygons, col.regions = "darkgreen")
 
-############################## CONTINUAR AQUI ----------------------------------------------------------
+
 
 
 
