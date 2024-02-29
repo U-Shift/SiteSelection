@@ -302,24 +302,47 @@ mapview::mapview(point_leisure_clean, zcol = "leisure")
 table(point_leisure_clean$leisure)
 rm(leisure_NA, leisure_distinct)
 
+## building
+bulding_values = c("hotel", "religious", "cathedral", "chapel", "church", "synagogue", "temple",
+                   "government", "hospital", "firestation", "museum", "transportation", "university",
+                   "stadium")
+# remove university?
+# remove transportation?
+
+
+osm_points_building = opq(CITY) |> 
+  add_osm_feature(key = "building", value = bulding_values) |>
+  osmdata_sf()
+point_building = osm_points_building$osm_points
+centroid_building = osm_points_building$osm_polygons |> st_centroid()
+point_building = point_building |> bind_rows(centroid_building)
+mapview::mapview(point_building[!is.na(point_building$building),], col.regions = "red") + mapview::mapview(point_building[is.na(point_building$building),], col.regions = "blue")
+table(point_building$building)
+# select few columns
+point_building = point_building |>
+  select(osm_id, building, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and building
+building_NA = point_building |> 
+  filter(is.na(building) | is.na(address) | is.na(housenumber))
+building_distinct = point_building |> 
+  distinct(building, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(building) & !is.na(address) & !is.na(housenumber))
+point_building_clean = rbind(building_NA, building_distinct) |> filter(!is.na(building)) # remove the ones without building
+mapview::mapview(point_building_clean, zcol = "building")
+table(point_building_clean$building)
+rm(building_NA, building_distinct)
+
+
 ############################## CONTINUAR AQUI ----------------------------------------------------------
 
-
-
-
-
-bulding_values = c("apartments", "detached", "house", "residential",
-            "hotel", "commercial", "office", "retail", "supermarket", "warehouse",
-            "religious", "cathedral", "chapel", "church", "synagogue", "temple",
-            "government", "hospital", "firestation", "museum", "school", "transportation", "university",
-            "stadium")
+# tourism?
+# transportation hubs
   
-
-  # add_osm_feature(key = "tourism") |>
-  # add_osm_feature(key = "leisure", value = c("park", "playground", "garden", "dog_park")) |> 
-  osmdata_sf()
-table(osm_points$osm_points$building)
-table(osm_points$osm_polygons$building)
 table(osm_points$osm_points$tourism)
 table(osm_points$osm_polygons$tourism)
 
