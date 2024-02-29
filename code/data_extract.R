@@ -190,6 +190,7 @@ point_amenity_clean = rbind(amenity_NA, amenity_distinct)
 # point_amenity_toomuch = anti_join(point_amenity |> st_drop_geometry(), point_amenity_clean |> st_drop_geometry())
 rm(amenity_NA, amenity_distinct)
 
+## shops
 osm_points_shop = opq(CITY) |> 
   add_osm_feature(key = "shop") |>
   osmdata_sf()
@@ -213,7 +214,93 @@ shop_distinct = point_shop |>
   distinct(shop, address, housenumber, .keep_all = TRUE) |> 
   filter(!is.na(shop) & !is.na(address) & !is.na(housenumber))
 point_shop_clean = rbind(shop_NA, shop_distinct)  
+point_shop_clean = point_shop_clean |> filter(!is.na(shop)) # remove the ones without healthcare
+mapview::mapview(point_shop_clean)
 rm(shop_NA, shop_distinct)
+
+## healthcare
+osm_points_healthcare = opq(CITY) |> 
+  add_osm_feature(key = "healthcare") |>
+  osmdata_sf()
+point_healthcare = osm_points_healthcare$osm_points
+centroid_healthcare = osm_points_healthcare$osm_polygons |> st_centroid()
+mapview::mapview(point_healthcare) + mapview::mapview(centroid_healthcare, col.regions = "red")
+point_healthcare = point_healthcare |> bind_rows(centroid_healthcare)
+table(point_healthcare$healthcare)
+# select few columns
+point_healthcare = point_healthcare |>
+  select(osm_id, healthcare, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and healthcare
+healthcare_NA = point_healthcare |> 
+  filter(is.na(healthcare) | is.na(address) | is.na(housenumber))
+healthcare_distinct = point_healthcare |> 
+  distinct(healthcare, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(healthcare) & !is.na(address) & !is.na(housenumber))
+point_healthcare_clean = rbind(healthcare_NA, healthcare_distinct)  
+mapview::mapview(point_healthcare_clean, zcol = "healthcare")
+rm(healthcare_NA, healthcare_distinct)
+point_healthcare_clean = point_healthcare_clean |> filter(!is.na(healthcare)) # remove the ones without healthcare
+
+## sport
+osm_points_sport = opq(CITY) |> 
+  add_osm_feature(key = "sport") |>
+  osmdata_sf()
+point_sport = osm_points_sport$osm_points
+centroid_sport = osm_points_sport$osm_polygons |> st_centroid()
+point_sport = point_sport |> bind_rows(centroid_sport)
+mapview::mapview(point_sport[!is.na(point_sport$sport),], col.regions = "red") + mapview::mapview(point_sport[is.na(point_sport$sport),], col.regions = "blue")
+table(point_sport$sport)
+# select few columns
+point_sport = point_sport |>
+  select(osm_id, sport, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and sport
+sport_NA = point_sport |> 
+  filter(is.na(sport) | is.na(address) | is.na(housenumber))
+sport_distinct = point_sport |> 
+  distinct(sport, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(sport) & !is.na(address) & !is.na(housenumber))
+point_sport_clean = rbind(sport_NA, sport_distinct) |> filter(!is.na(sport)) # remove the ones without sport
+mapview::mapview(point_sport_clean, zcol = "sport")
+table(point_sport_clean$sport)
+rm(sport_NA, sport_distinct)
+
+## leisure
+osm_points_leisure = opq(CITY) |> 
+  add_osm_feature(key = "leisure", value = c("park", "playground", "dog_park")) |>
+  osmdata_sf()
+point_leisure = osm_points_leisure$osm_points
+centroid_leisure = osm_points_leisure$osm_polygons |> st_centroid()
+point_leisure = point_leisure |> bind_rows(centroid_leisure)
+mapview::mapview(point_leisure[!is.na(point_leisure$leisure),], col.regions = "red") + mapview::mapview(point_leisure[is.na(point_leisure$leisure),], col.regions = "blue")
+table(point_leisure$leisure)
+# select few columns
+point_leisure = point_leisure |>
+  select(osm_id, leisure, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and leisure
+leisure_NA = point_leisure |> 
+  filter(is.na(leisure) | is.na(address) | is.na(housenumber))
+leisure_distinct = point_leisure |> 
+  distinct(leisure, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(leisure) & !is.na(address) & !is.na(housenumber))
+point_leisure_clean = rbind(leisure_NA, leisure_distinct) |> filter(!is.na(leisure)) # remove the ones without leisure
+mapview::mapview(point_leisure_clean, zcol = "leisure")
+table(point_leisure_clean$leisure)
+rm(leisure_NA, leisure_distinct)
 
 ############################## CONTINUAR AQUI ----------------------------------------------------------
 
@@ -227,8 +314,7 @@ bulding_values = c("apartments", "detached", "house", "residential",
             "government", "hospital", "firestation", "museum", "school", "transportation", "university",
             "stadium")
   
-  # add_osm_feature(key = "helthcare") |> 
-  # add_osm_feature(key = "sport") |> 
+
   # add_osm_feature(key = "tourism") |>
   # add_osm_feature(key = "leisure", value = c("park", "playground", "garden", "dog_park")) |> 
   osmdata_sf()

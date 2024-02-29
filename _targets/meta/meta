@@ -1,21 +1,35 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+betweeness_range|object|6143dec821aabc67|||||||||||||||
+build_osm|object|909013909b1f03d4|||||||||||||||
 candidates|function|9c2f95a20efa2e79|||||||||||||||
-candidates_centrality|stem|c28f7a300f11e130|beb5619abcee056e|08d6022602e8c578|-1085204634||t19768.7557629541s|db678a3e508d3f10|8849|rds|local|vector|||0.094||
-centrality_grid|stem|e6714fd404192916|87bea58679d3cd99|0744f5b21f245ccb|1844638451||t19768.7067794972s|58aad1a6e344dc5e|40697|rds|local|vector|||0.35||
-centrality_nodes|stem|e9349c1ffb27aaa0|e452823588902322|c032d396999069f6|1967224110||t19768.7557617041s|24a509147933d6b3|326829|rds|local|vector|||44.401||
-CITY|stem|243df1f374d1caf1|f5c3340119239295|eef4d404328a7e2e|494743506||t19768.7548233622s|cc81a7537cb02258|59|rds|local|vector|||5.016||
-CITYlimit|stem|b7e58edd8be08535|db239274ae2c370c|6bb43dab5f191604|-1610475006||t19768.7548853535s|e7150d4bfec07ead|36539|rds|local|vector|||5.326|x is already of type POLYGON.|
-clean_osm|function|9a700c7342068264|||||||||||||||
-find_candidates|function|b5a12bc9a7461fe4|||||||||||||||
-get_centrality|function|9cf8a66602b9e5fe|||||||||||||||
+candidates_all|stem|e4c0a9311516b41c|891ac1ca6f08b3f3|b8b7469e1838d3fb|392372375||t19779.6241357887s|77b75dc374fa552a|1968|rds|local|vector|||0.08||
+candidates_centrality|stem|9c82654c90976b49|beb5619abcee056e|26e2e18e51069a1d|-1085204634||t19775.8090717049s|c197b53c03af64b3|5712|rds|local|vector|||0.037||
+cellsize_input|object|4ff1951c78c41c6c|||||||||||||||
+CENSUScity|stem|ef9abd6614a38b8b|748a76bf12cc97b3|0e5e9788954ad081|329073188||t19779.597953638s|545e975dd6f9c10f|41524|rds|local|vector|||12.765||
+centrality_grid|stem|e7d6d743c19963fb|87bea58679d3cd99|171719011c844542|1844638451||t19779.5979785919s|ab6ddb12e393d2e9|15609|rds|local|vector|||0.138||
+centrality_nodes|stem|9e44a1f1a0e4c79a|e452823588902322|d48d3ffc86b1f07b|1967224110||t19779.5979767863s|24a509147933d6b3|326829|rds|local|vector|||0.021||
+CITY|stem|243df1f374d1caf1|7796fcd39ecfdd07|b187de406f54bb83|494743506||t19779.5978055353s|cc81a7537cb02258|59|rds|local|vector|||3.652||
+CITY_input|object|3ef6e99a4118c48f|||||||||||||||
+CITYcensus|stem|ef9abd6614a38b8b|748a76bf12cc97b3|82dd7f3c3e21dd52|-187326527||t19779.6020329674s|545e975dd6f9c10f|41524|rds|local|vector|||12.902||
+CITYlimit|stem|eae130ee713edfb4|db239274ae2c370c|3952be60bc4197a3|-1610475006||t19779.5978702116s|57fe525826afc1ef|36373|rds|local|vector|||0.009||
+clean_osm|function|f99826f41b1a7176|||||||||||||||
+closeness_range|object|8a0059b814463716|||||||||||||||
+degree_min|function|138cee1ae58dbe3f|||||||||||||||
+density_grid|stem|7be1363e5a55f96f|2199969ee386be70|4d2dd86edc4efac6|-6812704||t19779.6020337545s|d19d745e57a15b0c|2446|rds|local|vector|||0.048||
+find_candidates|function|302a38f5563e53d2|||||||||||||||
+get_census|function|d740e0d975dc3860|||||||||||||||
+get_centrality|function|0089e1e79e20a390|||||||||||||||
 get_centrality_grid|function|ea22a409243f2eb5|||||||||||||||
-get_citylimit|function|759de4bdab1d75a9|||||||||||||||
-get_osm|function|8ab15074a3c999b2|||||||||||||||
-grid|stem|dbf4872f7f45093a|4993cb656ea72c08|dffa5079e943b46d|-13385730||t19768.7060093511s|f573c5c45394910e|16270|rds|local|vector|||0.868||
+get_citylimit|function|01d48937971f5e58|||||||||||||||
+get_density_grid|function|43efb36785def4a2|||||||||||||||
+get_osm|function|25af801619a1826f|||||||||||||||
+grid|stem|9df22dbdefd2a98f|009c8a6b3f8dd8b7|0f0059812f34a58e|-13385730||t19779.5978717394s|d3e99e363afea4d6|5318|rds|local|vector|||0.123||
 grid_centrality|stem|d36ea1299fa8d732|d5b7005e54af8958|5ac6925e2d6d5771|-873626440||t19530.6801894964s|44e327d1ee1978d7|43|rds|local|vector|||0.396||
 grid_centrality_values|stem|fe4429b76362a57f|d5b7005e54af8958|d6e6ec3634fdbb80|215759028||t19530.6901541384s|4dec3046e7fc7d3e|61170|rds|local|vector|||0.389||
 grid_values|stem|d36ea1299fa8d732|d5b7005e54af8958|de1934b4cb1177f3|-1403192273||t19530.6760630171s|44e327d1ee1978d7|43|rds|local|vector|||0.395||
-make_grid|function|3a5ce63068889f36|||||||||||||||
-road_network|stem|1e3f492ba255c7fe|b1654aa20f166426|de8fc2e3a47cbeeb|-881406554||t19768.7550779942s|3848d6cca863b0f2|1152995|rds|local|vector|||16.463|attribute variables are assumed to be spatially constant throughout all geometries|
-road_network_clean|stem|871fb974458dff17|a84d98621ec92db0|1b10ec78fa65d30b|-1694479692||t19768.7552471161s|f86829838f07fd2e|950741|rds|local|vector|||14.45|GDAL Error 1 outputdataAlmadaroad_network.shp does not appear to be a file or directory.|
+make_grid|function|e85dde01943fb224|||||||||||||||
+population_min|function|138cee1ae58dbe3f|||||||||||||||
+road_network|stem|e06554d4450ca171|b1654aa20f166426|16c8717c539068d0|-881406554||t19779.5978728042s|996f738b88d16b67|805544|rds|local|vector|||0.028||
+road_network_clean|stem|ad951ea4b05f50ec|1e266dc79e3667a7|cf3f03fb465f30b3|-1694479692||t19779.5979758604s|e63d27e27d77828c|948647|rds|local|vector|||8.805|GDAL Error 1 outputdataAlmadaroad_network.shp does not appear to be a file or directory.|
 select_city|function|8da887bf0b6b50a7|||||||||||||||
+square_input|object|909013909b1f03d4|||||||||||||||
