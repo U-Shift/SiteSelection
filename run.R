@@ -10,7 +10,7 @@ targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
 
 targets::tar_make()
-targets::tar_crew() # paralell processing stats
+targets::tar_crew() # parallel processing stats
 
 targets::tar_load(candidates_all)
 mapview::mapview(candidates_all, zcol="population")

@@ -8,7 +8,7 @@
 CITY_input = "Almada"
 cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
-build_osm = TRUE #clean osm road network again?
+build_osm = FALSE #clean osm road network again?
 
 # Thresholds
 population_min = mean # mean or median? default: mean
