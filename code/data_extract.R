@@ -152,25 +152,25 @@ CITY = "Almada"
 CITYlimit = CAOP_municipios |> filter(Concelho == CITY)
 
 ## new way using osmdata ##
-osm_points_amenity = opq(CITY) |> 
+osm_points_amenity = opq("Portugal") |> 
   add_osm_feature(key = "amenity", value = c("atm", "bank", "hospital", "pharmacy", "veterinary",
                                              "restaurant", "pub", "cafe", "bar",
                                              "college", "university", "kindergarten", "school",
-                                             "library", "cinema", "theatre",
+                                             "library", "cinema", "theatre", "place_of_worship",
                                              "police", "fire_station", "courthouse", "post_office")) |>
   osmdata_sf()
-nrow(osm_points_amenity$osm_points)
-nrow(osm_points_amenity$osm_polygons)
+# nrow(osm_points_amenity$osm_points)
+# nrow(osm_points_amenity$osm_polygons)
 point_amenity = osm_points_amenity$osm_points |> filter(amenity %in%  c("atm", "bank", "hospital", "pharmacy", "veterinary",
                                                                         "restaurant", "pub", "cafe", "bar",
                                                                         "college", "university", "kindergarten", "school",
-                                                                        "library", "cinema", "theatre",
+                                                                        "library", "cinema", "theatre", "place_of_worship",
                                                                         "police", "fire_station", "courthouse", "post_office"))
 
 centroid_amenity = osm_points_amenity$osm_polygons |> st_centroid()
 point_amenity = point_amenity |> bind_rows(centroid_amenity)
-mapview::mapview(point_amenity)
-table(point_amenity$amenity)
+# mapview::# mapview(point_amenity)
+# table(point_amenity$amenity)
 
 # select few columns
 point_amenity = point_amenity |>
@@ -199,8 +199,8 @@ osm_points_shop = opq("Portugal") |>
 point_shop = osm_points_shop$osm_points
 centroid_shop = osm_points_shop$osm_polygons |> st_centroid()
 point_shop = point_shop |> bind_rows(centroid_shop)
-mapview::mapview(point_shop)
-table(point_shop$shop)
+# mapview::mapview(point_shop)
+# table(point_shop$shop)
 # select few columns
 point_shop = point_shop |>
   select(osm_id, shop, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
@@ -217,20 +217,20 @@ shop_distinct = point_shop |>
   filter(!is.na(shop) & !is.na(address) & !is.na(housenumber))
 point_shop_clean = rbind(shop_NA, shop_distinct)  
 point_shop_clean = point_shop_clean |> filter(!is.na(shop)) # remove the ones without healthcare
-mapview::mapview(point_shop_clean, zcol="shop")
-table(point_shop_clean$shop)
+# mapview::mapview(point_shop_clean, zcol="shop")
+# table(point_shop_clean$shop)
 rm(shop_NA, shop_distinct)
 rm(osm_points_shop)
 
 ## healthcare
-osm_points_healthcare = opq(CITY) |> 
+osm_points_healthcare = opq("Portugal") |> 
   add_osm_feature(key = "healthcare") |>
   osmdata_sf()
 point_healthcare = osm_points_healthcare$osm_points
 centroid_healthcare = osm_points_healthcare$osm_polygons |> st_centroid()
 # mapview::mapview(point_healthcare) + mapview::mapview(centroid_healthcare, col.regions = "red")
 point_healthcare = point_healthcare |> bind_rows(centroid_healthcare)
-table(point_healthcare$healthcare)
+# table(point_healthcare$healthcare)
 # select few columns
 point_healthcare = point_healthcare |>
   select(osm_id, healthcare, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
@@ -246,27 +246,28 @@ healthcare_distinct = point_healthcare |>
   distinct(healthcare, address, housenumber, .keep_all = TRUE) |> 
   filter(!is.na(healthcare) & !is.na(address) & !is.na(housenumber))
 point_healthcare_clean = rbind(healthcare_NA, healthcare_distinct)  
-mapview::mapview(point_healthcare_clean, zcol = "healthcare")
+# mapview::mapview(point_healthcare_clean, zcol = "healthcare")
 rm(healthcare_NA, healthcare_distinct)
 point_healthcare_clean = point_healthcare_clean |> filter(!is.na(healthcare)) # remove the ones without healthcare
 
 ## sport
-osm_points_sport = opq(CITY) |> 
+osm_points_sport = opq("Portugal") |> 
   add_osm_feature(key = "sport") |>
   osmdata_sf()
 point_sport = osm_points_sport$osm_points
-centroid_sport = osm_points_sport$osm_polygons |> st_centroid()
+centroid_sport = osm_points_sport$osm_polygons |> filter(!is.na(leisure)) |>  st_centroid()
 point_sport = point_sport |> bind_rows(centroid_sport)
-mapview::mapview(point_sport[!is.na(point_sport$sport),], col.regions = "red") + mapview::mapview(point_sport[is.na(point_sport$sport),], col.regions = "blue")
-table(point_sport$sport)
+# mapview::mapview(point_sport[!is.na(point_sport$sport),], col.regions = "red") + mapview::mapview(point_sport[is.na(point_sport$sport),], col.regions = "blue")
+# table(point_sport$sport)
 # select few columns
 point_sport = point_sport |>
-  select(osm_id, sport, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  select(osm_id, leisure, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |>
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
-         postcode = `addr:postcode`)
+         postcode = `addr:postcode`,
+         sport = leisure)
 # remove the ones with the same address and housenumber and sport
 sport_NA = point_sport |> 
   filter(is.na(sport) | is.na(address) | is.na(housenumber))
@@ -274,19 +275,19 @@ sport_distinct = point_sport |>
   distinct(sport, address, housenumber, .keep_all = TRUE) |> 
   filter(!is.na(sport) & !is.na(address) & !is.na(housenumber))
 point_sport_clean = rbind(sport_NA, sport_distinct) |> filter(!is.na(sport)) # remove the ones without sport
-mapview::mapview(point_sport_clean, zcol = "sport")
-table(point_sport_clean$sport)
+# mapview::mapview(point_sport_clean, zcol = "sport")
+# table(point_sport_clean$sport)
 rm(sport_NA, sport_distinct)
 
 ## leisure
-osm_points_leisure = opq(CITY) |> 
+osm_points_leisure = opq("Portugal") |> 
   add_osm_feature(key = "leisure", value = c("park", "playground", "dog_park")) |>
   osmdata_sf()
 point_leisure = osm_points_leisure$osm_points
 centroid_leisure = osm_points_leisure$osm_polygons |> st_centroid()
 point_leisure = point_leisure |> bind_rows(centroid_leisure)
-mapview::mapview(point_leisure[!is.na(point_leisure$leisure),], col.regions = "red") + mapview::mapview(point_leisure[is.na(point_leisure$leisure),], col.regions = "blue")
-table(point_leisure$leisure)
+# mapview::mapview(point_leisure[!is.na(point_leisure$leisure),], col.regions = "red") + mapview::mapview(point_leisure[is.na(point_leisure$leisure),], col.regions = "blue")
+# table(point_leisure$leisure)
 # select few columns
 point_leisure = point_leisure |>
   select(osm_id, leisure, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
@@ -302,26 +303,91 @@ leisure_distinct = point_leisure |>
   distinct(leisure, address, housenumber, .keep_all = TRUE) |> 
   filter(!is.na(leisure) & !is.na(address) & !is.na(housenumber))
 point_leisure_clean = rbind(leisure_NA, leisure_distinct) |> filter(!is.na(leisure)) # remove the ones without leisure
-mapview::mapview(point_leisure_clean, zcol = "leisure")
-table(point_leisure_clean$leisure)
+# mapview::mapview(point_leisure_clean, zcol = "leisure")
+# table(point_leisure_clean$leisure)
 rm(leisure_NA, leisure_distinct)
 
+
+## tourism
+tourism_values = c("motel", "viewpoint", "guest_house", "museum", "hotel", "hostel",
+                   "attraction", "gallery")
+osm_points_tourism = opq("Portugal") |> 
+  add_osm_feature(key = "tourism", value = tourism_values) |>
+  osmdata_sf()
+point_tourism = osm_points_tourism$osm_points |> filter(!is.na(tourism) | !is.na(name))
+centroid_tourism = osm_points_tourism$osm_polygons |> st_centroid()
+point_tourism = point_tourism |> bind_rows(centroid_tourism)
+# mapview::mapview(point_tourism[!is.na(point_tourism$tourism),], col.regions = "red") + mapview::mapview(point_tourism[is.na(point_tourism$tourism),], col.regions = "blue")
+# table(point_tourism$tourism)
+# select few columns
+point_tourism = point_tourism |>
+  select(osm_id, tourism, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and tourism
+tourism_NA = point_tourism |> 
+  filter(is.na(tourism) | is.na(address) | is.na(housenumber))
+tourism_distinct = point_tourism |> 
+  distinct(tourism, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(tourism) & !is.na(address) & !is.na(housenumber))
+point_tourism_clean = rbind(tourism_NA, tourism_distinct) |> filter(!is.na(tourism)) # remove the ones without tourism
+# mapview::mapview(point_tourism_clean, zcol = "tourism")
+# table(point_tourism_clean$tourism)
+rm(tourism_NA, tourism_distinct)
+
+
+rm(osm_points_tourism, osm_points_sport, osm_points_leisure, osm_points_healthcare, osm_points_amenity)
+
+
+points_all = rbind(point_amenity_clean |> rename(type = amenity) |> mutate(group = "amenity"),
+                   point_shop_clean |> rename(type = shop) |> mutate(group = "shop"),
+                   point_healthcare_clean |> rename(type = healthcare) |> mutate(group = "healthcare"),
+                   point_sport_clean |> rename(type = sport) |> mutate(group = "sport"),
+                   point_leisure_clean |> rename(type = leisure) |> mutate(group = "leisure"),
+                   # point_building_clean |> rename(type = building),
+                   point_tourism_clean |> rename(type = tourism) |> mutate(group = "tourism")
+                   ) |> 
+  select(-CITY) |> 
+  distinct(osm_id, .keep_all = TRUE) 
+
+points_all_portugal = points_all[CAOP_municipios,]
+
+table(points_all_portugal$type)
+points_all_tags = points_all_portugal |>
+  st_drop_geometry() |> 
+  group_by(group, type) |> 
+  summarise(count = n())
+
+write.table(points_all_tags, "database/osm_poi_tags.txt", sep = "\t", row.names = FALSE)
+piggyback::pb_upload("database/osm_poi_tags.txt")
+
+
+# Get for all country (Portugal), and filter with 
+# points_all_city = points_all[CITYlimit,]
+# ?
+# It can be a good approach!
+
+
+##### NEEDS TO RUN INDIVIDUALY FOR EACH CITY ### Too much information, won't pass
 ## building
-bulding_values = c("hotel", "religious", "cathedral", "chapel", "church", "synagogue", "temple",
-                   "government", "hospital", "firestation", "museum", "transportation", "university",
-                   "stadium")
+building_values = c("government", "hospital", "firestation", "museum",
+                    # "transportation", "university",
+                     "stadium", "hotel")
 # remove university?
 # remove transportation?
 
 
 osm_points_building = opq(CITY) |> 
-  add_osm_feature(key = "building", value = bulding_values) |>
+  add_osm_feature(key = "building", value = building_values) |>
   osmdata_sf()
-point_building = osm_points_building$osm_points |> filter(!is.na(building) | !is.na(name))
+point_building = osm_points_building$osm_points |> filter(!is.na(name))
 centroid_building = osm_points_building$osm_polygons |> st_centroid()
 point_building = point_building |> bind_rows(centroid_building)
-mapview::mapview(point_building[!is.na(point_building$building),], col.regions = "red") + mapview::mapview(point_building[is.na(point_building$building),], col.regions = "blue")
-table(point_building$building)
+# mapview::mapview(point_building[!is.na(point_building$building),], col.regions = "red") + mapview::mapview(point_building[is.na(point_building$building),], col.regions = "blue")
+# table(point_building$building)
 # select few columns
 point_building = point_building |>
   select(osm_id, building, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
@@ -338,70 +404,9 @@ building_distinct = point_building |>
   filter(!is.na(building) & !is.na(address) & !is.na(housenumber))
 point_building_clean = rbind(building_NA, building_distinct) |> filter(!is.na(building)) # remove the ones without building
 mapview::mapview(point_building_clean, zcol = "building")
-table(point_building_clean$building)
+# table(point_building_clean$building)
 rm(building_NA, building_distinct)
 rm(osm_points_building)
-
-
-## tourism
-tourism_values = c("motel", "viewpoint", "guest_house", "museum", "hotel", "hostel",
-                   "attraction", "gallery")
-osm_points_tourism = opq(CITY) |> 
-  add_osm_feature(key = "tourism", value = tourism_values) |>
-  osmdata_sf()
-point_tourism = osm_points_tourism$osm_points |> filter(!is.na(tourism) | !is.na(name))
-centroid_tourism = osm_points_tourism$osm_polygons |> st_centroid()
-point_tourism = point_tourism |> bind_rows(centroid_tourism)
-mapview::mapview(point_tourism[!is.na(point_tourism$tourism),], col.regions = "red") + mapview::mapview(point_tourism[is.na(point_tourism$tourism),], col.regions = "blue")
-table(point_tourism$tourism)
-# select few columns
-point_tourism = point_tourism |>
-  select(osm_id, tourism, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
-  rename(address = `addr:street`,
-         housenumber = `addr:housenumber`,
-         location = `addr:city`,
-         postcode = `addr:postcode`)
-# remove the ones with the same address and housenumber and tourism
-tourism_NA = point_tourism |> 
-  filter(is.na(tourism) | is.na(address) | is.na(housenumber))
-tourism_distinct = point_tourism |> 
-  distinct(tourism, address, housenumber, .keep_all = TRUE) |> 
-  filter(!is.na(tourism) & !is.na(address) & !is.na(housenumber))
-point_tourism_clean = rbind(tourism_NA, tourism_distinct) |> filter(!is.na(tourism)) # remove the ones without tourism
-mapview::mapview(point_tourism_clean, zcol = "tourism")
-table(point_tourism_clean$tourism)
-rm(tourism_NA, tourism_distinct)
-rm(osm_points_tourism)
-
-
-
-
-points_all = rbind(point_amenity_clean |> rename(type = amenity),
-                   point_shop_clean |> rename(type = shop),
-                   point_healthcare_clean |> rename(type = healthcare),
-                   point_sport_clean |> rename(type = sport),
-                   point_leisure_clean |> rename(type = leisure),
-                   point_building_clean |> rename(type = building),
-                   point_tourism_clean |> rename(type = tourism)
-                   ) |> 
-  distinct(osm_id, .keep_all = TRUE) 
-
-table(points_all$type)
-points_all_tags = points_all |>
-  st_drop_geometry() |> 
-  group_by(type) |> 
-  summarise(count = n())
-
-write.table(points_all_tags, "database/osm_poi_tags.txt", sep = "\t", row.names = FALSE)
-piggyback::pb_upload("database/osm_poi_tags.txt")
-
-
-# Get for all country (Portugal), and filter with 
-# points_all_city = points_all[CITYlimit,]
-# ?
-# It can be a good approach!
-
 
 ############################## CONTINUAR AQUI ----------------------------------------------------------
 
