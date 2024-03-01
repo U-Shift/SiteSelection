@@ -27,7 +27,7 @@ st_write(CAOP_municipios, "database/CAOP_municipios.gpkg")
 # upload to Assets
 piggyback::pb_upload("database/CAOP_municipios.gpkg") # not working, upload manually
 
-
+CAOP_municipios = st_read("database/CAOP_municipios.gpkg")
 
 # download OSM street network Portugal, as example --------------------------------------------
 
@@ -149,6 +149,7 @@ library(tidyverse)
 library(osmdata)
 library(sf)
 CITY = "Almada"
+CITYlimit = CAOP_municipios |> filter(Concelho == CITY)
 
 ## new way using osmdata ##
 osm_points_amenity = opq(CITY) |> 
@@ -192,7 +193,7 @@ point_amenity_clean = rbind(amenity_NA, amenity_distinct)
 rm(amenity_NA, amenity_distinct)
 
 ## shops
-osm_points_shop = opq(CITY) |> 
+osm_points_shop = opq("Portugal") |> 
   add_osm_feature(key = "shop") |>
   osmdata_sf()
 point_shop = osm_points_shop$osm_points
@@ -203,7 +204,7 @@ table(point_shop$shop)
 # select few columns
 point_shop = point_shop |>
   select(osm_id, shop, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  mutate(CITY = CITY) |>
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -216,8 +217,10 @@ shop_distinct = point_shop |>
   filter(!is.na(shop) & !is.na(address) & !is.na(housenumber))
 point_shop_clean = rbind(shop_NA, shop_distinct)  
 point_shop_clean = point_shop_clean |> filter(!is.na(shop)) # remove the ones without healthcare
-mapview::mapview(point_shop_clean)
+mapview::mapview(point_shop_clean, zcol="shop")
+table(point_shop_clean$shop)
 rm(shop_NA, shop_distinct)
+rm(osm_points_shop)
 
 ## healthcare
 osm_points_healthcare = opq(CITY) |> 
@@ -225,7 +228,7 @@ osm_points_healthcare = opq(CITY) |>
   osmdata_sf()
 point_healthcare = osm_points_healthcare$osm_points
 centroid_healthcare = osm_points_healthcare$osm_polygons |> st_centroid()
-mapview::mapview(point_healthcare) + mapview::mapview(centroid_healthcare, col.regions = "red")
+# mapview::mapview(point_healthcare) + mapview::mapview(centroid_healthcare, col.regions = "red")
 point_healthcare = point_healthcare |> bind_rows(centroid_healthcare)
 table(point_healthcare$healthcare)
 # select few columns
@@ -370,6 +373,34 @@ mapview::mapview(point_tourism_clean, zcol = "tourism")
 table(point_tourism_clean$tourism)
 rm(tourism_NA, tourism_distinct)
 rm(osm_points_tourism)
+
+
+
+
+points_all = rbind(point_amenity_clean |> rename(type = amenity),
+                   point_shop_clean |> rename(type = shop),
+                   point_healthcare_clean |> rename(type = healthcare),
+                   point_sport_clean |> rename(type = sport),
+                   point_leisure_clean |> rename(type = leisure),
+                   point_building_clean |> rename(type = building),
+                   point_tourism_clean |> rename(type = tourism)
+                   ) |> 
+  distinct(osm_id, .keep_all = TRUE) 
+
+table(points_all$type)
+points_all_tags = points_all |>
+  st_drop_geometry() |> 
+  group_by(type) |> 
+  summarise(count = n())
+
+write.table(points_all_tags, "database/osm_poi_tags.txt", sep = "\t", row.names = FALSE)
+piggyback::pb_upload("database/osm_poi_tags.txt")
+
+
+# Get for all country (Portugal), and filter with 
+# points_all_city = points_all[CITYlimit,]
+# ?
+# It can be a good approach!
 
 
 ############################## CONTINUAR AQUI ----------------------------------------------------------
