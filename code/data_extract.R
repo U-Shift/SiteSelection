@@ -340,7 +340,8 @@ rm(tourism_NA, tourism_distinct)
 
 
 rm(osm_points_tourism, osm_points_sport, osm_points_leisure, osm_points_healthcare, osm_points_amenity)
-
+rm(centroid_amenity, centroid_healthcare, centroid_leisure, centroid_shop, centroid_sport, centroid_tourism)
+rm(point_amenity, point_healthcare, point_leisure, point_shop, point_sport, point_tourism)
 
 points_all = rbind(point_amenity_clean |> rename(type = amenity) |> mutate(group = "amenity"),
                    point_shop_clean |> rename(type = shop) |> mutate(group = "shop"),
@@ -353,10 +354,10 @@ points_all = rbind(point_amenity_clean |> rename(type = amenity) |> mutate(group
   select(-CITY) |> 
   distinct(osm_id, .keep_all = TRUE) 
 
-points_all_portugal = points_all[CAOP_municipios,]
+points_all = points_all[CAOP_municipios,]
 
-table(points_all_portugal$type)
-points_all_tags = points_all_portugal |>
+table(points_all$type)
+points_all_tags = points_all |>
   st_drop_geometry() |> 
   group_by(group, type) |> 
   summarise(count = n())
