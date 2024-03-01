@@ -145,6 +145,7 @@ file.remove("database/CENSUSpolygons.gpkg")
 
 # download OSM buildings and services -------------------------------------
 
+library(tidyverse)
 library(osmdata)
 library(sf)
 CITY = "Almada"
@@ -313,7 +314,7 @@ bulding_values = c("hotel", "religious", "cathedral", "chapel", "church", "synag
 osm_points_building = opq(CITY) |> 
   add_osm_feature(key = "building", value = bulding_values) |>
   osmdata_sf()
-point_building = osm_points_building$osm_points
+point_building = osm_points_building$osm_points |> filter(!is.na(building) | !is.na(name))
 centroid_building = osm_points_building$osm_polygons |> st_centroid()
 point_building = point_building |> bind_rows(centroid_building)
 mapview::mapview(point_building[!is.na(point_building$building),], col.regions = "red") + mapview::mapview(point_building[is.na(point_building$building),], col.regions = "blue")
@@ -336,24 +337,68 @@ point_building_clean = rbind(building_NA, building_distinct) |> filter(!is.na(bu
 mapview::mapview(point_building_clean, zcol = "building")
 table(point_building_clean$building)
 rm(building_NA, building_distinct)
+rm(osm_points_building)
+
+
+## tourism
+tourism_values = c("motel", "viewpoint", "guest_house", "museum", "hotel", "hostel",
+                   "attraction", "gallery")
+osm_points_tourism = opq(CITY) |> 
+  add_osm_feature(key = "tourism", value = tourism_values) |>
+  osmdata_sf()
+point_tourism = osm_points_tourism$osm_points |> filter(!is.na(tourism) | !is.na(name))
+centroid_tourism = osm_points_tourism$osm_polygons |> st_centroid()
+point_tourism = point_tourism |> bind_rows(centroid_tourism)
+mapview::mapview(point_tourism[!is.na(point_tourism$tourism),], col.regions = "red") + mapview::mapview(point_tourism[is.na(point_tourism$tourism),], col.regions = "blue")
+table(point_tourism$tourism)
+# select few columns
+point_tourism = point_tourism |>
+  select(osm_id, tourism, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
+  mutate(CITY = CITY) |> 
+  rename(address = `addr:street`,
+         housenumber = `addr:housenumber`,
+         location = `addr:city`,
+         postcode = `addr:postcode`)
+# remove the ones with the same address and housenumber and tourism
+tourism_NA = point_tourism |> 
+  filter(is.na(tourism) | is.na(address) | is.na(housenumber))
+tourism_distinct = point_tourism |> 
+  distinct(tourism, address, housenumber, .keep_all = TRUE) |> 
+  filter(!is.na(tourism) & !is.na(address) & !is.na(housenumber))
+point_tourism_clean = rbind(tourism_NA, tourism_distinct) |> filter(!is.na(tourism)) # remove the ones without tourism
+mapview::mapview(point_tourism_clean, zcol = "tourism")
+table(point_tourism_clean$tourism)
+rm(tourism_NA, tourism_distinct)
+rm(osm_points_tourism)
 
 
 ############################## CONTINUAR AQUI ----------------------------------------------------------
 
-# tourism?
-# transportation hubs
-  
-table(osm_points$osm_points$tourism)
-table(osm_points$osm_polygons$tourism)
-
-mapview::mapview(osm_points_amenity$osm_polygons) +
-  mapview::mapview(osm_points_building$osm_polygons, col.regions = "red") +
-  mapview::mapview(osm_points_shop$osm_polygons, col.regions = "darkgreen")
-
-
-
-
-
-
-road_osm_test = road_osm_test %>% osm_poly2line()
-road_osm_test = road_osm_test$osm_lines %>% select(osm_id, name, highway, geometry)
+## transportation hubs
+osm_points_public_transport = opq(CITY) |> 
+  add_osm_feature(key = "public_transport") |>
+  osmdata_sf()
+point_public_transport = osm_points_public_transport$osm_points |> filter(!is.na(public_transport) | !is.na(name))
+centroid_public_transport = osm_points_public_transport$osm_polygons |> st_centroid()
+point_public_transport = point_public_transport |> bind_rows(centroid_public_transport)
+mapview::mapview(point_public_transport, zcol = "public_transport")
+table(point_public_transport$public_transport)
+# select few columns
+point_public_transport = point_public_transport |>
+  select(osm_id, public_transport, network, name, highway, railway, bus, ferry, train, subway, light_rail, tram, geometry) |> 
+  mutate(CITY = CITY)
+point_public_transport_clean = point_public_transport |>  #bus != "yes"? |> 
+  mutate(remover = ifelse(public_transport == "stop_position" & bus == "yes", "sim", "nao"))
+point_public_transport_clean$remover[is.na(point_public_transport_clean$remover)] = "nao"
+mapview::mapview(point_public_transport_clean, zcol = "public_transport")
+mapview::mapview(point_public_transport_clean, zcol = "network")
+mapview::mapview(point_public_transport_clean, zcol = "remover")
+point_public_transport_clean = point_public_transport_clean |> filter(remover == "nao")
+point_public_transport_clean_mode = point_public_transport_clean |> 
+  pivot_longer(cols = c("bus", "ferry", "train", "subway", "light_rail", "tram"), names_to = "mode", values_to = "sure") |> 
+  filter(sure == "yes") |> 
+  select(osm_id, mode, public_transport, highway, railway, network, name, geometry, CITY)
+mapview::mapview(point_public_transport_clean_mode, zcol = "mode")
+table(point_public_transport_clean_mode$mode)
+rm(osm_points_public_transport)
+# ainda não está perfeito, há alguns duplicados com o stop_position e station. Mas no caso do comboio da praia não.
