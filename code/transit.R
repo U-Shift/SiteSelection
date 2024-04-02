@@ -1,7 +1,70 @@
 # aim: get daily frequency of transit modes in the area
 
 
-# get gtfs and validate ---------------------------------------------------
+# Automatically download GTFS data---------------------------------------------------
+
+  # Braga 
+  
+    #Operador: 4 Planning
+  
+    Braga_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-braga.zip" # 1.6MB 
+    download.file(Braga_gtfs_zip, destfile = "database/transit/braga_gtfs_4planning.zip")
+    
+    #Operador: Transporlis
+    
+    Braga_gtfs_2_zip = "https://gtfs.pro/files/uran/improved-gtfs-braga.zip" # 1.6MB 
+    download.file(Braga_gtfs_2_zip, destfile = "database/transit/braga_gtfs_transporlis.zip")
+    
+
+  # Lisbon
+    
+    #Operador: Carris
+    
+    Lisbon_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-gateway.zip" # 15.8MB
+    download.file(Lisbon_gtfs_zip, destfile = "database/transit/lisbon_gtfs.zip")
+    
+  # Área Metropolitana de Lisboa
+    
+    #Operador: Carris Metropolitana
+    
+    AML_gtfs_zip = "https://api.carrismetropolitana.pt/gtfs" #48MB
+    download.file(AML_gtfs_zip, destfile = "database/transit/AML_gtfs.zip")
+  
+  # Funchal
+    
+    #Operador: 
+    
+    funchal_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-horariosdofunchal.zip" # 3.8MB
+    download.file(funchal_gtfs_zip, destfile = "database/transit/funchal_gtfs.zip")
+    
+  # Cascais: São Domingos de Rana
+    
+    #Operador: Mobi-Cascais
+    
+    cascais_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-mobi-cascais.zip" # 1.4MB
+    download.file(cascais_gtfs_zip, destfile = "database/transit/cascais_gtfs.zip")
+
+  # Barreiro
+
+    #Operador: Transporlis
+    
+    barreiro_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-transportes-colectivos-do-barreiro-pt.zip" # 0.33MB
+    download.file(barreiro_gtfs_zip, destfile = "database/transit/barreiro_gtfs.zip")
+
+  # Agueda, Aveiro
+    
+    #Operador: Câmara Municipal de Aveiro (operador?)
+    
+    agueda_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-agueda.zip" # 0.25MB
+    download.file(agueda_gtfs_zip, destfile = "database/transit/agueda_gtfs.zip")
+    
+  # Porto
+    
+    #Operador: 
+    
+    porto_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-stcp-porto-pt.zip" # 7.4MB
+    download.file(porto_gtfs_zip, destfile = "database/transit/porto_gtfs.zip")
+    
 
 gtfs de todos as operadoras a nível nacional
 filtrar as que são underground
