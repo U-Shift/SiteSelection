@@ -33,7 +33,8 @@ grid_resid = BUILDINGS[GRID,] |>
   summarise(n = sum(buildings)) |>
   ungroup() |>
   st_drop_geometry() |>
-  mutate(group = "residential")
+  mutate(group = "residential") |> 
+  filter(n > 0)
 
 # this is to verify the steps if make sense
 grid_landuse = bind_rows(grid_poi, grid_resid) |> 
