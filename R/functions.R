@@ -293,7 +293,8 @@ get_density_grid = function(grid, CITYcensus) {
             join = st_intersects) %>% 
     st_drop_geometry() %>% 
     group_by(ID) %>% 
-    summarise(population = sum(N_INDIVIDUOS))
+    summarise(population = sum(N_INDIVIDUOS)) |> 
+    ungroup()
   
 }
 
