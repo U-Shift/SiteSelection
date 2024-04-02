@@ -27,7 +27,7 @@
     
     #Operador: Carris Metropolitana
     
-    AML_gtfs_zip = "https://api.carrismetropolitana.pt/gtfs" #48MB
+    AML_gtfs_zip = "https://github.com/carrismetropolitana/gtfs/raw/live/CarrisMetropolitana.zip" #48MB
     download.file(AML_gtfs_zip, destfile = "database/transit/AML_gtfs.zip")
   
   # Funchal
@@ -65,7 +65,22 @@
     porto_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-stcp-porto-pt.zip" # 7.4MB
     download.file(porto_gtfs_zip, destfile = "database/transit/porto_gtfs.zip")
     
+#Import libraries
 
+    library(gtfstools)
+    
+# read gtfs files
+    
+    braga_4Planning_gtfs <- read_gtfs("database/transit/braga_gtfs_4planning.zip")
+    braga_transporlis_gtfs <- read_gtfs("database/transit/braga_gtfs_transporlis.zip")
+    lisbon_gtfs <- read_gtfs("database/transit/lisbon_gtfs.zip")
+    aml_gtfs <- read_gtfs("database/transit/AML_gtfs.zip")
+    funchal_gtfs <- read_gtfs("database/transit/funchal_gtfs.zip")
+    cascais_gtfs <- read_gtfs("database/transit/cascais_gtfs.zip")
+    barreiro_gtfs <- read_gtfs("database/transit/barreiro_gtfs.zip")
+    agueda_gtfs <- read_gtfs("database/transit/agueda_gtfs.zip")
+    porto_gtfs <- read_gtfs("database/transit/porto_gtfs.zip")
+    
 gtfs de todos as operadoras a nível nacional
 filtrar as que são underground
 validar
