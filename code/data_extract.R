@@ -148,8 +148,24 @@ file.remove("database/CENSUSpolygons.gpkg")
 library(tidyverse)
 library(osmdata)
 library(sf)
-CITY = "Almada"
-CITYlimit = CAOP_municipios |> filter(Concelho == CITY)
+
+
+# Get for all country (Portugal), and filter with 
+# points_all_city = points_all[CITYlimit,]
+# ?
+# It can be a good approach! But it will be a lot of data, and the filtering will be slow.
+# CITY = "Almada"
+# CITYlimit = CAOP_municipios |> filter(Concelho == CITY)
+
+# select the instance to use. can be busy.
+get_overpass_url()
+set_overpass_url("https://overpass-api.de/api/interpreter")
+# https://overpass.kumi.systems/api/interpreter
+# https://maps.mail.ru/osm/tools/overpass/api/interpreter
+# https://overpass-api.de/api/interpreter
+# https://overpass.openstreetmap.fr/api/interpreter
+
+
 
 ## new way using osmdata ##
 osm_points_amenity = opq("Portugal") |> 
@@ -175,7 +191,7 @@ point_amenity = point_amenity |> bind_rows(centroid_amenity)
 # select few columns
 point_amenity = point_amenity |>
   select(osm_id, amenity, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  # mutate(CITY = CITY) |> 
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -204,7 +220,7 @@ point_shop = point_shop |> bind_rows(centroid_shop)
 # select few columns
 point_shop = point_shop |>
   select(osm_id, shop, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |>
+  # mutate(CITY = CITY) |>
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -220,7 +236,6 @@ point_shop_clean = point_shop_clean |> filter(!is.na(shop)) # remove the ones wi
 # mapview::mapview(point_shop_clean, zcol="shop")
 # table(point_shop_clean$shop)
 rm(shop_NA, shop_distinct)
-rm(osm_points_shop)
 
 ## healthcare
 osm_points_healthcare = opq("Portugal") |> 
@@ -234,7 +249,7 @@ point_healthcare = point_healthcare |> bind_rows(centroid_healthcare)
 # select few columns
 point_healthcare = point_healthcare |>
   select(osm_id, healthcare, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  # mutate(CITY = CITY) |> 
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -262,7 +277,7 @@ point_sport = point_sport |> bind_rows(centroid_sport)
 # select few columns
 point_sport = point_sport |>
   select(osm_id, leisure, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |>
+  # mutate(CITY = CITY) |>
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -291,7 +306,7 @@ point_leisure = point_leisure |> bind_rows(centroid_leisure)
 # select few columns
 point_leisure = point_leisure |>
   select(osm_id, leisure, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  # mutate(CITY = CITY) |> 
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -322,7 +337,7 @@ point_tourism = point_tourism |> bind_rows(centroid_tourism)
 # select few columns
 point_tourism = point_tourism |>
   select(osm_id, tourism, name, `addr:city`, `addr:street`, `addr:housenumber`, `addr:postcode`, geometry) |> 
-  mutate(CITY = CITY) |> 
+  # mutate(CITY = CITY) |> 
   rename(address = `addr:street`,
          housenumber = `addr:housenumber`,
          location = `addr:city`,
@@ -338,8 +353,8 @@ point_tourism_clean = rbind(tourism_NA, tourism_distinct) |> filter(!is.na(touri
 # table(point_tourism_clean$tourism)
 rm(tourism_NA, tourism_distinct)
 
-
-rm(osm_points_tourism, osm_points_sport, osm_points_leisure, osm_points_healthcare, osm_points_amenity)
+## tidy up and merge all
+rm(osm_points_tourism, osm_points_sport, osm_points_leisure, osm_points_healthcare, osm_points_amenity, osm_points_shop)
 rm(centroid_amenity, centroid_healthcare, centroid_leisure, centroid_shop, centroid_sport, centroid_tourism)
 rm(point_amenity, point_healthcare, point_leisure, point_shop, point_sport, point_tourism)
 
@@ -348,13 +363,18 @@ points_all = rbind(point_amenity_clean |> rename(type = amenity) |> mutate(group
                    point_healthcare_clean |> rename(type = healthcare) |> mutate(group = "healthcare"),
                    point_sport_clean |> rename(type = sport) |> mutate(group = "sport"),
                    point_leisure_clean |> rename(type = leisure) |> mutate(group = "leisure"),
-                   # point_building_clean |> rename(type = building),
                    point_tourism_clean |> rename(type = tourism) |> mutate(group = "tourism")
                    ) |> 
-  select(-CITY) |> 
+  # select(-CITY) |> 
   distinct(osm_id, .keep_all = TRUE) 
 
 points_all = points_all[CAOP_municipios,]
+mapview::mapview(points_all, zcol = "group")
+
+# upload to repository points_all
+st_write(points_all, "database/osm_poi_landuse.gpkg", delete_dsn = TRUE)
+piggyback::pb_upload("database/osm_poi_landuse.gpkg")
+
 
 table(points_all$type)
 points_all_tags = points_all |>
@@ -366,10 +386,10 @@ write.table(points_all_tags, "database/osm_poi_tags.txt", sep = "\t", row.names 
 piggyback::pb_upload("database/osm_poi_tags.txt")
 
 
-# Get for all country (Portugal), and filter with 
-# points_all_city = points_all[CITYlimit,]
-# ?
-# It can be a good approach!
+
+
+
+# NOT RELEVANT HERE -------------------------------------------------------
 
 
 ##### NEEDS TO RUN INDIVIDUALY FOR EACH CITY ### Too much information, won't pass
