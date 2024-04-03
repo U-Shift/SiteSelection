@@ -344,7 +344,7 @@ get_landuse = function(grid, CITYcensus) {
 
 find_candidates = function(grid, centrality_grid, density_grid, CITY,
                            population_min, degree_min, betweeness_range, closeness_range,
-                           landuse_entropy) {
+                           entropy_min, landuse_entropy) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -380,7 +380,7 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds") # WHY does not work without this??
   candidates_landuse = 
     landuse_entropy |>
-    dplyr::filter(entropy >= 0.35)
+    dplyr::filter(entropy >= entropy_min)
   
   st_write(candidates_landuse, paste0("outputdata/", CITY, "/candidates_landuse.gpkg"), delete_dsn = TRUE)
   

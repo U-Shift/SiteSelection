@@ -15,6 +15,7 @@ population_min = mean # mean or median? default: mean
 degree_min = mean # mean or median? default: mean
 betweeness_range = 0.4 # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25 # value to exclude (upper and lower) default: 0.25
+entropy_min = 0.35 # value to exclude (lower) default: 0.5
 
 #########################################
 
@@ -90,14 +91,11 @@ list(
   tar_target(
     name = landuse_entropy,
     command = get_landuse(grid, CITYcensus)),
-  # tar_target(
-  #   name = landuse_grid,
-  #   command = get_landuse_grid(landuse_entropy, grid, CITY)),
   tar_target(
     name = candidates_all,
     command = find_candidates(grid, centrality_grid, density_grid, CITY,
                               population_min, degree_min, betweeness_range, closeness_range,
-                              landuse_entropy)
+                              entropy_min, landuse_entropy)
   )
 )
   

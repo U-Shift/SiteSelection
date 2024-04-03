@@ -2,7 +2,7 @@ name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iterat
 betweeness_range|object|6143dec821aabc67|||||||||||||||
 build_osm|object|df161ddba3dacc9e|||||||||||||||
 candidates|function|9c2f95a20efa2e79|||||||||||||||
-candidates_all|stem|af263fd9086f3b5e|116a11b16fc3cfca|ec0d9536ed09fbe5|392372375||t19816.6686064083s|3eca82e267962690|1462|rds|local|vector|||0.076||
+candidates_all|stem|af263fd9086f3b5e|20e287d5c6f223d2|d642bc64d6b8cf0d|392372375||t19816.6916486058s|3eca82e267962690|1462|rds|local|vector|||0.087||
 candidates_centrality|stem|9c82654c90976b49|beb5619abcee056e|26e2e18e51069a1d|-1085204634||t19775.8090717049s|c197b53c03af64b3|5712|rds|local|vector|||0.037||
 cellsize_input|object|4ff1951c78c41c6c|||||||||||||||
 CENSUScity|stem|ef9abd6614a38b8b|748a76bf12cc97b3|0e5e9788954ad081|329073188||t19779.597953638s|545e975dd6f9c10f|41524|rds|local|vector|||12.765||
@@ -16,7 +16,8 @@ clean_osm|function|f99826f41b1a7176|||||||||||||||
 closeness_range|object|8a0059b814463716|||||||||||||||
 degree_min|function|138cee1ae58dbe3f|||||||||||||||
 density_grid|stem|9bb228bac6b054a7|2199969ee386be70|a4ae85b485b1cab4|-6812704||t19816.6684728425s|d19d745e57a15b0c|2446|rds|local|vector|||0.048||
-find_candidates|function|ff0e0ad978477650|||||||||||||||
+entropy_min|object|094c5052fd9b1fc9|||||||||||||||
+find_candidates|function|e9be8befa5f63af5|||||||||||||||
 get_census|function|d740e0d975dc3860|||||||||||||||
 get_centrality|function|0089e1e79e20a390|||||||||||||||
 get_centrality_grid|function|ea22a409243f2eb5|||||||||||||||
