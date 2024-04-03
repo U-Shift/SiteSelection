@@ -67,7 +67,11 @@
     
 #Import libraries
 
-    library(gtfstools)
+    library(sf)
+    library(readr)
+    library(tidyverse)
+    library(lubridate)
+    library(tidytransit)
     
 # read gtfs files
     
@@ -81,62 +85,108 @@
     agueda_gtfs <- read_gtfs("database/transit/agueda_gtfs.zip")
     porto_gtfs <- read_gtfs("database/transit/porto_gtfs.zip")
     
-# Organize the databases 
+# Organize the databases
     
-    #Import Libraries
-    library(sf)
-    library(readr)
-    library(tidyverse)
-    library(lubridate)
-    library(tidy)
+    # Select and filter databases by a representative date (Wednesday)
+
+    braga_4Planning_date <- filter_feed_by_date(braga_4Planning_gtfs,"2024-04-03")
+    braga_transporlis_date <- filter_feed_by_date(braga_transporlis_gtfs, "2024-03-10")
+    lisbon_date <- filter_feed_by_date(lisbon_gtfs, "2024-03-10")
+    aml_date <- filter_feed_by_date(aml_gtfs, "2024-03-10")
+    funchal_date <- filter_feed_by_date(funchal_gtfs, "2024-03-10")
+    cascais_date <- filter_feed_by_date(cascais_gtfs, "2024-03-10")
+    barreiro_date <- filter_feed_by_date(barreiro_gtfs, "2024-03-10")
+    agueda_date <- filter_feed_by_date(agueda_gtfs, "2019-03-13")
+    porto_date <- filter_feed_by_date(porto_gtfs, "2022-03-09")
+    
+    #Organize the table calculating the frequencies per bus stop
+    
+    # Braga 4-Planning
+    
+      #Get stop frequency (missing data)
+    
+    braga_4Planning_f = data.frame()
+    
+    for (i in 6:9){
+      braga_4Planning <- get_stop_frequency(braga_4Planning_date,
+                                                    start_time = paste0("0",i,":00:00"),
+                                                    end_time = paste0("0",i,":59:59"),
+                                                    service_ids = NULL,
+                                                    by_route = TRUE) 
+      
+      braga_4Planning <- braga_4Planning |> 
+             group_by(stop_id) |> 
+              summarise(frequency = sum(n_departures)) |> 
+        mutate(hour=i)
+      braga_4Planning_f = rbind(braga_4Planning_f,braga_4Planning)
+    }
+    
+    for (i in 10:23){
+      braga_4Planning <- get_stop_frequency(braga_4Planning_date,
+                                            start_time = paste0(i,":00:00"),
+                                            end_time = paste0(i,":59:59"),
+                                            service_ids = NULL,
+                                            by_route = TRUE) 
+      braga_4Planning <- braga_4Planning |> 
+        group_by(stop_id) |> 
+        summarise(frequency = sum(n_departures)) |> 
+        mutate(hour=i)
+      braga_4Planning_f = rbind(braga_4Planning_f,braga_4Planning)
+      }
+      
+      
+    braga_4Planning_frequency <- braga_4Planning_f |> 
+        ungroup() |> 
+        group_by(stop_id,hour) |> 
+        summarise(frequency = sum(frequency)) |> 
+        ungroup()
+      
+    
+    braga_4Planning_table <- braga_4Planning_frequency |> 
+      left_join(braga_4Planning_date$stops |> 
+                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
+      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+   
+    mapview::mapview(braga_4Planning_table) 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     
+    excluir = c("stop_code", "stop_desc", "zone_id", "stop_url", "location_type", "parent_station", "stop_headsign", "pickup_type",
+                "drop_off_type", "shape_dist_traveled", "trip_headsign", "direction_id", "block_id", "route_short_name",
+                "route_desc","route_url", "route_color", "route_text_color")
     
-    #Join stop_id with stop_times
-    
-    lisbon_service <- lisbon_gtfs$ %>%
-      left_join(lisbon_gtfs$stop_times, by="stop_id")
-    
-    
-    
-    Braga_stops_4_planning <- braga_4Planning_gtfs$stops %>%
-      left_join(braga_4Planning_gtfs$stop_times, by="stop_id")
-    
-    Braga_dates_4_planning <- Braga_stops_4_planning$trips %>%
-      left_join(Braga_stops_4_planning$calendar_dates, by="service_id")
+    braga_4Planning_table = braga_4Planning_table |> 
+      select(!all_of(excluir))
     
     
-    Braga_agencys_transporlis <- braga_transporlis_gtfs$agency %>%
-      left_join(braga_transporlis_gtfs$calendar_dates, by="dates")
+    braga_4Planning_redux = braga_4Planning_table |>
+      group_by(stop_id, stop_name, stop_lat, stop_lon) |> 
+      summarise(frequency = n()) |> 
+      ungroup()
+    sum(braga_4Planning_redux$frequency) #all: 376697, only 16jan: 135557
     
-    lisbon_stops <- lisbon_gtfs$stops %>%
-      left_join(lisbon_gtfs$stop_times, by="stop_id")
+    braga_4Planning_stops = st_as_sf(Carris_stops_redux, coords = c("stop_lon", "stop_lat"), crs=4326)
     
-    aml_stops <- aml_gtfs$stops %>%
-      left_join(aml_gtfs$stop_times, by="stop_id")
+    st_write(Carris_stops, "database/transit/shapefiles/braga_4Planning_stops.gpkg", delete_dsn = TRUE)
     
-    funchal_stops <- funchal_gtfs$stops %>%
-      left_join(funchal_gtfs$stop_times, by="stop_id")
-    
-    cascais_stops <- cascais_gtfs$stops %>%
-      left_join(cascais_gtfs$stop_times, by="stop_id")
-    
-    barreiro_stops <- barreiro_gtfs$stops %>%
-      left_join(barreiro_gtfs$stop_times, by="stop_id")
-    
-    agueda_stops <- agueda_gtfs$stops %>%
-      left_join(agueda_gtfs$stop_times, by="stop_id")
-    
-    porto_stops <- porto_gtfs$stops %>%
-      left_join(porto_gtfs$stop_times, by="stop_id")
-    
-    # Join the frequencies
-    
-    
-    
-    
-    
-    
+    #
     
     
     
