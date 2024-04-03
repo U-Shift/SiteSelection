@@ -6,7 +6,7 @@
 
 # Set defaults HERE ######################
 CITY_input = "Almada"
-cellsize_input = c(400, 400)
+cellsize_input = c(200, 200)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
 
@@ -88,9 +88,16 @@ list(
     name = density_grid,
     command = get_density_grid(grid, CITYcensus)),
   tar_target(
+    name = landuse_entropy,
+    command = get_landuse(grid, CITYcensus)),
+  tar_target(
+    name = landuse_grid,
+    command = get_landuse_grid(grid, CITY)),
+  tar_target(
     name = candidates_all,
     command = find_candidates(grid, centrality_grid, density_grid, CITY,
-                              population_min, degree_min, betweeness_range, closeness_range)
+                              population_min, degree_min, betweeness_range, closeness_range,
+                              landuse_grid)
   )
 )
   

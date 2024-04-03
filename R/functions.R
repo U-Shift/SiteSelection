@@ -56,8 +56,7 @@ make_grid = function(CITYlimit, cellsize_input, square_input)  {
     mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
     select(-c(1,2)) %>% 
     st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
-    
-  
+
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
   
 }
@@ -299,11 +298,70 @@ get_density_grid = function(grid, CITYcensus) {
 }
 
 
+# get_landuse -------------------------------------------------------------
 
+get_landuse = function(grid, CITYcensus) {
+  
+  # get OSM POIs with 6 categories
+  points_poi = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg")
+  points_poi = points_poi[grid,] |>
+    st_join(grid, join = st_intersects) |>
+    st_drop_geometry() |> 
+    group_by(ID, group) |>
+    summarise(n = n()) |>
+    ungroup()
+
+  # get census buildings
+  points_residential = CITYcensus |>
+    select(BGRI2021, N_EDIFICIOS_EXCLUSIV_RESID, Concelho, geom) |> 
+    rename(buildings = N_EDIFICIOS_EXCLUSIV_RESID)
+  points_residential = points_residential[grid,] |>
+    st_join(grid, join = st_intersects) |>
+    st_drop_geometry() |>    
+    group_by(ID) |>
+    summarise(n = sum(buildings)) |>
+    ungroup() |>
+    mutate(group = "residential") |> 
+    filter(n > 0)
+  
+  # join residential and other 6 categories
+  categories = c("amenity", "healthcare", "leisure", "shop", "sport", "tourism", "residential")
+  n_categories = length(categories)
+  
+  landuse_entropy = bind_rows(points_poi, points_residential) |> 
+    group_by(ID) |> 
+    summarise(prop = n/sum(n),
+              entropy_step = -sum(prop * log(prop)),
+              entropy = entropy_step/log(n_categories)) |> 
+    # mutate(entropy = entropy/log(n_categories)) |>
+    ungroup() |> 
+    select(ID, entropy) |> 
+    distinct() |> 
+    mutate(entropy = round(entropy, digits = 3)) |> 
+    as.data.frame()
+  
+  saveRDS(landuse_entropy,"outputdata/test_landuse_entropy.Rds")
+
+}
+  
+# landuse_grid ------------------------------------------------------------
+
+get_landuse_grid = function(grid, CITY) {
+  
+  landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds")
+  
+  landuse_grid = grid |> 
+    left_join(landuse_entropy)
+   
+  saveRDS(landuse_grid, paste0("outputdata/", CITY, "/landuse_grid.Rds"))
+  
+}  
+  
 # find_candidates ---------------------------------------------------------
 
 find_candidates = function(grid, centrality_grid, density_grid, CITY,
-                           population_min, degree_min, betweeness_range, closeness_range) {
+                           population_min, degree_min, betweeness_range, closeness_range,
+                           landuse_grid) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -335,13 +393,21 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   
   st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   
+  # landuse
+  landuse_grid = readRDS(paste0("outputdata/", CITY, "/landuse_grid.Rds"))
+  candidates_landuse = landuse_grid |> 
+    dplyr::filter(entropy >= 0.35)
+  
+  st_write(candidates_landuse, paste0("outputdata/", CITY, "/candidates_landuse.gpkg"), delete_dsn = TRUE)
   
   # all candidates
   candidates_all = grid |> 
-    left_join(candidates_centrality |> st_drop_geometry()) |> 
-    left_join(candidates_density |> st_drop_geometry()) |> 
-    filter(!is.na(degree)) |> 
-    filter(!is.na(population))
+    left_join(candidates_centrality |> st_drop_geometry()) |>
+    left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
+    left_join(candidates_landuse |> st_drop_geometry(), by = "ID") |>
+    dplyr::filter(!is.na(degree)) |>
+    dplyr::filter(!is.na(population)) |> 
+    dplyr::filter(!is.na(entropy))
   
   # mapview::mapview(candidates_all)
   st_write(candidates_all, paste0("outputdata/", CITY, "/candidates_all.gpkg"), delete_dsn = TRUE)

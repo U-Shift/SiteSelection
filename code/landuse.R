@@ -52,10 +52,8 @@ landuse_grid = grid_landuse |>
   ungroup() |> 
   distinct()
 
-# colocar info na grid  --------------------------------------------------
+# back to grid  --------------------------------------------------
 
 landuse_grid = GRID |> left_join(landuse_grid)
 
 mapview::mapview(landuse_grid, zcol = "entropy")
-
-

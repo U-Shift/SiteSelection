@@ -12,5 +12,8 @@ targets::tar_visnetwork(targets_only = TRUE)
 targets::tar_make()
 targets::tar_crew() # parallel processing stats
 
+# targets::tar_meta(fields = error, complete_only = TRUE) # debugging
+
 targets::tar_load(candidates_all)
-mapview::mapview(candidates_all, zcol="population")
+mapview::mapview(candidates_all, zcol="entropy")
+
