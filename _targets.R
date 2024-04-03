@@ -6,7 +6,7 @@
 
 # Set defaults HERE ######################
 CITY_input = "Almada"
-cellsize_input = c(200, 200)
+cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
 
@@ -22,7 +22,7 @@ closeness_range = 0.25 # value to exclude (upper and lower) default: 0.25
 
 # Load packages required to define the pipeline:
 library(targets)
-library(crew)
+# library(crew)
 # library(tarchetypes) # Load other packages as needed. # nolint
 
 # Set target options:
@@ -32,7 +32,7 @@ tar_option_set(
   format = "rds", # default storage format
   storage = "worker",
   retrieval = "worker",
-  controller = crew_controller_local(workers = 3) #change here number of paralell process
+  # controller = crew_controller_local(workers = 3) #change here number of paralell process
   # Set other options as needed.
 )
 
@@ -90,14 +90,14 @@ list(
   tar_target(
     name = landuse_entropy,
     command = get_landuse(grid, CITYcensus)),
-  tar_target(
-    name = landuse_grid,
-    command = get_landuse_grid(grid, CITY)),
+  # tar_target(
+  #   name = landuse_grid,
+  #   command = get_landuse_grid(landuse_entropy, grid, CITY)),
   tar_target(
     name = candidates_all,
     command = find_candidates(grid, centrality_grid, density_grid, CITY,
                               population_min, degree_min, betweeness_range, closeness_range,
-                              landuse_grid)
+                              landuse_entropy)
   )
 )
   

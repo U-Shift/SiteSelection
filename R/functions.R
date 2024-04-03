@@ -330,13 +330,8 @@ get_landuse = function(grid, CITYcensus) {
   
   landuse_entropy = bind_rows(points_poi, points_residential) |> 
     group_by(ID) |> 
-    summarise(prop = n/sum(n),
-              entropy_step = -sum(prop * log(prop)),
-              entropy = entropy_step/log(n_categories)) |> 
-    # mutate(entropy = entropy/log(n_categories)) |>
+    summarise(entropy = -(sum((n/sum(n)) * log(n/sum(n))))/log(n_categories)) |>
     ungroup() |> 
-    select(ID, entropy) |> 
-    distinct() |> 
     mutate(entropy = round(entropy, digits = 3)) |> 
     as.data.frame()
   
@@ -344,24 +339,12 @@ get_landuse = function(grid, CITYcensus) {
 
 }
   
-# landuse_grid ------------------------------------------------------------
 
-get_landuse_grid = function(grid, CITY) {
-  
-  landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds")
-  
-  landuse_grid = grid |> 
-    left_join(landuse_entropy)
-   
-  saveRDS(landuse_grid, paste0("outputdata/", CITY, "/landuse_grid.Rds"))
-  
-}  
-  
 # find_candidates ---------------------------------------------------------
 
 find_candidates = function(grid, centrality_grid, density_grid, CITY,
                            population_min, degree_min, betweeness_range, closeness_range,
-                           landuse_grid) {
+                           landuse_entropy) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -394,8 +377,9 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   
   # landuse
-  landuse_grid = readRDS(paste0("outputdata/", CITY, "/landuse_grid.Rds"))
-  candidates_landuse = landuse_grid |> 
+  landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds") # WHY does not work without this??
+  candidates_landuse = 
+    landuse_entropy |>
     dplyr::filter(entropy >= 0.35)
   
   st_write(candidates_landuse, paste0("outputdata/", CITY, "/candidates_landuse.gpkg"), delete_dsn = TRUE)
@@ -404,7 +388,7 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   candidates_all = grid |> 
     left_join(candidates_centrality |> st_drop_geometry()) |>
     left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
-    left_join(candidates_landuse |> st_drop_geometry(), by = "ID") |>
+    left_join(candidates_landuse, by = "ID") |>
     dplyr::filter(!is.na(degree)) |>
     dplyr::filter(!is.na(population)) |> 
     dplyr::filter(!is.na(entropy))

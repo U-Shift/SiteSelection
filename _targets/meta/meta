@@ -2,11 +2,11 @@ name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iterat
 betweeness_range|object|6143dec821aabc67|||||||||||||||
 build_osm|object|df161ddba3dacc9e|||||||||||||||
 candidates|function|9c2f95a20efa2e79|||||||||||||||
-candidates_all|stem|6a67ef12fc1ade43|870e7b13bab12bb4|62f6593073e186c8|392372375||t19816.6122066084s|af1e28a9db55a5ed|1907|rds|local|vector|||0.094||
+candidates_all|stem|af263fd9086f3b5e|116a11b16fc3cfca|ec0d9536ed09fbe5|392372375||t19816.6686064083s|3eca82e267962690|1462|rds|local|vector|||0.076||
 candidates_centrality|stem|9c82654c90976b49|beb5619abcee056e|26e2e18e51069a1d|-1085204634||t19775.8090717049s|c197b53c03af64b3|5712|rds|local|vector|||0.037||
-cellsize_input|object|927a29a3a60aebea|||||||||||||||
+cellsize_input|object|4ff1951c78c41c6c|||||||||||||||
 CENSUScity|stem|ef9abd6614a38b8b|748a76bf12cc97b3|0e5e9788954ad081|329073188||t19779.597953638s|545e975dd6f9c10f|41524|rds|local|vector|||12.765||
-centrality_grid|stem|7fcf3b589a33d42b|87bea58679d3cd99|2906c708ce9fd065|1844638451||t19816.560113992s|fa295a2ee32514b2|40696|rds|local|vector|||0.161||
+centrality_grid|stem|86f601694890598d|87bea58679d3cd99|f88e792ee22bc654|1844638451||t19816.6686054824s|ab6ddb12e393d2e9|15609|rds|local|vector|||0.123||
 centrality_nodes|stem|c83c47ccb42d5fe6|e452823588902322|b5bee0394f7e3b2c|1967224110||t19816.4731178746s|24a509147933d6b3|326829|rds|local|vector|||0.028||
 CITY|stem|243df1f374d1caf1|7796fcd39ecfdd07|b187de406f54bb83|494743506||t19779.5978055353s|cc81a7537cb02258|59|rds|local|vector|||3.652||
 CITY_input|object|3ef6e99a4118c48f|||||||||||||||
@@ -15,22 +15,22 @@ CITYlimit|stem|eae130ee713edfb4|db239274ae2c370c|3952be60bc4197a3|-1610475006||t
 clean_osm|function|f99826f41b1a7176|||||||||||||||
 closeness_range|object|8a0059b814463716|||||||||||||||
 degree_min|function|138cee1ae58dbe3f|||||||||||||||
-density_grid|stem|14c031bb7e8fca04|2199969ee386be70|0e50d0e2d19a4bcb|-6812704||t19816.5601119549s|9c6bb90c3904bdce|5131|rds|local|vector|||0.06||
-find_candidates|function|6a0c003d36e521b5|||||||||||||||
+density_grid|stem|9bb228bac6b054a7|2199969ee386be70|a4ae85b485b1cab4|-6812704||t19816.6684728425s|d19d745e57a15b0c|2446|rds|local|vector|||0.048||
+find_candidates|function|ff0e0ad978477650|||||||||||||||
 get_census|function|d740e0d975dc3860|||||||||||||||
 get_centrality|function|0089e1e79e20a390|||||||||||||||
 get_centrality_grid|function|ea22a409243f2eb5|||||||||||||||
 get_citylimit|function|01d48937971f5e58|||||||||||||||
 get_density_grid|function|a19de3f5905b3fb6|||||||||||||||
-get_landuse|function|422f9c2ce9579b20|||||||||||||||
-get_landuse_grid|function|b68b35c5b27bcaa2|||||||||||||||
+get_landuse|function|88c6c485bb01ffea|||||||||||||||
+get_landuse_grid|function|06b5933eb69728aa|||||||||||||||
 get_osm|function|25af801619a1826f|||||||||||||||
-grid|stem|2b1e576068c1263c|009c8a6b3f8dd8b7|8d0b58510a7c5bb3|-13385730||t19816.5887910528s|c4ffea8b03e981d4|16071|rds|local|vector|||0.699||
+grid|stem|29a20ecfcf70ec9c|009c8a6b3f8dd8b7|0f0059812f34a58e|-13385730||t19816.6684722406s|d3e99e363afea4d6|5318|rds|local|vector|||0.112||
 grid_centrality|stem|d36ea1299fa8d732|d5b7005e54af8958|5ac6925e2d6d5771|-873626440||t19530.6801894964s|44e327d1ee1978d7|43|rds|local|vector|||0.396||
 grid_centrality_values|stem|fe4429b76362a57f|d5b7005e54af8958|d6e6ec3634fdbb80|215759028||t19530.6901541384s|4dec3046e7fc7d3e|61170|rds|local|vector|||0.389||
 grid_values|stem|d36ea1299fa8d732|d5b7005e54af8958|de1934b4cb1177f3|-1403192273||t19530.6760630171s|44e327d1ee1978d7|43|rds|local|vector|||0.395||
-landuse_entropy|stem|cc37473f3d7f648a|8746978f11779570|5c8c2021df915a0a|-186554672||t19816.5889208685s|a1c456b03adbfbf8|44|rds|local|vector|||11.195|Returning more or less than 1 row per summarise group was deprecated indplyr 1.1.0.ℹ Please use reframe instead.ℹ When switching from summarise to reframe, remember that reframe  always returns an ungrouped data frame and adjust accordingly.|
-landuse_grid|stem|cc37473f3d7f648a|33500803ee631b39|b1c190a164f8fa42|-1451878937||t19816.5940974701s|a1c456b03adbfbf8|44|rds|local|vector|||0.023||
+landuse_entropy|stem|cc37473f3d7f648a|8746978f11779570|756c1cc38037c53e|-186554672||t19816.6686039083s|a1c456b03adbfbf8|44|rds|local|vector|||11.306||
+landuse_grid|stem|cc37473f3d7f648a|6ccdeb9e0a911dc8|69488a64aca732c3|-1451878937||t19816.5940974701s||44|rds|local|vector|||0.003||no applicable method for left_join applied to an object of class NULL
 make_grid|function|e85dde01943fb224|||||||||||||||
 population_min|function|138cee1ae58dbe3f|||||||||||||||
 road_network|stem|e06554d4450ca171|b1654aa20f166426|16c8717c539068d0|-881406554||t19779.5978728042s|996f738b88d16b67|805544|rds|local|vector|||0.028||
