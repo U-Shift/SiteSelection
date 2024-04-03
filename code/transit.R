@@ -81,6 +81,68 @@
     agueda_gtfs <- read_gtfs("database/transit/agueda_gtfs.zip")
     porto_gtfs <- read_gtfs("database/transit/porto_gtfs.zip")
     
+# Organize the databases 
+    
+    #Import Libraries
+    library(sf)
+    library(readr)
+    library(tidyverse)
+    library(lubridate)
+    library(tidy)
+
+    
+    
+    #Join stop_id with stop_times
+    
+    lisbon_service <- lisbon_gtfs$ %>%
+      left_join(lisbon_gtfs$stop_times, by="stop_id")
+    
+    
+    
+    Braga_stops_4_planning <- braga_4Planning_gtfs$stops %>%
+      left_join(braga_4Planning_gtfs$stop_times, by="stop_id")
+    
+    Braga_dates_4_planning <- Braga_stops_4_planning$trips %>%
+      left_join(Braga_stops_4_planning$calendar_dates, by="service_id")
+    
+    
+    Braga_agencys_transporlis <- braga_transporlis_gtfs$agency %>%
+      left_join(braga_transporlis_gtfs$calendar_dates, by="dates")
+    
+    lisbon_stops <- lisbon_gtfs$stops %>%
+      left_join(lisbon_gtfs$stop_times, by="stop_id")
+    
+    aml_stops <- aml_gtfs$stops %>%
+      left_join(aml_gtfs$stop_times, by="stop_id")
+    
+    funchal_stops <- funchal_gtfs$stops %>%
+      left_join(funchal_gtfs$stop_times, by="stop_id")
+    
+    cascais_stops <- cascais_gtfs$stops %>%
+      left_join(cascais_gtfs$stop_times, by="stop_id")
+    
+    barreiro_stops <- barreiro_gtfs$stops %>%
+      left_join(barreiro_gtfs$stop_times, by="stop_id")
+    
+    agueda_stops <- agueda_gtfs$stops %>%
+      left_join(agueda_gtfs$stop_times, by="stop_id")
+    
+    porto_stops <- porto_gtfs$stops %>%
+      left_join(porto_gtfs$stop_times, by="stop_id")
+    
+    # Join the frequencies
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
 gtfs de todos as operadoras a nível nacional
 filtrar as que são underground
 validar
