@@ -10,7 +10,7 @@ targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
 
 targets::tar_make()
-targets::tar_crew() # parallel processing stats
+# targets::tar_crew() # parallel processing stats
 
 # targets::tar_meta(fields = error, complete_only = TRUE) # debugging
 
