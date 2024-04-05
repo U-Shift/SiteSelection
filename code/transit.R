@@ -1,139 +1,127 @@
-# aim: get daily frequency of transit modes in the area
+# aim: get daily frequency of transit modes in Portugal
 
 
 # Automatically download GTFS data---------------------------------------------------
 
-  # Braga 
-  
-    #Operador: 4 Planning
-  
-    Braga_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-braga.zip" # 1.6MB 
-    download.file(Braga_gtfs_zip, destfile = "database/transit/braga_gtfs_4planning.zip")
+# create directory if does not exist already
+if (!dir.exists("database/transit")) {
+  dir.create("database/transit", recursive = TRUE)
+}
 
-  # Lisbon
-    
-    #Operador: Carris
-    
-    Lisbon_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-gateway.zip" # 15.8MB
-    download.file(Lisbon_gtfs_zip, destfile = "database/transit/lisbon_gtfs.zip")
-    
-  # Área Metropolitana de Lisboa
-    
-    #Operador: Carris Metropolitana
-    
-    AML_gtfs_zip = "https://github.com/carrismetropolitana/gtfs/raw/live/CarrisMetropolitana.zip" #48MB
-    download.file(AML_gtfs_zip, destfile = "database/transit/AML_gtfs.zip")
-    
-  # Cascais: São Domingos de Rana
-    
-    #Operador: Mobi-Cascais
-    
-    cascais_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-mobi-cascais.zip" # 1.4MB
-    download.file(cascais_gtfs_zip, destfile = "database/transit/cascais_gtfs.zip")
+# Braga - Operador: 4 Planning
+braga_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-braga.zip" # 1.6MB
+download.file(braga_gtfs_url, destfile = "database/transit/braga_gtfs.zip")
 
-  # Barreiro
+# Lisbon - Operador: Carris
+lisbon_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-gateway.zip" # 15.8MB
+download.file(lisbon_gtfs_url, destfile = "database/transit/lisbon_gtfs.zip")
 
-    #Operador: Transporlis
-    
-    barreiro_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-transportes-colectivos-do-barreiro-pt.zip" # 0.33MB
-    download.file(barreiro_gtfs_zip, destfile = "database/transit/barreiro_gtfs.zip")
+# Área Metropolitana de Lisboa - Operador: Carris Metropolitana
+aml_gtfs_url = "https://github.com/carrismetropolitana/gtfs/raw/live/CarrisMetropolitana.zip" #48MB
+download.file(aml_gtfs_url, destfile = "database/transit/AML_gtfs.zip")
 
-  # Agueda, Aveiro
-    
-    #Operador: Câmara Municipal de Aveiro (operador?)
-    
-    agueda_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-agueda.zip" # 0.25MB
-    download.file(agueda_gtfs_zip, destfile = "database/transit/agueda_gtfs.zip")
-    
-  # Porto
-    
-    #Operador: 
-    
-    porto_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-stcp-porto-pt.zip" # 7.4MB
-    download.file(porto_gtfs_zip, destfile = "database/transit/porto_gtfs.zip")
-    
-#Import libraries
+# Cascais - Operador: Mobi-Cascais
+cascais_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-mobi-cascais.zip" # 1.4MB
+download.file(cascais_gtfs_url, destfile = "database/transit/cascais_gtfs.zip")
 
-    library(sf)
-    library(readr)
-    library(tidyverse)
-    library(lubridate)
-    library(tidytransit)
-    
+# Barreiro - Operador: Transporlis
+barreiro_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-transportes-colectivos-do-barreiro-pt.zip" # 0.33MB
+download.file(barreiro_gtfs_url, destfile = "database/transit/barreiro_gtfs.zip")
+
+# Agueda, Aveiro - Operador: Câmara Municipal de Aveiro (operador?)
+agueda_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-agueda.zip" # 0.25MB
+download.file(agueda_gtfs_url, destfile = "database/transit/agueda_gtfs.zip")
+
+# Porto - Operador: STCP
+porto_gtfs_url = "https://gtfs.pro/files/uran/improved-gtfs-stcp-porto-pt.zip" # 7.4MB
+download.file(porto_gtfs_url, destfile = "database/transit/porto_gtfs.zip")
+
+
+# filter gtfs by a tipical working day ------------------------------------
+
+library(sf)
+library(tidyverse)
+library(lubridate)
+library(tidytransit)
+
 # read gtfs files
-    
-    braga_4Planning_gtfs <- read_gtfs("database/transit/braga_gtfs_4planning.zip")
-    lisbon_gtfs <- read_gtfs("database/transit/lisbon_gtfs.zip")
-    aml_gtfs <- read_gtfs("database/transit/AML_gtfs.zip")
-    cascais_gtfs <- read_gtfs("database/transit/cascais_gtfs.zip")
-    barreiro_gtfs <- read_gtfs("database/transit/barreiro_gtfs.zip")
-    agueda_gtfs <- read_gtfs("database/transit/agueda_gtfs.zip")
-    porto_gtfs <- read_gtfs("database/transit/porto_gtfs.zip")
+braga_gtfs = read_gtfs("database/transit/braga_gtfs.zip")
+lisbon_gtfs = read_gtfs("database/transit/lisbon_gtfs.zip")
+aml_gtfs = read_gtfs("database/transit/AML_gtfs.zip")
+# aml_gtfs = read_gtfs("~/Downloads/CarrisMetropolitana.zip") #test
+cascais_gtfs = read_gtfs("database/transit/cascais_gtfs.zip")
+barreiro_gtfs = read_gtfs("database/transit/barreiro_gtfs.zip")
+agueda_gtfs = read_gtfs("database/transit/agueda_gtfs.zip")
+porto_gtfs = read_gtfs("database/transit/porto_gtfs.zip")
+      
 
-    
-municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barreiro", "Braga", "Agueda", "Porto"))        
+# Select and filter databases by a representative date (Wednesday)
 
-# Organize the databases
-    
-    # Select and filter databases by a representative date (Wednesday)
-    
-    braga_4Planning_date <- filter_feed_by_date(braga_4Planning_gtfs,"2024-04-03")
-    lisbon_date <- filter_feed_by_date(lisbon_gtfs, "2024-04-10")
-    aml_date <- filter_feed_by_date(aml_gtfs, "2024-04-10")
-    cascais_date <- filter_feed_by_date(cascais_gtfs, "2024-04-10")
-    barreiro_date <- filter_feed_by_date(barreiro_gtfs, "2019-04-10")
-    agueda_date <- filter_feed_by_date(agueda_gtfs, "2019-04-10")
-    porto_date <- filter_feed_by_date(porto_gtfs, "2022-11-09")
-    
-    #Organize the table calculating the frequencies per bus stop
+filter_dates = data.frame(
+  mun = c("braga", "lisbon", "aml", "cascais", "barreiro", "agueda", "porto"),
+  dates = c("2024-04-03", "2024-04-10", "2024-04-10", "2024-04-10", "2019-04-10", "2019-04-10", "2022-11-09")
+)
+
+for (mun in filter_dates$mun) {
+
+  cena_date = filter_feed_by_date(
+    get(paste0(mun, "_gtfs")),
+    extract_date = filter_dates$dates[filter_dates$mun == mun]
+  )
+  assign(paste0(mun, "_date"), cena_date)
+  print(mun)
+
+}
+
+#Organize the table calculating the frequencies per bus stop
     
 #### Braga 4-Planning
     
       #Get stop frequency (missing data)
     
-    braga_4Planning_f = data.frame()
+    braga_f = data.frame()
     
     for (i in 6:9){
-      braga_4Planning <- get_stop_frequency(braga_4Planning_date,
+      braga = get_stop_frequency(braga_date,
                                                     start_time = paste0("0",i,":00:00"),
                                                     end_time = paste0("0",i,":59:59"),
                                                     service_ids = NULL,
                                                     by_route = TRUE) 
       
-      braga_4Planning <- braga_4Planning |> 
+      braga = braga |> 
              group_by(stop_id) |> 
               summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
-      braga_4Planning_f = rbind(braga_4Planning_f,braga_4Planning)
+      braga_f = rbind(braga_f,braga)
     }
     
     for (i in 10:23){
-      braga_4Planning <- get_stop_frequency(braga_4Planning_date,
+      braga = get_stop_frequency(braga_date,
                                             start_time = paste0(i,":00:00"),
                                             end_time = paste0(i,":59:59"),
                                             service_ids = NULL,
                                             by_route = TRUE) 
-      braga_4Planning <- braga_4Planning |> 
+      braga = braga |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
-      braga_4Planning_f = rbind(braga_4Planning_f,braga_4Planning)
+      braga_f = rbind(braga_f,braga)
       }
       
       
-    braga_4Planning_frequency <- braga_4Planning_f |> 
+    braga_frequency = braga_f |> 
         ungroup() |> 
         group_by(stop_id,hour) |> 
         summarise(frequency = sum(frequency)) |> 
         ungroup()
       
     
-    braga_4Planning_table <- braga_4Planning_frequency |> 
-      left_join(braga_4Planning_date$stops |> 
+    braga_table = braga_frequency |> 
+      left_join(braga_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
    
-    mapview::mapview(braga_4Planning_table) 
+    mapview::mapview(braga_table) 
     
     
 #### Lisbon
@@ -142,46 +130,51 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     
     lisbon_f = data.frame()
     
-    for (i in 6:9){
-      lisbon <- get_stop_frequency(lisbon_date,
-                                            start_time = paste0("0",i,":00:00"),
-                                            end_time = paste0("0",i,":59:59"),
-                                            service_ids = NULL,
-                                            by_route = TRUE) 
+    for (i in 6:9) {
+      lisbon = get_stop_frequency(
+        lisbon_date,
+        start_time = paste0("0", i, ":00:00"),
+        end_time = paste0("0", i, ":59:59"),
+        service_ids = NULL,
+        by_route = TRUE
+      )
       
-      lisbon <- lisbon |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      lisbon = lisbon |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       lisbon_f = rbind(lisbon_f, lisbon)
     }
     
     for (i in 10:23) {
-      lisbon <- get_stop_frequency(lisbon_date,
-                                              start_time = paste0(i,":00:00"),
-                                              end_time = paste0(i,":59:59"),
-                                              service_ids = NULL,
-                                              by_route = TRUE)
+      lisbon = get_stop_frequency(
+        lisbon_date,
+        start_time = paste0(i, ":00:00"),
+        end_time = paste0(i, ":59:59"),
+        service_ids = NULL,
+        by_route = TRUE
+      )
       
-      lisbon <- lisbon |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      lisbon_f =rbind(lisbon_f, lisbon)
+      lisbon = lisbon |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
+      lisbon_f = rbind(lisbon_f, lisbon)
     }
     
     
-    lisbon_frequency <- lisbon_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    lisbon_frequency = lisbon_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    lisbon_table <- lisbon_frequency |> 
-      left_join(lisbon_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    lisbon_table = lisbon_frequency |>
+      left_join(lisbon_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat")
+      )
     
     mapview::mapview(lisbon_table)     
 
@@ -194,13 +187,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     aml_f = data.frame()
     
     for (i in 6:9){
-      aml <- get_stop_frequency(aml_date,
+      aml = get_stop_frequency(aml_date,
                                    start_time = paste0("0",i,":00:00"),
                                    end_time = paste0("0",i,":59:59"),
                                    service_ids = NULL,
                                    by_route = TRUE) 
       
-      aml <- aml |> 
+      aml = aml |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -208,13 +201,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     for (i in 10:23) {
-      aml <- get_stop_frequency(aml_date,
+      aml = get_stop_frequency(aml_date,
                                    start_time = paste0(i,":00:00"),
                                    end_time = paste0(i,":59:59"),
                                    service_ids = NULL,
                                    by_route = TRUE)
       
-      aml <- aml |> 
+      aml = aml |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -222,14 +215,14 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     
-    aml_frequency <- aml_f |> 
+    aml_frequency = aml_f |> 
       ungroup() |> 
       group_by(stop_id,hour) |> 
       summarise(frequency = sum(frequency)) |> 
       ungroup()
     
     
-    aml_table <- aml_frequency |> 
+    aml_table = aml_frequency |> 
       left_join(aml_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
@@ -245,13 +238,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     cascais_f = data.frame()
     
     for (i in 6:9){
-      cascais <- get_stop_frequency(cascais_date,
+      cascais = get_stop_frequency(cascais_date,
                                     start_time = paste0("0",i,":00:00"),
                                     end_time = paste0("0",i,":59:59"),
                                     service_ids = NULL,
                                     by_route = TRUE) 
       
-      cascais <- cascais |> 
+      cascais = cascais |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -259,13 +252,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     for (i in 10:23) {
-      cascais <- get_stop_frequency(cascais_date,
+      cascais = get_stop_frequency(cascais_date,
                                     start_time = paste0(i,":00:00"),
                                     end_time = paste0(i,":59:59"),
                                     service_ids = NULL,
                                     by_route = TRUE)
       
-      cascais <- cascais |> 
+      cascais = cascais |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -273,14 +266,14 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     
-    cascais_frequency <- cascais_f |> 
+    cascais_frequency = cascais_f |> 
       ungroup() |> 
       group_by(stop_id,hour) |> 
       summarise(frequency = sum(frequency)) |> 
       ungroup()
     
     
-    cascais_table <- cascais_frequency |> 
+    cascais_table = cascais_frequency |> 
       left_join(cascais_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
@@ -295,13 +288,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     barreiro_f = data.frame()
     
     for (i in 6:9){
-      barreiro <- get_stop_frequency(barreiro_date,
+      barreiro = get_stop_frequency(barreiro_date,
                                     start_time = paste0("0",i,":00:00"),
                                     end_time = paste0("0",i,":59:59"),
                                     service_ids = NULL,
                                     by_route = TRUE) 
       
-      barreiro <- barreiro |> 
+      barreiro = barreiro |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -309,13 +302,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     for (i in 10:23) {
-      barreiro <- get_stop_frequency(barreiro_date,
+      barreiro = get_stop_frequency(barreiro_date,
                                     start_time = paste0(i,":00:00"),
                                     end_time = paste0(i,":59:59"),
                                     service_ids = NULL,
                                     by_route = TRUE)
       
-      barreiro <- barreiro |> 
+      barreiro = barreiro |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -323,14 +316,14 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     
-    barreiro_frequency <- barreiro_f |> 
+    barreiro_frequency = barreiro_f |> 
       ungroup() |> 
       group_by(stop_id,hour) |> 
       summarise(frequency = sum(frequency)) |> 
       ungroup()
     
     
-    barreiro_table <- barreiro_frequency |> 
+    barreiro_table = barreiro_frequency |> 
       left_join(barreiro_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
@@ -344,13 +337,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     agueda_f = data.frame()
     
     for (i in 6:9){
-      agueda <- get_stop_frequency(agueda_date,
+      agueda = get_stop_frequency(agueda_date,
                                      start_time = paste0("0",i,":00:00"),
                                      end_time = paste0("0",i,":59:59"),
                                      service_ids = NULL,
                                      by_route = TRUE) 
       
-      agueda <- agueda |> 
+      agueda = agueda |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -358,13 +351,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     for (i in 10:23) {
-      agueda <- get_stop_frequency(agueda_date,
+      agueda = get_stop_frequency(agueda_date,
                                      start_time = paste0(i,":00:00"),
                                      end_time = paste0(i,":59:59"),
                                      service_ids = NULL,
                                      by_route = TRUE)
       
-      agueda <- agueda |> 
+      agueda = agueda |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -372,14 +365,14 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     
-    agueda_frequency <- agueda_f |> 
+    agueda_frequency = agueda_f |> 
       ungroup() |> 
       group_by(stop_id,hour) |> 
       summarise(frequency = sum(frequency)) |> 
       ungroup()
     
     
-    agueda_table <- agueda_frequency |> 
+    agueda_table = agueda_frequency |> 
       left_join(agueda_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
@@ -394,13 +387,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     porto_f = data.frame()
     
     for (i in 6:9){
-      porto <- get_stop_frequency(porto_date,
+      porto = get_stop_frequency(porto_date,
                                    start_time = paste0("0",i,":00:00"),
                                    end_time = paste0("0",i,":59:59"),
                                    service_ids = NULL,
                                    by_route = TRUE) 
       
-      porto <- porto |> 
+      porto = porto |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -408,13 +401,13 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     for (i in 10:23) {
-      porto <- get_stop_frequency(porto_date,
+      porto = get_stop_frequency(porto_date,
                                    start_time = paste0(i,":00:00"),
                                    end_time = paste0(i,":59:59"),
                                    service_ids = NULL,
                                    by_route = TRUE)
       
-      porto <- porto |> 
+      porto = porto |> 
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
@@ -422,14 +415,14 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     }
     
     
-    porto_frequency <- porto_f |> 
+    porto_frequency = porto_f |> 
       ungroup() |> 
       group_by(stop_id,hour) |> 
       summarise(frequency = sum(frequency)) |> 
       ungroup()
     
     
-    porto_table <- porto_frequency |> 
+    porto_table = porto_frequency |> 
       left_join(porto_date$stops |> 
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
@@ -438,8 +431,21 @@ municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barrei
     
     
     
-    
-    
+
+# list municipalities with GTFS -------------------------------------------
+municipios = list(
+  c(
+    "Lisboa",
+    "Oeiras",
+    "Amadora",
+    "Sintra",
+    "Cascais",
+    "Barreiro",
+    "Braga",
+    "Agueda", # Águeda?
+    "Porto"
+  )
+)
 
     
    
