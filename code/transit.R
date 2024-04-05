@@ -23,13 +23,6 @@
     
     AML_gtfs_zip = "https://github.com/carrismetropolitana/gtfs/raw/live/CarrisMetropolitana.zip" #48MB
     download.file(AML_gtfs_zip, destfile = "database/transit/AML_gtfs.zip")
-  
-  # Funchal
-    
-    #Operador: 
-    
-    funchal_gtfs_zip = "https://gtfs.pro/files/uran/improved-gtfs-horariosdofunchal.zip" # 3.8MB
-    download.file(funchal_gtfs_zip, destfile = "database/transit/funchal_gtfs.zip")
     
   # Cascais: São Domingos de Rana
     
@@ -72,12 +65,14 @@
     braga_4Planning_gtfs <- read_gtfs("database/transit/braga_gtfs_4planning.zip")
     lisbon_gtfs <- read_gtfs("database/transit/lisbon_gtfs.zip")
     aml_gtfs <- read_gtfs("database/transit/AML_gtfs.zip")
-    funchal_gtfs <- read_gtfs("database/transit/funchal_gtfs.zip")
     cascais_gtfs <- read_gtfs("database/transit/cascais_gtfs.zip")
     barreiro_gtfs <- read_gtfs("database/transit/barreiro_gtfs.zip")
     agueda_gtfs <- read_gtfs("database/transit/agueda_gtfs.zip")
     porto_gtfs <- read_gtfs("database/transit/porto_gtfs.zip")
+
     
+municipios <- list(c("Lisboa", "Oeiras", "Amadora", "Sintra", "Cascais", "Barreiro", "Braga", "Agueda", "Porto"))        
+
 # Organize the databases
     
     # Select and filter databases by a representative date (Wednesday)
@@ -85,7 +80,6 @@
     braga_4Planning_date <- filter_feed_by_date(braga_4Planning_gtfs,"2024-04-03")
     lisbon_date <- filter_feed_by_date(lisbon_gtfs, "2024-04-10")
     aml_date <- filter_feed_by_date(aml_gtfs, "2024-04-10")
-    funchal_date <- filter_feed_by_date(funchal_gtfs, "2024-04-10")
     cascais_date <- filter_feed_by_date(cascais_gtfs, "2024-04-10")
     barreiro_date <- filter_feed_by_date(barreiro_gtfs, "2019-04-10")
     agueda_date <- filter_feed_by_date(agueda_gtfs, "2019-04-10")
@@ -210,7 +204,7 @@
         group_by(stop_id) |> 
         summarise(frequency = sum(n_departures)) |> 
         mutate(hour=i)
-      aml_f = rbind(aml_f, lisbon)
+      aml_f = rbind(aml_f, aml)
     }
     
     for (i in 10:23) {
@@ -242,55 +236,7 @@
     
     mapview::mapview(aml_table)         
     
-#### Funchal
-    
-    #Get stop frequency (missing data)
-    
-    funchal_f = data.frame()
-    
-    for (i in 6:9){
-      funchal <- get_stop_frequency(funchal_date,
-                                start_time = paste0("0",i,":00:00"),
-                                end_time = paste0("0",i,":59:59"),
-                                service_ids = NULL,
-                                by_route = TRUE) 
-      
-      funchal <- funchal |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      funchal_f = rbind(funchal_f, funchal)
-    }
-    
-    for (i in 10:23) {
-      funchal <- get_stop_frequency(funchal_date,
-                                start_time = paste0(i,":00:00"),
-                                end_time = paste0(i,":59:59"),
-                                service_ids = NULL,
-                                by_route = TRUE)
-      
-      funchal <- funchal |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      funchal_f =rbind(funchal_f, funchal)
-    }
-    
-    
-    funchal_frequency <- funchal_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
-      ungroup()
-    
-    
-    funchal_table <- funchal_frequency |> 
-      left_join(funchal_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
-    
-    mapview::mapview(funchal_table)      
-    
+
 
 #### Cascais
     
@@ -391,8 +337,6 @@
     
     mapview::mapview(barreiro_table)      
     
-
-    
 #### Agueda
     
     #Get stop frequency (missing data)
@@ -492,8 +436,6 @@
     
     mapview::mapview(porto_table)      
     
-    
-updat 
     
     
     
