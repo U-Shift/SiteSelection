@@ -48,7 +48,6 @@ library(tidytransit)
 braga_gtfs = read_gtfs("database/transit/braga_gtfs.zip")
 lisbon_gtfs = read_gtfs("database/transit/lisbon_gtfs.zip")
 aml_gtfs = read_gtfs("database/transit/AML_gtfs.zip")
-# aml_gtfs = read_gtfs("~/Downloads/CarrisMetropolitana.zip") #test
 cascais_gtfs = read_gtfs("database/transit/cascais_gtfs.zip")
 barreiro_gtfs = read_gtfs("database/transit/barreiro_gtfs.zip")
 agueda_gtfs = read_gtfs("database/transit/agueda_gtfs.zip")
@@ -76,6 +75,70 @@ for (mun in filter_dates$mun) {
 #Organize the table calculating the frequencies per bus stop
     
 #### Braga 4-Planning
+    
+##Test Service pattern
+
+#### Create a table on the gtfs feed that lets us filter by weekday/weekend service
+     
+      braga_pattern_gtfs <- set_servicepattern(braga_gtfs)
+      
+#### Convert stops and shapes to simple features
+      
+      braga_pattern_gtfs <- gtfs_as_sf(braga_pattern_gtfs)
+      braga_pattern_gtfs$shapes$length <- st_length(braga_pattern_gtfs$shapes)
+      
+      braga_shape_lengths <- braga_pattern_gtfs$shapes |> 
+        as.data.frame() |> 
+        select(shape_id, length, -geometry)
+      
+#### Statistics up to services
+      
+      service_pattern_summary <- braga_pattern_gtfs$trips %>%
+        left_join(braga_pattern_gtfs$.$servicepatterns, by="service_id") %>% 
+        left_join(braga_shape_lengths, by="shape_id") %>%
+        left_join(braga_pattern_gtfs$stop_times, by="trip_id") %>% 
+        group_by(servicepattern_id) %>% 
+        summarise(
+          trips = n(), 
+          routes = n_distinct(route_id),
+          total_distance_per_day_km = sum(as.numeric(length), na.rm=TRUE)/1e3,
+          route_avg_distance_km = (sum(as.numeric(length), na.rm=TRUE)/1e3)/(trips*routes),
+          stops=(n_distinct(stop_id)/2))  
+       
+        
+#### Number of days that each service operates
+      
+      service_pattern_summary <- braga_pattern_gtfs$.$dates_servicepatterns %>% 
+        group_by(servicepattern_id) %>% 
+        summarise(days_in_service = n()) %>% 
+        left_join(service_pattern_summary, by="servicepattern_id")  
+        
+#### convert service pattern to an excel file
+     #library(writexl)
+    #write_xlsx(service_pattern_summary, "database/transit/braga_service_pattern_summary.xlsx")
+
+#### Filter to the most common service pattern id  
+      
+      service_ids <- braga_pattern_gtfs$.$servicepattern %>% 
+        filter(servicepattern_id == 's_6a7097c') %>% 
+        pull(service_id)
+      
+      head(service_ids) %>% 
+        knitr::kable()  
+      
+####  Analyze how trips fall under each of these service_ids, and how they relate to routes
+      
+      braga_pattern_gtfs$trips %>%
+        filter(service_id %in% service_ids) %>%
+        group_by(service_id, route_id) %>%
+        summarise(trips = n()) %>%
+        arrange(desc(trips)) %>%
+        head() %>%
+        knitr::kable()
+      
+#-----------------------------------------------------------      
+      
+#### FILTER BY WEDNESDAY    
     
       #Get stop frequency (missing data)
     
@@ -181,6 +244,38 @@ for (mun in filter_dates$mun) {
     
         
 #### AML
+    
+aml_pattern_gtfs <- set_servicepattern(aml_gtfs)
+
+aml_pattern_gtfs <- gtfs_as_sf(aml_pattern_gtfs)
+aml_pattern_gtfs$shapes$length <- st_length(aml_pattern_gtfs$shapes)
+
+aml_shape_lengths <- aml_pattern_gtfs$shapes |>
+  as.data.frame() |>
+  select(shape_id, length, -geometry)
+
+service_pattern_summary_aml <- aml_pattern_gtfs$trips %>%
+  left_join(aml_pattern_gtfs$.$servicepatterns, by = "service_id") %>%
+  left_join(aml_shape_lengths, by = "shape_id") %>%
+  left_join(aml_pattern_gtfs$stop_times, by = "trip_id") %>%
+  group_by(servicepattern_id) %>%
+  summarise(
+    trips = n(),
+    routes = n_distinct(route_id),
+    total_distance_per_day_km = sum(as.numeric(length), na.rm = TRUE) / 1e3,
+    route_avg_distance_km = (sum(as.numeric(length), na.rm = TRUE) / 1e3) / (trips * routes),
+    stops = (n_distinct(stop_id) / 2)
+  )
+
+service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
+  group_by(servicepattern_id) %>%
+  summarise(days_in_service = n()) %>%
+  left_join(service_pattern_summary_aml, by = "servicepattern_id") 
+
+
+    
+        
+#-------------------------------------------------------------    
     
     #Get stop frequency (missing data)
     
