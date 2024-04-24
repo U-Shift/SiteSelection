@@ -281,6 +281,12 @@ service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
  # s_0973a74 (191 days)
  # s_70dfe23 (188 days)
 
+ # s_b00890f (47 days)
+ # s_89ef482 (46 days)
+ # s_49403b6 (45 days)
+ # s_a6bf59d (44 days)
+  
+
  # IDENTIFY WHERE THESE SERVICE PATTERNS ARE OPERATING
 
  # Get the service_ids for the most common service patterns
@@ -295,6 +301,9 @@ service_ids_aml_2 <- aml_pattern_gtfs$.$servicepattern %>%
 service_ids_aml_3 <- aml_pattern_gtfs$.$servicepattern %>%
   filter(servicepattern_id %in% "s_70dfe23") %>%
   pull(service_id)
+
+#Continuar daqui...!!
+service_ids_aml_4 <-
 
 # Get route geometries
 
