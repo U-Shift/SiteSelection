@@ -244,9 +244,11 @@ for (mun in filter_dates$mun) {
     
         
 #### AML
-    
+
+  # Setting the service patterns        
 aml_pattern_gtfs <- set_servicepattern(aml_gtfs)
 
+  # Convert stops and shapes into simple features
 aml_pattern_gtfs <- gtfs_as_sf(aml_pattern_gtfs)
 aml_pattern_gtfs$shapes$length <- st_length(aml_pattern_gtfs$shapes)
 
@@ -254,6 +256,7 @@ aml_shape_lengths <- aml_pattern_gtfs$shapes |>
   as.data.frame() |>
   select(shape_id, length, -geometry)
 
+  # Get statistics up to services
 service_pattern_summary_aml <- aml_pattern_gtfs$trips %>%
   left_join(aml_pattern_gtfs$.$servicepatterns, by = "service_id") %>%
   left_join(aml_shape_lengths, by = "shape_id") %>%
@@ -267,12 +270,60 @@ service_pattern_summary_aml <- aml_pattern_gtfs$trips %>%
     stops = (n_distinct(stop_id) / 2)
   )
 
+# Add the number of days that each service is in operation
 service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
   group_by(servicepattern_id) %>%
   summarise(days_in_service = n()) %>%
   left_join(service_pattern_summary_aml, by = "servicepattern_id") 
 
+# The service patterns with most days in operation are: 
+ # s_d38ffee (192 days)
+ # s_0973a74 (191 days)
+ # s_70dfe23 (188 days)
 
+ # IDENTIFY WHERE THESE SERVICE PATTERNS ARE OPERATING
+
+ # Get the service_ids for the most common service patterns
+service_ids_aml_1 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_d38ffee") %>%
+  pull(service_id)
+
+service_ids_aml_2 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_0973a74") %>%
+  pull(service_id)
+
+service_ids_aml_3 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_70dfe23") %>%
+  pull(service_id)
+
+# Get route geometries
+
+aml_routes_pattern_1 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_1)
+aml_routes_pattern_2 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_2)
+aml_routes_pattern_3 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_3)
+
+# get_route_geometry needs a gtfs object that includes shapes as simple feature data frames
+
+routes_sf_1 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_1)
+routes_sf_2 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_2)
+routes_sf_3 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_3)
+
+# join the geometries to the calculated frequencies
+
+routes_sf_1 <- routes_sf_1 |> 
+  inner_join(aml_routes_pattern_1, by = "route_id")
+
+routes_sf_2 <- routes_sf_2 |> 
+  inner_join(aml_routes_pattern_2, by = "route_id")
+
+routes_sf_3 <- routes_sf_3 |> 
+  inner_join(aml_routes_pattern_3, by = "route_id")
+
+mapview::mapview(routes_sf_1)
+
+mapview::mapview(routes_sf_2)
+
+mapview::mapview(routes_sf_3)
     
         
 #-------------------------------------------------------------    
