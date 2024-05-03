@@ -296,6 +296,7 @@ service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
  # s_c614df3 (38 days)
  # s_757dfee (38 days)
  # s_6eb2a0d (38 days)
+ # s_4778121 (37 days)
  # s_bc376dc (37 days)
  
 
@@ -305,6 +306,7 @@ service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
 service_ids_aml_1 <- aml_pattern_gtfs$.$servicepattern %>%
   filter(servicepattern_id %in% "s_d38ffee") %>%
   pull(service_id)
+
 
 service_ids_aml_2 <- aml_pattern_gtfs$.$servicepattern %>%
   filter(servicepattern_id %in% "s_0973a74") %>%
@@ -356,6 +358,31 @@ service_ids_aml_12 <- aml_pattern_gtfs$.$servicepattern %>%
 
 
 
+service_ids_aml_13 <- aml_pattern_gtfs$.$servicepattern %>% 
+  filter(servicepattern_id %in% "s_8415b1b") %>% 
+  pull(service_id)
+
+service_ids_aml_14 <- aml_pattern_gtfs$.$servicepattern %>% 
+  filter(servicepattern_id %in% "s_c614df3") %>% 
+  pull(service_id)
+
+service_ids_aml_15 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_757dfee") %>%
+  pull(service_id)
+
+service_ids_aml_16 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_6eb2a0d") %>%
+  pull(service_id)
+
+service_ids_aml_17 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_4778121") %>%
+  pull(service_id)
+
+service_ids_aml_18 <- aml_pattern_gtfs$.$servicepattern %>%
+  filter(servicepattern_id %in% "s_bc376dc") %>%
+  pull(service_id)
+
+
 # Get route geometries
 
 aml_routes_pattern_1 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_1)
@@ -372,6 +399,13 @@ aml_routes_pattern_9 <- get_route_frequency(aml_pattern_gtfs, service_ids = serv
 aml_routes_pattern_10 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_10)
 aml_routes_pattern_11 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_11)
 aml_routes_pattern_12 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_12)
+
+aml_routes_pattern_13 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_13)
+aml_routes_pattern_14 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_14)
+aml_routes_pattern_15 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_15)
+aml_routes_pattern_16 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_16)
+aml_routes_pattern_17 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_17)
+aml_routes_pattern_18 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_18)
 
 
 # get_route_geometry needs a gtfs object that includes shapes as simple feature data frames
@@ -391,6 +425,12 @@ routes_sf_10 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_a
 routes_sf_11 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_11)
 routes_sf_12 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_12)
 
+routes_sf_13 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_13)
+routes_sf_14 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_14)
+routes_sf_15 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_15)
+routes_sf_16 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_16)
+routes_sf_17 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_17)
+routes_sf_18 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_18)
 
 # join the geometries to the calculated frequencies
 
@@ -433,6 +473,28 @@ routes_sf_12 <- routes_sf_12 |>
   inner_join(aml_routes_pattern_12, by = "route_id")
 
 
+
+
+routes_sf_13 <- routes_sf_13 |>
+  inner_join(aml_routes_pattern_13, by = "route_id")
+
+routes_sf_14 <- routes_sf_14 |>
+  inner_join(aml_routes_pattern_14, by = "route_id")
+
+routes_sf_15 <- routes_sf_15 |>
+  inner_join(aml_routes_pattern_15, by = "route_id")
+
+routes_sf_16 <- routes_sf_16 |>
+  inner_join(aml_routes_pattern_16, by = "route_id")
+
+routes_sf_17 <- routes_sf_17 |>
+  inner_join(aml_routes_pattern_17, by = "route_id")
+
+routes_sf_18 <- routes_sf_18 |>
+  inner_join(aml_routes_pattern_18, by = "route_id")
+
+
+
 mapview::mapview(routes_sf_1)
 
 mapview::mapview(routes_sf_2)
@@ -456,6 +518,41 @@ mapview::mapview(routes_sf_10)
 mapview::mapview(routes_sf_11)
 
 mapview::mapview(routes_sf_12)
+
+mapview::mapview(routes_sf_13)
+
+mapview::mapview(routes_sf_14)
+
+mapview::mapview(routes_sf_15)
+
+mapview::mapview(routes_sf_16)
+
+mapview::mapview(routes_sf_17)
+
+mapview::mapview(routes_sf_18)
+
+
+
+## Adopted service patterns (ranked by "days in service"): 
+
+# 1. Service pattern #1: "s_d38ffee" (192 days)
+# 2. Service pattern #2: "s_0973a74" (191 days)
+# 3. Service pattern #3: "s_70dfe23" (188 days)
+# 4. Service pattern #12: "s_fff1bcb" (39 days)
+# 5. Service pattern #18: "s_bc376dc" (37 days)
+
+#get start and end days in operation for each service pattern
+
+service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns %>%
+  group_by(servicepattern_id) %>%
+  summarise(start_date = min(date), end_date = max(date)) %>%
+  left_join(service_pattern_summary_aml, by = "servicepattern_id")
+
+#filter service_pattern_summary_aml to the service patterns 
+
+service_pattern_summary_aml <- service_pattern_summary_aml %>%
+  filter(servicepattern_id %in% c("s_d38ffee", "s_0973a74", "s_70dfe23", "s_fff1bcb", "s_bc376dc"))
+
 #-------------------------------------------------------------    
     
     #Get stop frequency (missing data)
