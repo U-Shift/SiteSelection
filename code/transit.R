@@ -171,7 +171,7 @@ for (mun in filter_dates$mun) {
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
    
-    mapview::mapview(braga_table) 
+    #mapview::mapview(braga_table) 
     
     
 #### Lisbon
@@ -210,14 +210,10 @@ for (mun in filter_dates$mun) {
       summarise(days_in_service = n()) |>  
       left_join(service_pattern_summary_lisbon, by="servicepattern_id")  
     
-    #### convert service pattern to an excel file
-    #library(writexl)
-    #write_xlsx(service_pattern_summary, "database/transit/braga_service_pattern_summary.xlsx")
-    
     #### Filter to the most common service pattern id  
     
     service_id_lisbon <- lisbon_pattern_gtfs$.$servicepattern |>  
-      filter(servicepattern_id == 's_e4e06e4') |>  
+      filter(servicepattern_id == 's_840dfaf') |>  
       pull(service_id)
     
     head(service_id_lisbon) |>  
@@ -274,7 +270,7 @@ for (mun in filter_dates$mun) {
       st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat")
       )
     
-    mapview::mapview(lisbon_table)     
+    #mapview::mapview(lisbon_table)     
         
 #### AML
 
@@ -377,15 +373,15 @@ routes_sf_18 <- routes_sf_18 |>
 
 #visualize the routes
 
-mapview::mapview(routes_sf_1)
+#mapview::mapview(routes_sf_1)
 
-mapview::mapview(routes_sf_2)
+#mapview::mapview(routes_sf_2)
 
-mapview::mapview(routes_sf_3)
+#mapview::mapview(routes_sf_3)
 
-mapview::mapview(routes_sf_12)
+#mapview::mapview(routes_sf_12)
 
-mapview::mapview(routes_sf_18)
+#mapview::mapview(routes_sf_18)
 
 
 #get start and end days in operation for each service pattern
@@ -445,7 +441,7 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
     
-    mapview::mapview(aml_table)         
+    #mapview::mapview(aml_table)         
     
 
 #### Cascais
@@ -532,7 +528,7 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
     
-    mapview::mapview(cascais_table)      
+    #mapview::mapview(cascais_table)      
     
 
 #### Barreiro
@@ -619,7 +615,7 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
     
-    mapview::mapview(barreiro_table)      
+    #mapview::mapview(barreiro_table)      
     
 #### Agueda
     
@@ -704,7 +700,7 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
     
-    mapview::mapview(agueda_table)      
+    #mapview::mapview(agueda_table)      
     
 
 #### Porto
@@ -791,9 +787,19 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
                   select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
       st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
     
-    mapview::mapview(porto_table)      
+    #mapview::mapview(porto_table)      
     
+# Combine all tables into one
+    transit_table_final <- rbind(braga_table, lisbon_table, aml_table, cascais_table, barreiro_table, agueda_table, porto_table)
+    
+    #mapview::mapview(transit_table_final)
+    
+# Save the final table in gpkg format to the releases in Github
+    library(piggyback)
 
+    pb_upload(transit_table_final, "bus_stop_frequency_gtfs.gpkg", repo = "U-Shift/SiteSelection")
+    
+    
 # list municipalities with GTFS -------------------------------------------
 municipios = list(
   c(
