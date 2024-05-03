@@ -794,11 +794,9 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
     
     #mapview::mapview(transit_table_final)
     
-# Save the final table in gpkg format to the releases in Github
-    library(piggyback)
-
-    pb_upload(transit_table_final, "bus_stop_frequency_gtfs.gpkg", repo = "U-Shift/SiteSelection")
+# Save the final table in gpkg format 
     
+    st_write(transit_table_final, "bus_stop_frequency_gtfs.gpkg")
     
 # list municipalities with GTFS -------------------------------------------
 municipios = list(
