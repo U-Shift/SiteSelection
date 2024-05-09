@@ -74,26 +74,27 @@ for (mun in filter_dates$mun) {
 
 #Organize the table calculating the frequencies per bus stop
     
-#### Braga 4-Planning
-    
+
+# Braga -------------------------------------------------------------------
+
 ## Service pattern
 
 #### Create a table on the gtfs feed that lets us filter by weekday/weekend service
      
-      braga_pattern_gtfs <- set_servicepattern(braga_gtfs)
+      braga_pattern_gtfs = set_servicepattern(braga_gtfs) # WARNING: every time we run this, random numbers will be generated for the service patterns
       
 #### Convert stops and shapes to simple features
       
-      braga_pattern_gtfs <- gtfs_as_sf(braga_pattern_gtfs)
-      braga_pattern_gtfs$shapes$length <- st_length(braga_pattern_gtfs$shapes)
+      braga_pattern_gtfs = gtfs_as_sf(braga_pattern_gtfs)
+      braga_pattern_gtfs$shapes$length = st_length(braga_pattern_gtfs$shapes)
       
-      braga_shape_lengths <- braga_pattern_gtfs$shapes |> 
-        as.data.frame() |> 
+      braga_shape_lengths = braga_pattern_gtfs$shapes |>
+        as.data.frame() |>
         select(shape_id, length, -geometry)
       
 #### Statistics up to services
       
-      service_pattern_summary_braga <- braga_pattern_gtfs$trips |> 
+      service_pattern_summary_braga = braga_pattern_gtfs$trips |> 
         left_join(braga_pattern_gtfs$.$servicepatterns, by="service_id") |>  
         left_join(braga_shape_lengths, by="shape_id") |> 
         left_join(braga_pattern_gtfs$stop_times, by="trip_id") |>  
@@ -107,10 +108,10 @@ for (mun in filter_dates$mun) {
        
 #### Number of days that each service operates
       
-      service_pattern_summary_braga <- braga_pattern_gtfs$.$dates_servicepatterns |>  
-        group_by(servicepattern_id) |>  
-        summarise(days_in_service = n()) |>  
-        left_join(service_pattern_summary_braga, by="servicepattern_id")  
+      service_pattern_summary_braga = braga_pattern_gtfs$.$dates_servicepatterns |>
+        group_by(servicepattern_id) |>
+        summarise(days_in_service = n()) |>
+        left_join(service_pattern_summary_braga, by = "servicepattern_id")  
         
 #### convert service pattern to an excel file
      #library(writexl)
@@ -118,11 +119,11 @@ for (mun in filter_dates$mun) {
 
 #### Filter to the most common service pattern id  
       
-      service_id_braga <- braga_pattern_gtfs$.$servicepattern |>  
-        filter(servicepattern_id == 's_6a7097c') |>  
+      service_id_braga = braga_pattern_gtfs$.$servicepattern |>
+        filter(servicepattern_id == 's_6a7097c') |>  # my random generated service pattern
         pull(service_id)
       
-      head(service_id_braga) |>  
+      head(service_id_braga) |>
         knitr::kable()  
       
 #### Filter by date    
@@ -131,67 +132,56 @@ for (mun in filter_dates$mun) {
     
     braga_f = data.frame()
     
-    for (i in 6:9){
-      braga = get_stop_frequency(braga_date,
-                                                    start_time = paste0("0",i,":00:00"),
-                                                    end_time = paste0("0",i,":59:59"),
-                                                    service_ids = service_id_braga, 
-                                                    by_route = TRUE) 
+    for (i in 6:23) {
+      braga = get_stop_frequency(
+        braga_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = service_id_braga,
+        by_route = TRUE
+      )
       
-      braga = braga |> 
-             group_by(stop_id) |> 
-              summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      braga_f = rbind(braga_f,braga)
+      braga = braga |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
+      braga_f = rbind(braga_f, braga)
     }
     
-    for (i in 10:23){
-      braga = get_stop_frequency(braga_date,
-                                            start_time = paste0(i,":00:00"),
-                                            end_time = paste0(i,":59:59"),
-                                            service_ids = service_id_braga,
-                                            by_route = TRUE) 
-      braga = braga |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      braga_f = rbind(braga_f,braga)
-      }
-      
-      
-    braga_frequency = braga_f |> 
-        ungroup() |> 
-        group_by(stop_id,hour) |> 
-        summarise(frequency = sum(frequency)) |> 
-        ungroup()
-      
+    braga_frequency = braga_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
+      ungroup()
     
-    braga_table = braga_frequency |> 
-      left_join(braga_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
-   
+    
+    braga_table = braga_frequency |>
+      left_join(braga_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
+    
     #mapview::mapview(braga_table) 
     
     
-#### Lisbon
-    
+
+# Lisbon ------------------------------------------------------------------
+
     #### Create a table on the gtfs feed that lets us filter by weekday/weekend service
     
-    lisbon_pattern_gtfs <- set_servicepattern(lisbon_gtfs)
+    lisbon_pattern_gtfs = set_servicepattern(lisbon_gtfs)
     
     #### Convert stops and shapes to simple features
     
-    lisbon_pattern_gtfs <- gtfs_as_sf(lisbon_pattern_gtfs)
-    lisbon_pattern_gtfs$shapes$length <- st_length(lisbon_pattern_gtfs$shapes)
+    lisbon_pattern_gtfs = gtfs_as_sf(lisbon_pattern_gtfs)
+    lisbon_pattern_gtfs$shapes$length = st_length(lisbon_pattern_gtfs$shapes)
     
-    lisbon_shape_lengths <- lisbon_pattern_gtfs$shapes |> 
+    lisbon_shape_lengths = lisbon_pattern_gtfs$shapes |> 
       as.data.frame() |> 
       select(shape_id, length, -geometry)
     
     #### Statistics up to services
     
-    service_pattern_summary_lisbon <- lisbon_pattern_gtfs$trips |> 
+    service_pattern_summary_lisbon = lisbon_pattern_gtfs$trips |> 
       left_join(lisbon_pattern_gtfs$.$servicepatterns, by="service_id") |>  
       left_join(lisbon_shape_lengths, by="shape_id") |> 
       left_join(lisbon_pattern_gtfs$stop_times, by="trip_id") |>  
@@ -205,14 +195,14 @@ for (mun in filter_dates$mun) {
     
     #### Number of days that each service operates
     
-    service_pattern_summary_lisbon <- lisbon_pattern_gtfs$.$dates_servicepatterns |>  
+    service_pattern_summary_lisbon = lisbon_pattern_gtfs$.$dates_servicepatterns |>  
       group_by(servicepattern_id) |>  
       summarise(days_in_service = n()) |>  
       left_join(service_pattern_summary_lisbon, by="servicepattern_id")  
     
     #### Filter to the most common service pattern id  
     
-    service_id_lisbon <- lisbon_pattern_gtfs$.$servicepattern |>  
+    service_id_lisbon = lisbon_pattern_gtfs$.$servicepattern |>  
       filter(servicepattern_id == 's_840dfaf') |>  
       pull(service_id)
     
@@ -224,27 +214,11 @@ for (mun in filter_dates$mun) {
     
     lisbon_f = data.frame()
     
-    for (i in 6:9) {
+    for (i in 6:23) {
       lisbon = get_stop_frequency(
         lisbon_date,
-        start_time = paste0("0", i, ":00:00"),
-        end_time = paste0("0", i, ":59:59"),
-        service_ids = service_id_lisbon,
-        by_route = TRUE
-      )
-      
-      lisbon = lisbon |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      lisbon_f = rbind(lisbon_f, lisbon)
-    }
-    
-    for (i in 10:23) {
-      lisbon = get_stop_frequency(
-        lisbon_date,
-        start_time = paste0(i, ":00:00"),
-        end_time = paste0(i, ":59:59"),
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
         service_ids = service_id_lisbon,
         by_route = TRUE
       )
@@ -267,26 +241,26 @@ for (mun in filter_dates$mun) {
     lisbon_table = lisbon_frequency |>
       left_join(lisbon_date$stops |>
                   select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
-      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat")
-      )
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(lisbon_table)     
         
-#### AML
+
+# AML ---------------------------------------------------------------------
 
   # Setting the service patterns        
-aml_pattern_gtfs <- set_servicepattern(aml_gtfs)
+aml_pattern_gtfs = set_servicepattern(aml_gtfs)
 
   # Convert stops and shapes into simple features
-aml_pattern_gtfs <- gtfs_as_sf(aml_pattern_gtfs)
-aml_pattern_gtfs$shapes$length <- st_length(aml_pattern_gtfs$shapes)
+aml_pattern_gtfs = gtfs_as_sf(aml_pattern_gtfs)
+aml_pattern_gtfs$shapes$length = st_length(aml_pattern_gtfs$shapes)
 
-aml_shape_lengths <- aml_pattern_gtfs$shapes |>
+aml_shape_lengths = aml_pattern_gtfs$shapes |>
   as.data.frame() |>
   select(shape_id, length, -geometry)
 
   # Get statistics up to services
-service_pattern_summary_aml <- aml_pattern_gtfs$trips |> 
+service_pattern_summary_aml = aml_pattern_gtfs$trips |> 
   left_join(aml_pattern_gtfs$.$servicepatterns, by = "service_id") |> 
   left_join(aml_shape_lengths, by = "shape_id") |> 
   left_join(aml_pattern_gtfs$stop_times, by = "trip_id") |> 
@@ -300,7 +274,7 @@ service_pattern_summary_aml <- aml_pattern_gtfs$trips |>
   )
 
 # Add the number of days that each service is in operation
-service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns |> 
+service_pattern_summary_aml = aml_pattern_gtfs$.$dates_servicepatterns |> 
   group_by(servicepattern_id) |> 
   summarise(days_in_service = n()) |> 
   left_join(service_pattern_summary_aml, by = "servicepattern_id") 
@@ -315,150 +289,133 @@ service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns |>
 # 5. Service pattern #18: "s_bc376dc" (37 days)
 
  # Get the service_ids for the most common service patterns
-service_ids_aml_1 <- aml_pattern_gtfs$.$servicepattern |> 
+service_ids_aml_1 = aml_pattern_gtfs$.$servicepattern |> 
   filter(servicepattern_id %in% "s_d38ffee") |> 
   pull(service_id)
 
-service_ids_aml_2 <- aml_pattern_gtfs$.$servicepattern |> 
+service_ids_aml_2 = aml_pattern_gtfs$.$servicepattern |> 
   filter(servicepattern_id %in% "s_0973a74") |> 
   pull(service_id)
 
-service_ids_aml_3 <- aml_pattern_gtfs$.$servicepattern |> 
+service_ids_aml_3 = aml_pattern_gtfs$.$servicepattern |> 
   filter(servicepattern_id %in% "s_70dfe23") |> 
   pull(service_id)
 
-service_ids_aml_12 <- aml_pattern_gtfs$.$servicepattern |>  
+service_ids_aml_12 = aml_pattern_gtfs$.$servicepattern |>  
   filter(servicepattern_id %in% "s_fff1bcb") |>  
   pull(service_id)
 
-service_ids_aml_18 <- aml_pattern_gtfs$.$servicepattern |> 
+service_ids_aml_18 = aml_pattern_gtfs$.$servicepattern |> 
   filter(servicepattern_id %in% "s_bc376dc") |> 
   pull(service_id)
 
 
 # Get route geometries
 
-aml_routes_pattern_1 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_1)
-aml_routes_pattern_2 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_2)
-aml_routes_pattern_3 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_3)
-aml_routes_pattern_12 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_12)
-aml_routes_pattern_18 <- get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_18)
+aml_routes_pattern_1 = get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_1)
+aml_routes_pattern_2 = get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_2)
+aml_routes_pattern_3 = get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_3)
+aml_routes_pattern_12 = get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_12)
+aml_routes_pattern_18 = get_route_frequency(aml_pattern_gtfs, service_ids = service_ids_aml_18)
 
 
 # get_route_geometry needs a gtfs object that includes shapes as simple feature data frames
 
-routes_sf_1 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_1)
-routes_sf_2 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_2)
-routes_sf_3 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_3)
-routes_sf_12 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_12)
-routes_sf_18 <- get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_18)
+routes_sf_1 = get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_1)
+routes_sf_2 = get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_2)
+routes_sf_3 = get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_3)
+routes_sf_12 = get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_12)
+routes_sf_18 = get_route_geometry(aml_pattern_gtfs, service_ids = service_ids_aml_18)
 
 # join the geometries to the calculated frequencies
 
-routes_sf_1 <- routes_sf_1 |> 
-  inner_join(aml_routes_pattern_1, by = "route_id")
-
-routes_sf_2 <- routes_sf_2 |> 
-  inner_join(aml_routes_pattern_2, by = "route_id")
-
-routes_sf_3 <- routes_sf_3 |> 
-  inner_join(aml_routes_pattern_3, by = "route_id")
-
-routes_sf_12 <- routes_sf_12 |>
-  inner_join(aml_routes_pattern_12, by = "route_id")
-
-routes_sf_18 <- routes_sf_18 |>
-  inner_join(aml_routes_pattern_18, by = "route_id")
+routes_sf_1 = routes_sf_1 |> inner_join(aml_routes_pattern_1, by = "route_id")
+routes_sf_2 = routes_sf_2 |> inner_join(aml_routes_pattern_2, by = "route_id")
+routes_sf_3 = routes_sf_3 |> inner_join(aml_routes_pattern_3, by = "route_id")
+routes_sf_12 = routes_sf_12 |> inner_join(aml_routes_pattern_12, by = "route_id")
+routes_sf_18 = routes_sf_18 |> inner_join(aml_routes_pattern_18, by = "route_id")
 
 
-#visualize the routes
+# visualize the routes
 
-#mapview::mapview(routes_sf_1)
-
-#mapview::mapview(routes_sf_2)
-
-#mapview::mapview(routes_sf_3)
-
-#mapview::mapview(routes_sf_12)
-
-#mapview::mapview(routes_sf_18)
+# mapview::mapview(routes_sf_1)
+# mapview::mapview(routes_sf_2)
+# mapview::mapview(routes_sf_3)
+# mapview::mapview(routes_sf_12)
+# mapview::mapview(routes_sf_18)
 
 
 #get start and end days in operation for each service pattern
 
-service_pattern_summary_aml <- aml_pattern_gtfs$.$dates_servicepatterns |> 
+service_pattern_summary_aml = aml_pattern_gtfs$.$dates_servicepatterns |> 
   group_by(servicepattern_id) |> 
   summarise(start_date = min(date), end_date = max(date)) |> 
   left_join(service_pattern_summary_aml, by = "servicepattern_id")
 
 #filter service_pattern_summary_aml to the service patterns 
 
-service_pattern_summary_aml <- service_pattern_summary_aml |> 
+service_pattern_summary_aml = service_pattern_summary_aml |> 
   filter(servicepattern_id %in% c("s_d38ffee", "s_0973a74", "s_70dfe23", "s_fff1bcb", "s_bc376dc"))
 
 #join selected service patterns ids with the frequencies per bus stop
     
     aml_f = data.frame()
     
-    for (i in 6:9){
-      aml = get_stop_frequency(aml_date,
-                                   start_time = paste0("0",i,":00:00"),
-                                   end_time = paste0("0",i,":59:59"),
-                                   service_ids = c(service_ids_aml_1, service_ids_aml_2, service_ids_aml_3, service_ids_aml_12, service_ids_aml_18),
-                                   by_route = TRUE) 
+    for (i in 6:23) {
+      aml = get_stop_frequency(
+        aml_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = c(
+          service_ids_aml_1,
+          service_ids_aml_2,
+          service_ids_aml_3,
+          service_ids_aml_12,
+          service_ids_aml_18
+        ),
+        by_route = TRUE
+      )
       
-      aml = aml |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      aml = aml |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       aml_f = rbind(aml_f, aml)
     }
     
-    for (i in 10:23) {
-      aml = get_stop_frequency(aml_date,
-                                   start_time = paste0(i,":00:00"),
-                                   end_time = paste0(i,":59:59"),
-                                   service_ids = c(service_ids_aml_1, service_ids_aml_2, service_ids_aml_3, service_ids_aml_12, service_ids_aml_18),
-                                   by_route = TRUE)
-      
-      aml = aml |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      aml_f =rbind(aml_f, aml)
-    }
     
-    
-    aml_frequency = aml_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    aml_frequency = aml_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    aml_table = aml_frequency |> 
-      left_join(aml_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    aml_table = aml_frequency |>
+      left_join(aml_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(aml_table)         
     
 
-#### Cascais
-    
+
+# Cascais -----------------------------------------------------------------
+
+
     # Setting the service patterns
-    cascais_pattern_gtfs <- set_servicepattern(cascais_gtfs)
+    cascais_pattern_gtfs = set_servicepattern(cascais_gtfs)
     
     # Convert stops and shapes into simple features
-    cascais_pattern_gtfs <- gtfs_as_sf(cascais_pattern_gtfs)
-    cascais_pattern_gtfs$shapes$length <- st_length(cascais_pattern_gtfs$shapes)
+    cascais_pattern_gtfs = gtfs_as_sf(cascais_pattern_gtfs)
+    cascais_pattern_gtfs$shapes$length = st_length(cascais_pattern_gtfs$shapes)
     
-    cascais_shape_lengths <- cascais_pattern_gtfs$shapes |>
+    cascais_shape_lengths = cascais_pattern_gtfs$shapes |>
       as.data.frame() |>
       select(shape_id, length, -geometry)
     
     # Get statistics up to services
-    service_pattern_summary_cascais <- cascais_pattern_gtfs$trips |> 
+    service_pattern_summary_cascais = cascais_pattern_gtfs$trips |> 
       left_join(cascais_pattern_gtfs$.$servicepatterns, by = "service_id") |> 
       left_join(cascais_shape_lengths, by = "shape_id") |> 
       left_join(cascais_pattern_gtfs$stop_times, by = "trip_id") |> 
@@ -472,13 +429,13 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
       )
     
     # Add the number of days that each service is in operation
-    service_pattern_summary_cascais <- cascais_pattern_gtfs$.$dates_servicepatterns |> 
+    service_pattern_summary_cascais = cascais_pattern_gtfs$.$dates_servicepatterns |> 
       group_by(servicepattern_id) |> 
       summarise(days_in_service = n()) |> 
       left_join(service_pattern_summary_cascais, by = "servicepattern_id")
     
     # Get the service_ids for the most common service patterns
-    service_ids_cascais <- cascais_pattern_gtfs$.$servicepattern |> 
+    service_ids_cascais = cascais_pattern_gtfs$.$servicepattern |> 
       filter(servicepattern_id %in% "s_ebf7135") |> 
       pull(service_id)
     
@@ -487,65 +444,55 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
     
     cascais_f = data.frame()
     
-    for (i in 6:9){
-      cascais = get_stop_frequency(cascais_date,
-                                    start_time = paste0("0",i,":00:00"),
-                                    end_time = paste0("0",i,":59:59"),
-                                    service_ids = service_ids_cascais,
-                                    by_route = TRUE) 
+    for (i in 6:23) {
+      cascais = get_stop_frequency(
+        cascais_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = service_ids_cascais,
+        by_route = TRUE
+      )
       
-      cascais = cascais |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      cascais = cascais |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       cascais_f = rbind(cascais_f, cascais)
     }
     
-    for (i in 10:23) {
-      cascais = get_stop_frequency(cascais_date,
-                                    start_time = paste0(i,":00:00"),
-                                    end_time = paste0(i,":59:59"),
-                                    service_ids = service_ids_cascais,
-                                    by_route = TRUE)
-      
-      cascais = cascais |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      cascais_f =rbind(cascais_f, cascais)
-    }
     
-    
-    cascais_frequency = cascais_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    cascais_frequency = cascais_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    cascais_table = cascais_frequency |> 
-      left_join(cascais_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    cascais_table = cascais_frequency |>
+      left_join(cascais_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(cascais_table)      
     
 
-#### Barreiro
-    
+
+# Barreiro ----------------------------------------------------------------
+
+
     # Setting the service patterns        
-    barreiro_pattern_gtfs <- set_servicepattern(barreiro_gtfs)
+    barreiro_pattern_gtfs = set_servicepattern(barreiro_gtfs)
     
     # Convert stops and shapes into simple features
-    barreiro_pattern_gtfs <- gtfs_as_sf(barreiro_pattern_gtfs)
-    barreiro_pattern_gtfs$shapes$length <- st_length(barreiro_pattern_gtfs$shapes)
+    barreiro_pattern_gtfs = gtfs_as_sf(barreiro_pattern_gtfs)
+    barreiro_pattern_gtfs$shapes$length = st_length(barreiro_pattern_gtfs$shapes)
     
-    barreiro_shape_lengths <- barreiro_pattern_gtfs$shapes |>
+    barreiro_shape_lengths = barreiro_pattern_gtfs$shapes |>
       as.data.frame() |>
       select(shape_id, length, -geometry)
     
     # Get statistics up to services
-    service_pattern_summary_barreiro <- barreiro_pattern_gtfs$trips |> 
+    service_pattern_summary_barreiro = barreiro_pattern_gtfs$trips |> 
       left_join(barreiro_pattern_gtfs$.$servicepatterns, by = "service_id") |> 
       left_join(barreiro_shape_lengths, by = "shape_id") |> 
       left_join(barreiro_pattern_gtfs$stop_times, by = "trip_id") |> 
@@ -559,14 +506,14 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
       )
     
     # Add the number of days that each service is in operation
-    service_pattern_summary_barreiro <- barreiro_pattern_gtfs$.$dates_servicepatterns |> 
+    service_pattern_summary_barreiro = barreiro_pattern_gtfs$.$dates_servicepatterns |> 
       group_by(servicepattern_id) |> 
       summarise(days_in_service = n()) |> 
       left_join(service_pattern_summary_barreiro, by = "servicepattern_id") 
     
     
     # Get the service_ids for the most common service patterns
-    service_ids_barreiro <- barreiro_pattern_gtfs$.$servicepattern |> 
+    service_ids_barreiro = barreiro_pattern_gtfs$.$servicepattern |> 
       filter(servicepattern_id %in% "s_22f0a7c") |> 
       pull(service_id)
     
@@ -574,64 +521,55 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
     
     barreiro_f = data.frame()
     
-    for (i in 6:9){
-      barreiro = get_stop_frequency(barreiro_date,
-                                    start_time = paste0("0",i,":00:00"),
-                                    end_time = paste0("0",i,":59:59"),
-                                    service_ids = service_ids_barreiro,
-                                    by_route = TRUE) 
+    for (i in 6:23) {
+      barreiro = get_stop_frequency(
+        barreiro_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = service_ids_barreiro,
+        by_route = TRUE
+      )
       
-      barreiro = barreiro |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      barreiro = barreiro |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       barreiro_f = rbind(barreiro_f, barreiro)
     }
     
-    for (i in 10:23) {
-      barreiro = get_stop_frequency(barreiro_date,
-                                    start_time = paste0(i,":00:00"),
-                                    end_time = paste0(i,":59:59"),
-                                    service_ids = service_ids_barreiro,
-                                    by_route = TRUE)
-      
-      barreiro = barreiro |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      barreiro_f =rbind(barreiro_f, barreiro)
-    }
     
-    
-    barreiro_frequency = barreiro_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    barreiro_frequency = barreiro_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    barreiro_table = barreiro_frequency |> 
-      left_join(barreiro_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    barreiro_table = barreiro_frequency |>
+      left_join(barreiro_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(barreiro_table)      
+
     
-#### Agueda
-    
+
+# Agueda ------------------------------------------------------------------
+
+
     # Setting the service patterns        
-    agueda_pattern_gtfs <- set_servicepattern(agueda_gtfs)
+    agueda_pattern_gtfs = set_servicepattern(agueda_gtfs)
     
     # Convert stops and shapes into simple features
-    agueda_pattern_gtfs <- gtfs_as_sf(agueda_pattern_gtfs)
-    agueda_pattern_gtfs$shapes$length <- st_length(agueda_pattern_gtfs$shapes)
+    agueda_pattern_gtfs = gtfs_as_sf(agueda_pattern_gtfs)
+    agueda_pattern_gtfs$shapes$length = st_length(agueda_pattern_gtfs$shapes)
     
-    agueda_shape_lengths <- agueda_pattern_gtfs$shapes |>
+    agueda_shape_lengths = agueda_pattern_gtfs$shapes |>
       as.data.frame() |>
       select(shape_id, length, -geometry)
     
     # Get statistics up to services
-    service_pattern_summary_agueda <- agueda_pattern_gtfs$trips |> 
+    service_pattern_summary_agueda = agueda_pattern_gtfs$trips |> 
       left_join(agueda_pattern_gtfs$.$servicepatterns, by = "service_id") |> 
       left_join(agueda_shape_lengths, by = "shape_id") |> 
       left_join(agueda_pattern_gtfs$stop_times, by = "trip_id") |> 
@@ -645,13 +583,13 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
       )
     
     # Add the number of days that each service is in operation
-    service_pattern_summary_agueda <- agueda_pattern_gtfs$.$dates_servicepatterns |> 
+    service_pattern_summary_agueda = agueda_pattern_gtfs$.$dates_servicepatterns |> 
       group_by(servicepattern_id) |> 
       summarise(days_in_service = n()) |> 
       left_join(service_pattern_summary_agueda, by = "servicepattern_id") 
     
     # Get the service_ids for the most common service patterns
-    service_ids_agueda <- agueda_pattern_gtfs$.$servicepattern |> 
+    service_ids_agueda = agueda_pattern_gtfs$.$servicepattern |> 
       filter(servicepattern_id %in% "s_3c9f481") |> 
       pull(service_id)
     
@@ -659,65 +597,55 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
     
     agueda_f = data.frame()
     
-    for (i in 6:9){
-      agueda = get_stop_frequency(agueda_date,
-                                     start_time = paste0("0",i,":00:00"),
-                                     end_time = paste0("0",i,":59:59"),
-                                     service_ids = service_ids_agueda,
-                                     by_route = TRUE) 
+    for (i in 6:23) {
+      agueda = get_stop_frequency(
+        agueda_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = service_ids_agueda,
+        by_route = TRUE
+      )
       
-      agueda = agueda |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      agueda = agueda |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       agueda_f = rbind(agueda_f, agueda)
     }
     
-    for (i in 10:23) {
-      agueda = get_stop_frequency(agueda_date,
-                                     start_time = paste0(i,":00:00"),
-                                     end_time = paste0(i,":59:59"),
-                                     service_ids = service_ids_agueda,
-                                     by_route = TRUE)
-      
-      agueda = agueda |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      agueda_f =rbind(agueda_f, agueda)
-    }
     
-    
-    agueda_frequency = agueda_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    agueda_frequency = agueda_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    agueda_table = agueda_frequency |> 
-      left_join(agueda_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    agueda_table = agueda_frequency |>
+      left_join(agueda_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(agueda_table)      
     
 
-#### Porto
-    
+
+# Porto -------------------------------------------------------------------
+
+
     # Setting the service patterns
-    porto_pattern_gtfs <- set_servicepattern(porto_gtfs)
+    porto_pattern_gtfs = set_servicepattern(porto_gtfs)
     
     # Convert stops and shapes into simple features
-    porto_pattern_gtfs <- gtfs_as_sf(porto_pattern_gtfs)
-    porto_pattern_gtfs$shapes$length <- st_length(porto_pattern_gtfs$shapes)
+    porto_pattern_gtfs = gtfs_as_sf(porto_pattern_gtfs)
+    porto_pattern_gtfs$shapes$length = st_length(porto_pattern_gtfs$shapes)
     
-    porto_shape_lengths <- porto_pattern_gtfs$shapes |>
+    porto_shape_lengths = porto_pattern_gtfs$shapes |>
       as.data.frame() |>
       select(shape_id, length, -geometry)
     
     # Get statistics up to services
-    service_pattern_summary_porto <- porto_pattern_gtfs$trips |> 
+    service_pattern_summary_porto = porto_pattern_gtfs$trips |> 
       left_join(porto_pattern_gtfs$.$servicepatterns, by = "service_id") |> 
       left_join(porto_shape_lengths, by = "shape_id") |> 
       left_join(porto_pattern_gtfs$stop_times, by = "trip_id") |> 
@@ -731,13 +659,13 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
       )
     
     # Add the number of days that each service is in operation
-    service_pattern_summary_porto <- porto_pattern_gtfs$.$dates_servicepatterns |> 
+    service_pattern_summary_porto = porto_pattern_gtfs$.$dates_servicepatterns |> 
       group_by(servicepattern_id) |> 
       summarise(days_in_service = n()) |> 
       left_join(service_pattern_summary_porto, by = "servicepattern_id")
     
     # Get the service_ids for the most common service patterns
-    service_ids_porto <- porto_pattern_gtfs$.$servicepattern |> 
+    service_ids_porto = porto_pattern_gtfs$.$servicepattern |> 
       filter(servicepattern_id %in% "s_f70554e") |> 
       pull(service_id)
     
@@ -746,58 +674,53 @@ service_pattern_summary_aml <- service_pattern_summary_aml |>
     
     porto_f = data.frame()
     
-    for (i in 6:9){
-      porto = get_stop_frequency(porto_date,
-                                   start_time = paste0("0",i,":00:00"),
-                                   end_time = paste0("0",i,":59:59"),
-                                   service_ids = service_ids_porto,
-                                   by_route = TRUE) 
+    for (i in 6:23) {
+      porto = get_stop_frequency(
+        porto_date,
+        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
+        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
+        service_ids = service_ids_porto,
+        by_route = TRUE
+      )
       
-      porto = porto |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
+      porto = porto |>
+        group_by(stop_id) |>
+        summarise(frequency = sum(n_departures)) |>
+        mutate(hour = i)
       agueda_f = rbind(porto_f, porto)
     }
     
-    for (i in 10:23) {
-      porto = get_stop_frequency(porto_date,
-                                   start_time = paste0(i,":00:00"),
-                                   end_time = paste0(i,":59:59"),
-                                   service_ids = service_ids_porto,
-                                   by_route = TRUE)
-      
-      porto = porto |> 
-        group_by(stop_id) |> 
-        summarise(frequency = sum(n_departures)) |> 
-        mutate(hour=i)
-      porto_f =rbind(porto_f, porto)
-    }
     
-    
-    porto_frequency = porto_f |> 
-      ungroup() |> 
-      group_by(stop_id,hour) |> 
-      summarise(frequency = sum(frequency)) |> 
+    porto_frequency = porto_f |>
+      ungroup() |>
+      group_by(stop_id, hour) |>
+      summarise(frequency = sum(frequency)) |>
       ungroup()
     
     
-    porto_table = porto_frequency |> 
-      left_join(porto_date$stops |> 
-                  select(stop_id,stop_lon,stop_lat), by = "stop_id") |> 
-      st_as_sf(crs=4326, coords = c("stop_lon","stop_lat"))
+    porto_table = porto_frequency |>
+      left_join(porto_date$stops |>
+                  select(stop_id, stop_lon, stop_lat), by = "stop_id") |>
+      st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
     
     #mapview::mapview(porto_table)      
     
-# Combine all tables into one
-    transit_table_final <- rbind(braga_table, lisbon_table, aml_table, cascais_table, barreiro_table, agueda_table, porto_table)
     
-    #mapview::mapview(transit_table_final)
+
+# COMBINE ALL BUS STOPS ---------------------------------------------------
+
+    transit_table_all = rbind(braga_table, lisbon_table, aml_table, cascais_table, barreiro_table, agueda_table, porto_table)
+    
+    #mapview::mapview(transit_table_all)
     
 # Save the final table in gpkg format 
     
-    st_write(transit_table_final, "bus_stop_frequency_gtfs.gpkg")
+    st_write(transit_table_all, "database/transit/bus_stop_frequency.gpkg")
     
+    piggyback::pb_upload("database/transit/bus_stop_freq.gpkg")
+    # download.file("https://github.com/U-Shift/SiteSelection/releases/download/0.1/bus_stop_freq.gpkg", "database/transit/bus_stop_freq.gpkg")
+ 
+       
 # list municipalities with GTFS -------------------------------------------
 municipios = list(
   c(
