@@ -42,7 +42,7 @@ get_citylimit = function(CITY) {
 
 # make_grid ---------------------------------------------------------------
 
-make_grid = function(CITYlimit, cellsize_input, square_input)  {
+make_grid = function(CITYlimit, CITY, cellsize_input, square_input)  {
   
   CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
   # cellsize = c(200, 200) #200x200m
@@ -58,6 +58,8 @@ make_grid = function(CITYlimit, cellsize_input, square_input)  {
     st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
+  
+  st_write(grid, paste0("outputdata/", CITY, "/grid.geojson"), delete_dsn = TRUE)
   
 }
 
@@ -346,11 +348,44 @@ get_landuse = function(grid, CITYcensus) {
 }
   
 
+# get_transit --------------------------------------------------------------
+
+get_transit = function(CITYlimit) {
+  
+  points_transit = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/bus_stop_freq.gpkg")
+  points_transit = points_transit[CITYlimit, ]
+}
+
+
+# get_transit_grid --------------------------------------------------------
+
+get_transit_grid = function(points_transit, grid) {
+  
+  transit_grid = points_transit |>
+    st_join(grid, join = st_intersects) |>
+    st_drop_geometry() |>
+    group_by(ID, hour) |>
+    summarise(frequency = sum(frequency)) |>
+    ungroup() |>
+    group_by(ID) |>
+    summarise(frequency = max(frequency)) |>
+    ungroup()
+  
+  # transit_grid$frequency[is.na(transit_grid$frequency)] = 0
+
+  
+  # saveRDS(transit_grid, paste0("outputdata/", CITY, "/transit_grid.Rds"))
+  
+}
+
+
+
 # find_candidates ---------------------------------------------------------
 
-find_candidates = function(grid, centrality_grid, density_grid, CITY,
+find_candidates = function(grid, CITY,
+                           centrality_grid, density_grid, landuse_entropy, transit_grid,
                            population_min, degree_min, betweeness_range, closeness_range,
-                           entropy_min, landuse_entropy) {
+                           entropy_min) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -382,6 +417,23 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   
   st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   
+  # transit
+  candidates_transit = grid |>
+    left_join(transit_grid, by = "ID") |>
+    mutate(frequency = replace_na(frequency, 0)) |> # unecessary
+    mutate(transit = case_when(
+      frequency <= 4 ~ 1,
+      frequency > 4 & frequency <= 10 ~ 2,
+      frequency > 10 & frequency <= 20 ~ 3,
+      frequency > 20 ~ 4
+    )) |> 
+    filter(transit %in% c(3,4))
+  
+  # TO-DO: select(-frequency)
+  
+  st_write(candidates_transit, paste0("outputdata/", CITY, "/candidates_transit.gpkg"), delete_dsn = TRUE)
+  
+  
   # landuse
   landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds") # WHY does not work without this??
   candidates_landuse = 
@@ -394,10 +446,12 @@ find_candidates = function(grid, centrality_grid, density_grid, CITY,
   candidates_all = grid |> 
     left_join(candidates_centrality |> st_drop_geometry()) |>
     left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
+    left_join(candidates_transit |> st_drop_geometry(), by = "ID") |>
     left_join(candidates_landuse, by = "ID") |>
     dplyr::filter(!is.na(degree)) |>
     dplyr::filter(!is.na(population)) |> 
-    dplyr::filter(!is.na(entropy))
+    dplyr::filter(!is.na(entropy)) |> 
+    dplyr::filter(!is.na(transit))
   
   # mapview::mapview(candidates_all)
   st_write(candidates_all, paste0("outputdata/", CITY, "/candidates_all.gpkg"), delete_dsn = TRUE)

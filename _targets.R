@@ -5,8 +5,8 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Porto"
-cellsize_input = c(200, 200)
+CITY_input = "Lisboa"
+cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
 
@@ -67,7 +67,7 @@ list(
     command = get_citylimit(CITY)),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit, cellsize = cellsize_input, square = square_input)),
+    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input)),
   tar_target(
     name = road_network,
     command = get_osm(CITYlimit, CITY)),
@@ -86,6 +86,12 @@ list(
     name = CITYcensus,
     command = get_census(CITY)),
   tar_target(
+    name = points_transit,
+    command = get_transit(CITYlimit)),
+  tar_target(
+    name = transit_grid,
+    command = get_transit_grid(grid, points_transit)),
+  tar_target(
     name = density_grid,
     command = get_density_grid(grid, CITYcensus)),
   tar_target(
@@ -93,9 +99,10 @@ list(
     command = get_landuse(grid, CITYcensus)),
   tar_target(
     name = candidates_all,
-    command = find_candidates(grid, centrality_grid, density_grid, CITY,
+    command = find_candidates(grid, CITY,
+                              centrality_grid, density_grid, landuse_entropy, transit_grid,
                               population_min, degree_min, betweeness_range, closeness_range,
-                              entropy_min, landuse_entropy)
+                              entropy_min)
   )
 )
   
