@@ -276,6 +276,10 @@ get_census = function(CITY) {
   CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg")
   CITYcensus = CENSUSpoint |> filter(Concelho == toupper(CITY))
   
+  # TO-DO: st_intersects with the grid
+  # CITYcensus = CENSUSpoint |> 
+  #   st_intersection(CITYlimit)
+
   # saveRDS(CITYcensus, paste0("outputdata/", CITY, "/CITYcensus.Rds"))
 }
 
