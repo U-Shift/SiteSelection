@@ -385,7 +385,7 @@ get_transit_grid = function(points_transit, grid) {
 find_candidates = function(grid, CITY,
                            centrality_grid, density_grid, landuse_entropy, transit_grid,
                            population_min, degree_min, betweeness_range, closeness_range,
-                           entropy_min) {
+                           entropy_min, freq_bus) {
   
   # centrality
   candidates_centrality = grid |> 
@@ -427,11 +427,11 @@ find_candidates = function(grid, CITY,
     left_join(transit_grid, by = "ID") |>
     mutate(frequency = replace_na(frequency, 0)) |> # unecessary
     mutate(transit = case_when(
-      frequency <= 4 ~ 1,
-      frequency > 4 & frequency <= 10 ~ 2,
-      frequency > 10 & frequency <= 20 ~ 3,
-      frequency > 20 ~ 4
-    )) |> 
+      frequency <= freq_bus[1] ~ 1,
+      frequency > freq_bus[1] & frequency <= freq_bus[2] ~ 2,
+      frequency > freq_bus[2] & freq_bus[3] ~ 3,
+      frequency > freq_bus[3] ~ 4
+    )) |>
     filter(transit %in% c(3,4))
   
   st_write(candidates_transit, paste0("outputdata/", CITY, "/candidates_transit.gpkg"), delete_dsn = TRUE)

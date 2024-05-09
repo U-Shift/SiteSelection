@@ -16,6 +16,7 @@ degree_min = mean # mean or median? default: mean
 betweeness_range = 0.4 # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25 # value to exclude (upper and lower) default: 0.25
 entropy_min = 0.35 # value to exclude (lower) default: 0.5
+freq_bus = c(4, 10, 20) # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
 
 #########################################
 
@@ -102,7 +103,7 @@ list(
     command = find_candidates(grid, CITY,
                               centrality_grid, density_grid, landuse_entropy, transit_grid,
                               population_min, degree_min, betweeness_range, closeness_range,
-                              entropy_min)
+                              entropy_min, freq_bus)
   )
 )
   
