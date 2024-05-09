@@ -28,15 +28,15 @@ mapview::mapview(CELL_candidates)
 # density -> higher than mean(density)
 # entropy -> hiher than 0.5 (in 4 land uses, have at least 2)
 
-# Public transport
 
-library(sf)
-library(tidyverse)
-gtfs <- st_read("database/bus_stop_frequency_gtfs.gpkg")
+# Public transport --------------------------------------------------------
 
-# Join bus stops in grid 
+grid = st_read("outputdata/Lisboa/grid.geojson")
 
-gtfs_1 = st_join(gtfs, GRID, join = st_intersects)
+gtfs = st_read("database/transit/bus_stop_freq.gpkg")
+gtfs_1 = gtfs[grid, ] |> 
+  st_join(grid, join = st_intersects) |>
+  st_drop_geometry()
 
 # Calculate the frequency sum per hour within a zone
 
@@ -50,6 +50,10 @@ gtfs_3 = gtfs_2 |>
   group_by(ID) |>  
   summarise(max_frequency = max(frequency))
 
+grid_gtfs3 = grid |> left_join(gtfs_3, by = "ID")
+mapview::mapview(grid_gtfs3, zcol = "max_frequency")
+mapview::mapview(grid_gtfs3, zcol = "max_frequency") + mapview::mapview(gtfs[grid, ] )
+
 # Calculate the level of service of each stop_id
 #if max_frequency <= 4 -> 1
 #if max_frequency > 4 and <= 10 -> 2
@@ -57,6 +61,7 @@ gtfs_3 = gtfs_2 |>
 #if max_frequency > 20 -> 4
 
 gtfs_4 = gtfs_3 |> 
+  mutate(max_frequency = replace_na(max_frequency, 0)) |> 
   mutate(level = case_when(
     max_frequency <= 4 ~ 1,
     max_frequency > 4 & max_frequency <= 10 ~ 2,
@@ -65,7 +70,10 @@ gtfs_4 = gtfs_3 |>
   ))
 
 # st_write(gtfs_4, "bus_stop_LS_gtfs_final.gpkg")
- 
+
+grid_gtfs4 = grid |> left_join(gtfs_4, by = "ID")
+mapview::mapview(grid_gtfs4, zcol = "max_frequency")
+mapview::mapview(grid_gtfs4, zcol = "max_frequency") + mapview::mapview(gtfs[grid, ] )
 
 # Traffic -----------------------------------------------------------------
 
