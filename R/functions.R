@@ -418,6 +418,11 @@ find_candidates = function(grid, CITY,
   st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   
   # transit
+  
+  # if the object is not null, process. Otherwise, skip
+  
+  if (!is.null(transit_grid)){
+  
   candidates_transit = grid |>
     left_join(transit_grid, by = "ID") |>
     mutate(frequency = replace_na(frequency, 0)) |> # unecessary
@@ -429,9 +434,18 @@ find_candidates = function(grid, CITY,
     )) |> 
     filter(transit %in% c(3,4))
   
-  # TO-DO: select(-frequency)
-  
   st_write(candidates_transit, paste0("outputdata/", CITY, "/candidates_transit.gpkg"), delete_dsn = TRUE)
+  
+  } 
+  
+  else {
+  
+  candidates_transit = grid |>
+    mutate(transit = 0)
+  }
+  
+
+  
   
   
   # landuse
@@ -446,7 +460,9 @@ find_candidates = function(grid, CITY,
   candidates_all = grid |> 
     left_join(candidates_centrality |> st_drop_geometry()) |>
     left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
-    left_join(candidates_transit |> st_drop_geometry(), by = "ID") |>
+    left_join(candidates_transit |>
+                # select(-frequency) |> TO-DO tidy this
+                st_drop_geometry(), by = "ID") |>
     left_join(candidates_landuse, by = "ID") |>
     dplyr::filter(!is.na(degree)) |>
     dplyr::filter(!is.na(population)) |> 
