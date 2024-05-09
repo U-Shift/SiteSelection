@@ -271,7 +271,7 @@ get_centrality_grid = function(centrality_nodes, grid) {
 
 # get_census --------------------------------------------------------------
 
-get_census = function(CITY) {
+get_census = function(CITY, CITYlimit) {
   
   CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg")
   CITYcensus = CENSUSpoint |> filter(Concelho == toupper(CITY))
@@ -279,6 +279,8 @@ get_census = function(CITY) {
   # TO-DO: st_intersects with the grid
   # CITYcensus = CENSUSpoint |> 
   #   st_intersection(CITYlimit)
+  # or
+  # CITYcensus = CENSUSpoint[CITYlimit,]
 
   # saveRDS(CITYcensus, paste0("outputdata/", CITY, "/CITYcensus.Rds"))
 }
