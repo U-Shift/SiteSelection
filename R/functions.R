@@ -438,7 +438,7 @@ find_candidates = function(grid, CITY,
   
   } 
   
-  else {
+  else { # not working - tested with Entroncamento, and it still saves st_write
   
   candidates_transit = grid |>
     mutate(transit = 0)
