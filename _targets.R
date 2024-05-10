@@ -5,7 +5,7 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Lisboa"
+CITY_input = "Entroncamento"
 cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?

@@ -139,7 +139,7 @@ clean_osm = function(road_network, CITY, build_osm) {
     # mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
     st_write(paste0("outputdata/", CITY, "/road_network.shp"), delete_dsn = TRUE)
   
-  input = st_read(paste0("outputdata/", CITY, "/road_network.shp")) #because of the fid column
+  input = st_read(paste0("outputdata/", CITY, "/road_network.shp"), quiet = TRUE) #because of the fid column
   
   #delete exiting outputs
   if (file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
@@ -275,7 +275,7 @@ get_centrality_grid = function(centrality_nodes, grid) {
 
 get_census = function(CITY, CITYlimit) {
   
-  CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg")
+  CENSUSpoint = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg", quiet = TRUE)
   CITYcensus = CENSUSpoint |> filter(Concelho == toupper(CITY))
   
   # TO-DO: st_intersects with the grid
@@ -311,7 +311,7 @@ get_density_grid = function(grid, CITYcensus) {
 get_landuse = function(grid, CITYcensus) {
   
   # get OSM POIs with 6 categories
-  points_poi = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg")
+  points_poi = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg", quiet = TRUE)
   points_poi = points_poi[grid,] |>
     st_join(grid, join = st_intersects) |>
     st_drop_geometry() |> 
@@ -352,7 +352,7 @@ get_landuse = function(grid, CITYcensus) {
 
 get_transit = function(CITYlimit) {
   
-  points_transit = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/bus_stop_freq.gpkg")
+  points_transit = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/bus_stop_freq.gpkg", quiet = TRUE)
   points_transit = points_transit[CITYlimit, ]
 }
 
@@ -361,6 +361,14 @@ get_transit = function(CITYlimit) {
 
 get_transit_grid = function(points_transit, grid) {
   
+  if (nrow(points_transit) == 0){ # empty - no bus stops
+    
+    transit_grid = grid |>
+      st_drop_geometry() |>
+      mutate(transit = 0)
+    
+  } else {
+    
   transit_grid = points_transit |>
     st_join(grid, join = st_intersects) |>
     st_drop_geometry() |>
@@ -371,13 +379,12 @@ get_transit_grid = function(points_transit, grid) {
     summarise(frequency = max(frequency)) |>
     ungroup()
   
-  # transit_grid$frequency[is.na(transit_grid$frequency)] = 0
+  }
 
-  
-  # saveRDS(transit_grid, paste0("outputdata/", CITY, "/transit_grid.Rds"))
-  
 }
 
+  # saveRDS(transit_grid, paste0("outputdata/", CITY, "/transit_grid.Rds"))
+  
 
 
 # find_candidates ---------------------------------------------------------
@@ -421,30 +428,18 @@ find_candidates = function(grid, CITY,
   
   # if the object is not null, process. Otherwise, skip
   
-  if (!is.null(transit_grid)){
-  
   candidates_transit = grid |>
     left_join(transit_grid, by = "ID") |>
     mutate(frequency = replace_na(frequency, 0)) |> # unecessary
     mutate(transit = case_when(
       frequency <= freq_bus[1] ~ 1,
       frequency > freq_bus[1] & frequency <= freq_bus[2] ~ 2,
-      frequency > freq_bus[2] & freq_bus[3] ~ 3,
+      frequency > freq_bus[2] & frequency <= freq_bus[3] ~ 3,
       frequency > freq_bus[3] ~ 4
     )) |>
     filter(transit %in% c(3,4))
   
   st_write(candidates_transit, paste0("outputdata/", CITY, "/candidates_transit.gpkg"), delete_dsn = TRUE)
-  
-  } 
-  
-  else { # not working - tested with Entroncamento, and it still saves st_write
-  
-  candidates_transit = grid |>
-    mutate(transit = 0)
-  }
-  
-
   
   
   
@@ -466,8 +461,24 @@ find_candidates = function(grid, CITY,
     left_join(candidates_landuse, by = "ID") |>
     dplyr::filter(!is.na(degree)) |>
     dplyr::filter(!is.na(population)) |> 
-    dplyr::filter(!is.na(entropy)) |> 
-    dplyr::filter(!is.na(transit))
+    dplyr::filter(!is.na(entropy))
+  
+  if (nrow(candidates_transit) == 0){
+         
+    print("No transit complexity !")
+    
+    candidates_all = candidates_all |>
+      select(-transit, -frequency)
+
+  } else {
+    
+    print("Including transit complexity")
+
+    candidates_all = candidates_all |>
+      dplyr::filter(!is.na(transit))
+             
+  }
+  
   
   # mapview::mapview(candidates_all)
   st_write(candidates_all, paste0("outputdata/", CITY, "/candidates_all.gpkg"), delete_dsn = TRUE)
