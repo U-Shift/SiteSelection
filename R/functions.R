@@ -248,19 +248,19 @@ get_centrality = function(road_network_clean, CITY) {
 
 get_centrality_grid = function(centrality_nodes, grid) {
   
-  centrality_grid = 
-    st_join(centrality_nodes,
-            grid,
-    # st_transform(grid, 3857),
-    join = st_intersects) %>% 
-    st_drop_geometry() %>% 
-    group_by(ID) %>% 
-    summarise(degree = mean(degree),
-              betweenness = mean(betweenness),
-              closeness = mean(closeness)) %>% 
-    mutate(degree = rescale(degree),
-           betweenness = rescale(betweenness),
-           closeness = rescale(closeness)
+  centrality_grid = grid |> 
+    st_join(centrality_nodes, join = st_intersects) %>%
+    st_drop_geometry() %>%
+    group_by(ID) %>%
+    summarise(
+      degree = mean(degree),
+      betweenness = mean(betweenness),
+      closeness = mean(closeness)
+    ) %>%
+    mutate(
+      degree = rescale(degree),
+      betweenness = rescale(betweenness),
+      closeness = rescale(closeness)
     )
   
   # saveRDS(grid_centrality, paste0("outputdata/", CITY, "/centrality_grid".Rds"))
@@ -365,7 +365,7 @@ get_transit_grid = function(points_transit, grid) {
     
     transit_grid = grid |>
       st_drop_geometry() |>
-      mutate(transit = 0)
+      mutate(transit = NA)
     
   } else {
     
@@ -387,7 +387,7 @@ get_transit_grid = function(points_transit, grid) {
   
 
 
-# find_candidates ---------------------------------------------------------
+# classify_candidates ---------------------------------------------------------
 
 find_candidates = function(grid, CITY,
                            centrality_grid, density_grid, landuse_entropy, transit_grid,
@@ -395,92 +395,111 @@ find_candidates = function(grid, CITY,
                            entropy_min, freq_bus) {
   
   # centrality
-  candidates_centrality = grid |> 
-    # st_transform(3857) |> 
-    left_join(centrality_grid) 
-  # Filter in thresholds #for Lisbon. Adjust for other places?
-  candidates_centrality = candidates_centrality %>%
-    filter(degree >= degree_min(centrality_grid$degree), #1088 média
-           betweenness >= quantile(centrality_grid$betweenness, betweeness_range, na.rm = TRUE) &
-             betweenness <= quantile(centrality_grid$betweenness, 1-betweeness_range, na.rm = TRUE), 
-           closeness >= closeness_range & closeness <= 1-closeness_range
-           # closeness >= quantile(centrality_grid$closeness, 0.25, na.rm = TRUE) & closeness <= quantile(centrality_grid$closeness, 0.75, na.rm = TRUE) #2135 #too high
-    ) |>
+  centrality_candidates = centrality_grid |> 
+    mutate(degree_candidate = ifelse(degree >= degree_min(grid_all$degree),
+                                     1, 0),
+           betweenness_candidate = ifelse(betweenness >= quantile(grid_all$betweenness, betweeness_range, na.rm = TRUE) &
+                                            betweenness <= quantile(grid_all$betweenness, 1-betweeness_range, na.rm = TRUE),
+                                          1, 0),
+           closeness_candidate = ifelse(closeness >= closeness_range & closeness <= 1-closeness_range,
+                                        1, 0)) |> 
     mutate(degree = round(degree, digits = 3),
            betweenness = round(betweenness, digits = 3),
            closeness = round(closeness, digits = 3)
      )
 
-  # map_candidates = mapview::mapview(candidates_centrality)
-  st_write(candidates_centrality, paste0("outputdata/", CITY, "/candidates_centrality.gpkg"), delete_dsn = TRUE)
-  
-  
+
   # density
-  candidates_density = grid |>
-    # st_transform(3857) |> 
-    left_join(density_grid) |> 
-    # filter(population >= mean(density_grid$population)) #above mean
-    filter(population >= population_min(density_grid$population)) #above mean
+  density_candidates = density_grid |>
+    mutate(population_candidate =
+             ifelse(population >= population_min(density_grid$population), 1, 0))
+
   
-  st_write(candidates_density, paste0("outputdata/", CITY, "/candidates_density.gpkg"), delete_dsn = TRUE)
   
   # transit
   
-  # if the object is not null, process. Otherwise, skip
-  
-  candidates_transit = grid |>
-    left_join(transit_grid, by = "ID") |>
-    mutate(frequency = replace_na(frequency, 0)) |> # unecessary
+  candidates_transit = transit_grid |> 
     mutate(transit = case_when(
       frequency <= freq_bus[1] ~ 1,
       frequency > freq_bus[1] & frequency <= freq_bus[2] ~ 2,
       frequency > freq_bus[2] & frequency <= freq_bus[3] ~ 3,
       frequency > freq_bus[3] ~ 4
-    )) |>
-    filter(transit %in% c(3,4))
+    )) |> 
+    mutate(transit = replace_na(frequency, 0)) |> # unecessary
+    mutate(transit_candidate = ifelse(transit %in% c(3,4), 1, 0))
+
   
-  st_write(candidates_transit, paste0("outputdata/", CITY, "/candidates_transit.gpkg"), delete_dsn = TRUE)
   
   
   
   # landuse
   landuse_entropy = readRDS("outputdata/test_landuse_entropy.Rds") # WHY does not work without this??
-  candidates_landuse = 
-    landuse_entropy |>
-    dplyr::filter(entropy >= entropy_min)
+  candidates_landuse = landuse_entropy |>
+    mutate(entropy_candidate =
+             ifelse(entropy >= entropy_min, 1, 0))
   
-  st_write(candidates_landuse, paste0("outputdata/", CITY, "/candidates_landuse.gpkg"), delete_dsn = TRUE)
+
+}
+
+
+# grid_all ----------------------------------------------------------------
+
+grid_all = function(grid, CITY,
+                           centrality_grid, density_grid, landuse_entropy, transit_grid,
+                           population_min, degree_min, betweeness_range, closeness_range,
+                           entropy_min, freq_bus) {
   
-  # all candidates
-  candidates_all = grid |> 
-    left_join(candidates_centrality |> st_drop_geometry()) |>
-    left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
-    left_join(candidates_transit |>
-                # select(-frequency) |> TO-DO tidy this
-                st_drop_geometry(), by = "ID") |>
-    left_join(candidates_landuse, by = "ID") |>
-    dplyr::filter(!is.na(degree)) |>
+  grid_all = grid |> 
+      left_join(candidates_centrality |> st_drop_geometry(), by = "ID") |>
+      left_join(candidates_density |> st_drop_geometry(), by = "ID") |> 
+      left_join(candidates_transit |>
+                  # select(-frequency) |> TO-DO tidy this
+                  st_drop_geometry(), by = "ID") |>
+      left_join(candidates_landuse, by = "ID") 
+    
+    
+    
+    # mapview::mapview(candidates_all)
+    st_write(grid_all, paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)
+
+}
+
+
+# filter_candidates -------------------------------------------------------
+
+site_selection = function(grid, CITY,
+                    centrality_grid, density_grid, landuse_entropy, transit_grid,
+                    population_min, degree_min, betweeness_range, closeness_range,
+                    entropy_min, freq_bus) {
+  
+  
+  grid_selection = grid_all |> 
+    st_drop_geometry() |>
+    
+    
+  dplyr::filter(!is.na(degree)) |>
     dplyr::filter(!is.na(population)) |> 
     dplyr::filter(!is.na(entropy))
   
+  
+  
+  
+  # transit
+  
   if (nrow(candidates_transit) == 0){
-         
+    
     print("No transit complexity !")
     
-    candidates_all = candidates_all |>
+    grid_selection = grid_selection |>
       select(-transit, -frequency)
-
+    
   } else {
     
     print("Including transit complexity")
-
-    candidates_all = candidates_all |>
+    
+    grid_selection = grid_selection |>
       dplyr::filter(!is.na(transit))
-             
+    
   }
-  
-  
-  # mapview::mapview(candidates_all)
-  st_write(candidates_all, paste0("outputdata/", CITY, "/candidates_all.gpkg"), delete_dsn = TRUE)
   
 }
