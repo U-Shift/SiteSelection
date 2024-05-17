@@ -5,7 +5,7 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Entroncamento"
+CITY_input = "Lisboa"
 cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
@@ -85,7 +85,7 @@ list(
     command = get_centrality_grid(centrality_nodes, grid)),
   tar_target(
     name = CITYcensus,
-    command = get_census(CITY)),
+    command = get_census(CITYlimit)),
   tar_target(
     name = points_transit,
     command = get_transit(CITYlimit)),
@@ -96,14 +96,31 @@ list(
     name = density_grid,
     command = get_density_grid(grid, CITYcensus)),
   tar_target(
-    name = landuse_entropy,
+    name = landuse_grid,
     command = get_landuse(grid, CITYcensus)),
+
+  tar_target(
+    name = classify_candidates_centrality,
+    command = find_centrality_candidates(centrality_grid, degree_min, betweeness_range, closeness_range)),
+  
+  tar_target(
+    name = classify_candidates_density,
+    command = find_density_candidates(density_grid, population_min)),
+  tar_target(
+    name = classify_candidates_landuse,
+    command = find_landuse_candidates(landuse_grid, entropy_min)),
+  tar_target(
+    name = classify_candidates_transit,
+    command = find_transit_candidates(transit_grid, freq_bus)),
+  
   tar_target(
     name = candidates_all,
-    command = find_candidates(grid, CITY,
-                              centrality_grid, density_grid, landuse_entropy, transit_grid,
-                              population_min, degree_min, betweeness_range, closeness_range,
-                              entropy_min, freq_bus)
+    command = grid_all(grid, CITY, classify_candidates_transit, classify_candidates_landuse,
+                       classify_candidates_centrality, classify_candidates_density)),
+   
+  tar_target(
+    name = site_selection,
+    command = site_selection(CITY, candidates_all, transit_candidates)
   )
 )
   
