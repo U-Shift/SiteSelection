@@ -38,6 +38,8 @@ rsconnect/
 # data export folder
 database/
 outputdata/
+inputdata/*
+!inputdata/map1.geojson
 traffic.log
 SiteSelection.qgz
 _targets/meta/meta*
