@@ -29,7 +29,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble", "dplyr", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
+  packages = c("tibble", "dplyr", "tidyr", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
                "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
   format = "rds", # default storage format
   storage = "worker",
