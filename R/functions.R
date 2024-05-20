@@ -542,7 +542,7 @@ get_site_selection = function(grid_all, CITY) {
     print("Including transit complexity")
     
     grid_selection = grid_selection |>
-      dplyr::filter(!is.na(transit))
+      dplyr::filter(transit %in% c(3,4))
     
   }
  
