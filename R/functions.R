@@ -358,7 +358,7 @@ get_transit_grid = function(grid, points_transit) {
     
     transit_grid = grid |>
       st_drop_geometry() |>
-      mutate(transit = NA)
+      mutate(frequency = 0)
     
   } else {
     
@@ -429,14 +429,23 @@ find_landuse_candidates = function(landuse_grid, entropy_min) {
 # transit
 find_transit_candidates = function(transit_grid, freq_bus) {
 
-  transit_candidates = transit_grid |> 
-    mutate(transit = case_when(
+  if (max(transit_grid$frequency, na.rm = TRUE) == 0){
+    
+    transit_candidates = transit_grid |> 
+      mutate(transit = 0,
+             transit_candidate = 0)
+             
+  } else {
+    
+    transit_candidates = transit_grid |> 
+      mutate(transit = case_when(
       frequency <= freq_bus[1] ~ 1,
-      frequency > freq_bus[1] & frequency <= freq_bus[2] ~ 2,
-      frequency > freq_bus[2] & frequency <= freq_bus[3] ~ 3,
-      frequency > freq_bus[3] ~ 4
-    )) |> 
-    mutate(transit_candidate = ifelse(transit %in% c(3,4), 1, 0))
+        frequency > freq_bus[1] & frequency <= freq_bus[2] ~ 2,
+        frequency > freq_bus[2] & frequency <= freq_bus[3] ~ 3,
+        frequency > freq_bus[3] ~ 4
+     )) |> 
+      mutate(transit_candidate = ifelse(transit %in% c(3,4), 1, 0))
+  }
   
   return(transit_candidates)
   
