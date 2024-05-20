@@ -14,6 +14,10 @@ targets::tar_make()
 
 # targets::tar_meta(fields = error, complete_only = TRUE) # debugging
 
-targets::tar_load(candidates_all)
-mapview::mapview(candidates_all, zcol="entropy")
+targets::tar_load(grid_all)
+mapview::mapview(grid_all, zcol="all_candidate")
+mapview::mapview(grid_all, zcol="frequency")
+
+targets::tar_load(site_selection)
+mapview::mapview(site_selection, zcol="entropy")
 

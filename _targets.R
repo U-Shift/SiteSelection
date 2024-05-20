@@ -5,7 +5,7 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Entroncamento"
+CITY_input = "Lisboa"
 cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
@@ -29,7 +29,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble", "tidyverse", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
+  packages = c("tibble", "dplyr", "tidyr", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
                "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
   format = "rds", # default storage format
   storage = "worker",
@@ -85,7 +85,7 @@ list(
     command = get_centrality_grid(centrality_nodes, grid)),
   tar_target(
     name = CITYcensus,
-    command = get_census(CITY)),
+    command = get_census(CITYlimit)),
   tar_target(
     name = points_transit,
     command = get_transit(CITYlimit)),
@@ -96,14 +96,31 @@ list(
     name = density_grid,
     command = get_density_grid(grid, CITYcensus)),
   tar_target(
-    name = landuse_entropy,
+    name = landuse_grid,
     command = get_landuse(grid, CITYcensus)),
+
   tar_target(
-    name = candidates_all,
-    command = find_candidates(grid, CITY,
-                              centrality_grid, density_grid, landuse_entropy, transit_grid,
-                              population_min, degree_min, betweeness_range, closeness_range,
-                              entropy_min, freq_bus)
-  )
+    name = classify_candidates_centrality,
+    command = find_centrality_candidates(centrality_grid, degree_min, betweeness_range, closeness_range)),
+  
+  tar_target(
+    name = classify_candidates_density,
+    command = find_density_candidates(density_grid, population_min)),
+  tar_target(
+    name = classify_candidates_landuse,
+    command = find_landuse_candidates(landuse_grid, entropy_min)),
+  tar_target(
+    name = classify_candidates_transit,
+    command = find_transit_candidates(transit_grid, freq_bus)),
+  
+  tar_target(
+    name = grid_all,
+    command = make_grid_all(grid, CITY = CITY_input,
+                            classify_candidates_transit, classify_candidates_landuse,
+                            classify_candidates_centrality, classify_candidates_density)),
+   
+  tar_target(
+    name = site_selection,
+    command = get_site_selection(CITY = CITY_input, grid_all))
 )
   
