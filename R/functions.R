@@ -3,39 +3,68 @@
 
 # select_city -------------------------------------------------------------
 
-select_city = function(CITY){
-  CITY = CITY
+select_city = function(CITY, GEOJSON, GEOJSON_name){
+  
+  if (GEOJSON == FALSE) {
+    
+    CITY = CITY
+    
+  } else {
+    
+    CITY = GEOJSON_name
+    
+  }
+  
+
 }
 
 
 
 # get_citylimit -----------------------------------------------------------
 
-get_citylimit = function(CITY) {
+get_citylimit = function(CITY, GEOJSON, GEOJSON_name) {
   
-  if(file.exists(paste0("outputdata/", CITY, "/CITYlimit.geojson"))){
+  if(GEOJSON == TRUE){
     
-    CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+    CITYlimit = st_read(paste0("inputdata/", GEOJSON_name, ".geojson"), quiet = TRUE)
     
-  } else {
+    output_dir_gj = file.path("outputdata", GEOJSON_name)
+    if (!dir.exists(output_dir_gj)) {
+      dir.create(output_dir_gj)
+    } else {
+      print("Dir already exists!")
+    }
+    
+    st_write(CITYlimit, paste0(output_dir_gj, "/CITYlimit.geojson"), delete_dsn = TRUE)
+    
+    
+    }else{
+      
   
-  
-  MUNICIPIOSgeo = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CAOP_municipios.gpkg", quiet = TRUE) # Portugal
-  CITYlimit = MUNICIPIOSgeo %>%
-    filter(Concelho == CITY) %>% 
-    st_collection_extract(type = "POLYGON") %>% # when the mixes lines with polygons
-    sfheaders::sf_remove_holes(close = TRUE) # when it has holes in topology
-  
-  output_dir = file.path("outputdata", CITY)
-    if (!dir.exists(output_dir)) {
-    dir.create(output_dir)
-  } else {
-    print("Dir already exists!")
+    if(file.exists(paste0("outputdata/", CITY, "/CITYlimit.geojson"))){
+      
+      CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+      
+    } else {
+    
+    
+    MUNICIPIOSgeo = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CAOP_municipios.gpkg", quiet = TRUE) # Portugal
+    CITYlimit = MUNICIPIOSgeo %>%
+      filter(Concelho == CITY) %>% 
+      st_collection_extract(type = "POLYGON") %>% # when the mixes lines with polygons
+      sfheaders::sf_remove_holes(close = TRUE) # when it has holes in topology
+    
+    output_dir = file.path("outputdata", CITY)
+      if (!dir.exists(output_dir)) {
+      dir.create(output_dir)
+    } else {
+      print("Dir already exists!")
+    }
+    
+    st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE)
+   
+    }
   }
-  
-  st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE)
- 
-   }
 }
 
 
@@ -43,6 +72,7 @@ get_citylimit = function(CITY) {
 # make_grid ---------------------------------------------------------------
 
 make_grid = function(CITYlimit, CITY, cellsize_input, square_input)  {
+  
   
   CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
   # cellsize = c(200, 200) #200x200m
@@ -54,11 +84,12 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input)  {
     st_sf() %>% #convert sfc to sf %>% 
     st_join(CITYlimit_meters, left = FALSE) %>% 
     mutate(ID = seq(1:nrow(.))) %>% # give an ID to each cell
-    select(-c(1,2)) %>% 
+    select(ID, geometry) %>% 
     st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
   
+ 
   st_write(grid, paste0("outputdata/", CITY, "/grid.geojson"), delete_dsn = TRUE)
   
 }
@@ -73,9 +104,13 @@ get_osm = function(CITYlimit, CITY) {
     
     road_network = st_read(paste0("outputdata/", CITY, "/road_network.gpkg"), quiet = TRUE)
   
-  } else {
+  }
+    
+ else {
   
+   
   CITYlimit = st_read(paste0("outputdata/", CITY, "/CITYlimit.geojson"), quiet = TRUE)
+   
   BBOX = st_as_sfc(st_bbox(CITYlimit))
   
   # road_osm = st_read("database/geofabrik_portugal-latest.gpkg", quiet = TRUE) #old version with osmextract
@@ -108,9 +143,11 @@ get_osm = function(CITYlimit, CITY) {
   
   road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
   
+ 
   st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
   
   }
+  
 }
 
 

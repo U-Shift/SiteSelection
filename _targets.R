@@ -6,6 +6,8 @@
 
 # Set defaults HERE ######################
 CITY_input = "Lisboa"
+GEOJSON = TRUE # use a different limit, made with https://geojson.io/ and saved in inputdata/
+GEOJSON_input = "map1" # name of the file if GEOJSON = TRUE. default: map1
 cellsize_input = c(400, 400)
 square_input = TRUE #TRUE = squares, FALSE = hexagons
 build_osm = FALSE #clean osm road network again?
@@ -62,10 +64,10 @@ if(!file.exists("outputdata")){
 list(
   tar_target(
     name = CITY,
-    command = select_city(CITY = CITY_input)),
+    command = select_city(CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON)),
   tar_target(
     name = CITYlimit,
-    command = get_citylimit(CITY)),
+    command = get_citylimit(CITY, GEOJSON, GEOJSON_name = GEOJSON_input)),
   tar_target(
     name = grid,
     command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input)),
