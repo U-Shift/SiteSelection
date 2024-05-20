@@ -336,7 +336,7 @@ get_landuse = function(grid, CITYcensus) {
   
   return(landuse_grid)
   
-  saveRDS(landuse_entropy,"outputdata/test_landuse_entropy.Rds")
+  # saveRDS(landuse_entropy,"outputdata/test_landuse_entropy.Rds")
 
 }
   
@@ -386,7 +386,7 @@ get_transit_grid = function(grid, points_transit) {
 find_centrality_candidates = function(centrality_grid, degree_min, betweeness_range, closeness_range) {
   
   centrality_candidates = centrality_grid |> 
-    mutate(degree_candidate = ifelse(degree >= degree_min(centrality_grid$degree), 1, 0),
+    mutate(degree_candidate = ifelse(degree >= degree_min(centrality_grid$degree, na.rm = TRUE), 1, 0),
            betweenness_candidate = ifelse(betweenness >= quantile(betweenness, betweeness_range, na.rm = TRUE) &
                                             betweenness <= quantile(betweenness, 1-betweeness_range, na.rm = TRUE),
                                           1, 0),
@@ -436,7 +436,6 @@ find_transit_candidates = function(transit_grid, freq_bus) {
       frequency > freq_bus[2] & frequency <= freq_bus[3] ~ 3,
       frequency > freq_bus[3] ~ 4
     )) |> 
-    mutate(transit = replace_na(frequency, 0)) |> # unecessary
     mutate(transit_candidate = ifelse(transit %in% c(3,4), 1, 0))
   
   return(transit_candidates)
@@ -446,7 +445,7 @@ find_transit_candidates = function(transit_grid, freq_bus) {
 
 # grid_all ----------------------------------------------------------------
 
-grid_all = function(grid, CITY, centrality_candidates, density_candidates, transit_candidates, landuse_candidates) {
+make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, transit_candidates, landuse_candidates) {
   
   grid_all = grid |> 
       left_join(centrality_candidates |> st_drop_geometry(), by = "ID") |>
@@ -456,13 +455,12 @@ grid_all = function(grid, CITY, centrality_candidates, density_candidates, trans
                   st_drop_geometry(), by = "ID") |>
       left_join(landuse_candidates, by = "ID") |> 
     
-    mutate(candidates_all = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
+    mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
                                       closeness_candidate == 1 & population_candidate == 1 &
                                       entropy_candidate == 1, 1, 0))
     
     ## DEAL WITH TRANSIT ##
     
-    # mapview::mapview(candidates_all)
     st_write(grid_all, paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)
 
 }
@@ -470,11 +468,11 @@ grid_all = function(grid, CITY, centrality_candidates, density_candidates, trans
 
 # filter_candidates -------------------------------------------------------
 
-site_selection = function(grid_all, CITY, transit_candidates) {
+get_site_selection = function(grid_all, CITY) {
   
   
   grid_selection = grid_all |> 
-    filter(candidates_all == 1) |>
+    dplyr::filter(all_candidate == 1) |>
 
     
   dplyr::filter(!is.na(degree)) |>
@@ -486,7 +484,7 @@ site_selection = function(grid_all, CITY, transit_candidates) {
   
   # transit
   
-  if (nrow(transit_candidates) == 0){
+  if (max(grid_all$transit_candidate, na.rm = TRUE) == 0){
     
     print("No transit complexity !")
     
@@ -502,7 +500,12 @@ site_selection = function(grid_all, CITY, transit_candidates) {
     
   }
  
+  grid_selection = grid_selection |>
+    select(-transit_candidate, -degree_candidate, -betweenness_candidate, -closeness_candidate, -population_candidate, -entropy_candidate, -all_candidate)
   
   st_write(site_selection, paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE)
+  
+  
+  return(grid_selection)
    
 }

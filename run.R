@@ -17,3 +17,4 @@ targets::tar_make()
 targets::tar_load(candidates_all)
 mapview::mapview(candidates_all, zcol="entropy")
 
+targets::tar_meta(fields = error)

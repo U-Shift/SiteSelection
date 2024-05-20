@@ -29,7 +29,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble", "tidyverse", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
+  packages = c("tibble", "dplyr", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
                "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
   format = "rds", # default storage format
   storage = "worker",
@@ -114,13 +114,12 @@ list(
     command = find_transit_candidates(transit_grid, freq_bus)),
   
   tar_target(
-    name = candidates_all,
-    command = grid_all(grid, CITY, classify_candidates_transit, classify_candidates_landuse,
+    name = grid_all,
+    command = make_grid_all(grid, CITY, classify_candidates_transit, classify_candidates_landuse,
                        classify_candidates_centrality, classify_candidates_density)),
    
   tar_target(
     name = site_selection,
-    command = site_selection(CITY, candidates_all, transit_candidates)
-  )
+    command = get_site_selection(CITY, grid_all))
 )
   
