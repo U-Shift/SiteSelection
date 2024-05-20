@@ -12,7 +12,7 @@ targets::tar_visnetwork(targets_only = TRUE)
 targets::tar_make()
 # targets::tar_crew() # parallel processing stats
 
-targets::tar_meta(fields = error, complete_only = TRUE) # debugging
+# targets::tar_meta(fields = error, complete_only = TRUE) # debugging
 
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="all_candidate")

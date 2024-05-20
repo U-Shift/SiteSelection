@@ -115,11 +115,12 @@ list(
   
   tar_target(
     name = grid_all,
-    command = make_grid_all(grid, CITY, classify_candidates_transit, classify_candidates_landuse,
-                       classify_candidates_centrality, classify_candidates_density)),
+    command = make_grid_all(grid, CITY = CITY_input,
+                            classify_candidates_transit, classify_candidates_landuse,
+                            classify_candidates_centrality, classify_candidates_density)),
    
   tar_target(
     name = site_selection,
-    command = get_site_selection(CITY, grid_all))
+    command = get_site_selection(CITY = CITY_input, grid_all))
 )
   

@@ -461,12 +461,13 @@ make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, 
     mutate(all_candidate = as.numeric(all_candidate)) |> 
     mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate))
     
-    ## DEAL WITH TRANSIT ##
+    ## DEAL WITH TRANSIT AFTER ##
     
-  saveRDS(grid_all,"outputdata/grid_all.Rds")
-    
+  
+  st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)  
+  
+  
     return(grid_all)
-    print(class(grid_all))
 
 }
 
@@ -475,15 +476,11 @@ make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, 
 
 get_site_selection = function(grid_all, CITY) {
   
-  grid_all = readRDS("outputdata/grid_all.Rds") # WHY does not work without this??
-
-  # grid_selection = grid_all[grid_all$all_candidate == 1,]
 
   grid_selection = grid_all |>
   dplyr::filter(all_candidate == 1)
 
-  
-  ## clear binaries classification
+
   
   # transit
   
@@ -504,12 +501,13 @@ get_site_selection = function(grid_all, CITY) {
   }
  
   
+  # tidy df
+  
   grid_selection = grid_selection |>
     select(-transit_candidate, -degree_candidate, -betweenness_candidate,
            -closeness_candidate, -population_candidate, -entropy_candidate, -all_candidate)
   
-  saveRDS(grid_selection, "outputdata/site_selection.Rds") # ERROR if CITY is in the path ?!
-  # st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/grid_selection.gpkg"), delete_dsn = TRUE)
+  st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE)
   
   
   return(grid_selection)
