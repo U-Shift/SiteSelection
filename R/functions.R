@@ -505,7 +505,11 @@ make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name, centrality_candidate
                                       closeness_candidate == 1 & population_candidate == 1 &
                                       entropy_candidate == 1, 1, 0)) |> 
     mutate(all_candidate = as.numeric(all_candidate)) |> 
-    mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate))
+    mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate)) |> 
+    
+    rowwise() |> # make sure the operator occurs on each row
+    mutate(score = sum(degree_candidate, betweenness_candidate, closeness_candidate, 
+                     population_candidate, entropy_candidate, transit_candidate, na.rm = TRUE))
     
     ## DEAL WITH TRANSIT AFTER ##
     
