@@ -5,20 +5,20 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Lisboa"
-GEOJSON = TRUE # use a different limit, made with https://geojson.io/ and saved in inputdata/
-GEOJSON_input = "map1" # name of the file if GEOJSON = TRUE. default: map1
-cellsize_input = c(400, 400)
-square_input = TRUE #TRUE = squares, FALSE = hexagons
-build_osm = FALSE #clean osm road network again?
+CITY_input = "Lisboa"       # Municipality name in Portugal
+GEOJSON = FALSE             # use a different limit, made with https://geojson.io/ and saved in inputdata/
+GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
+cellsize_input = c(400, 400)# in meters
+square_input = TRUE         # TRUE = squares, FALSE = hexagons
+build_osm = FALSE           # clean osm road network again?
 
 # Thresholds
-population_min = mean # mean or median? default: mean
-degree_min = mean # mean or median? default: mean
-betweeness_range = 0.4 # percentile to exclude (upper and lower) default: 0.25
-closeness_range = 0.25 # value to exclude (upper and lower) default: 0.25
-entropy_min = 0.35 # value to exclude (lower) default: 0.5
-freq_bus = c(4, 10, 20) # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
+population_min = mean       # mean or median? default: mean
+degree_min = mean           # mean or median? default: mean
+betweeness_range = 0.4      # percentile to exclude (upper and lower) default: 0.25
+closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
+entropy_min = 0.35          # value to exclude (lower) default: 0.5
+freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
 
 #########################################
 
