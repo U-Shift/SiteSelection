@@ -6,7 +6,7 @@
 
 # Set defaults HERE ######################
 CITY_input = "Lisboa"       # Municipality name in Portugal
-GEOJSON = FALSE             # use a different limit, made with https://geojson.io/ and saved in inputdata/
+GEOJSON = FALSE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
 cellsize_input = c(400, 400)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
