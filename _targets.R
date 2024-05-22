@@ -15,7 +15,7 @@ build_osm = FALSE           # clean osm road network again?
 # Thresholds
 population_min = mean       # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
-betweeness_range = 0.4      # percentile to exclude (upper and lower) default: 0.25
+betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
 entropy_min = 0.35          # value to exclude (lower) default: 0.5
 freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
