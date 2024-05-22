@@ -117,12 +117,12 @@ list(
   
   tar_target(
     name = grid_all,
-    command = make_grid_all(grid, CITY = CITY_input,
+    command = make_grid_all(grid, CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON,
                             classify_candidates_transit, classify_candidates_landuse,
                             classify_candidates_centrality, classify_candidates_density)),
    
   tar_target(
     name = site_selection,
-    command = get_site_selection(CITY = CITY_input, grid_all))
+    command = get_site_selection(CITY = CITY_input, grid_all, GEOJSON_name = GEOJSON_input, GEOJSON))
 )
   

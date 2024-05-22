@@ -491,7 +491,7 @@ find_transit_candidates = function(transit_grid, freq_bus) {
 
 # grid_all ----------------------------------------------------------------
 
-make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, transit_candidates, landuse_candidates) {
+make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name, centrality_candidates, density_candidates, transit_candidates, landuse_candidates) {
   
   grid_all = grid |> 
       left_join(centrality_candidates |> st_drop_geometry(), by = "ID") |>
@@ -510,7 +510,16 @@ make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, 
     ## DEAL WITH TRANSIT AFTER ##
     
   
-  st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)  
+  if (GEOJSON == TRUE){
+    
+    st_write(grid_all, dsn = paste0("outputdata/", GEOJSON_name, "/grid_all.gpkg"), delete_dsn = TRUE)  
+    
+  }
+  else {
+    
+    st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)  
+    
+  }
   
   
     return(grid_all)
@@ -520,7 +529,7 @@ make_grid_all = function(grid, CITY, centrality_candidates, density_candidates, 
 
 # filter_candidates -------------------------------------------------------
 
-get_site_selection = function(grid_all, CITY) {
+get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
   
 
   grid_selection = grid_all |>
@@ -553,8 +562,18 @@ get_site_selection = function(grid_all, CITY) {
     select(-transit_candidate, -degree_candidate, -betweenness_candidate,
            -closeness_candidate, -population_candidate, -entropy_candidate, -all_candidate)
   
-  st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE)
   
+  # export candidates
+  
+  if (GEOJSON == TRUE){
+    
+    st_write(grid_selection, dsn = paste0("outputdata/", GEOJSON_name, "/site_selection.gpkg"), delete_dsn = TRUE)  
+    
+  }
+  else {
+    
+  st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE)
+  }
   
   return(grid_selection)
    
