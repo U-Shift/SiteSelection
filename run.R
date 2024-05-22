@@ -16,7 +16,7 @@ targets::tar_make()
 
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="all_candidate")
-mapview::mapview(grid_all, zcol="frequency")
+mapview::mapview(grid_all, zcol="score") #ranked
 
 targets::tar_load(site_selection)
 mapview::mapview(site_selection, zcol="entropy")
