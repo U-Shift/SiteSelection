@@ -40,7 +40,7 @@ database/
 outputdata/
 inputdata/*
 !inputdata/map1.geojson
-analysys/
+analysis/*
 traffic.log
 SiteSelection.qgz
 _targets/meta/meta*
