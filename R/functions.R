@@ -501,38 +501,34 @@ make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name, centrality_candidate
                   st_drop_geometry(), by = "ID") |>
       left_join(landuse_candidates, by = "ID") 
     
-    
-  if (max(grid_all$transit_candidate, na.rm = TRUE) == 0){
+  # if there is no transit stops, all_candidate does not sum the transit_candidate
+  # if (max(grid_all$transit_candidate, na.rm = TRUE) == 0){
     
     grid_all = grid_all |> 
     mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
                                       closeness_candidate == 1 & population_candidate == 1 &
                                       entropy_candidate == 1, 1, 0)) |> 
     mutate(all_candidate = as.numeric(all_candidate)) |> 
-    mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate)) |> 
+    mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate)) 
     
-    rowwise() |> # make sure the operator occurs on each row
-    mutate(score = sum(degree_candidate, betweenness_candidate, closeness_candidate, 
-                     population_candidate, entropy_candidate, na.rm = TRUE))
-    
-  } else {
-    
-    grid_all = grid_all |> 
-    mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
-                                    closeness_candidate == 1 & population_candidate == 1 &
-                                    entropy_candidate == 1 & transit_candidate == 1,
-                                  1, 0)) |> 
-    mutate(all_candidate = as.numeric(all_candidate)) |> 
-    mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate)) |> 
-      
-    rowwise() |> # make sure the operator occurs on each row
-    mutate(score = sum(degree_candidate, betweenness_candidate, closeness_candidate, 
-                      population_candidate, entropy_candidate, transit_candidate, na.rm = TRUE))
-    
-  }
+  #   # if there is transit stops, all_candidate sums the transit_candidate
+  # } else {
+  #   
+  #   grid_all = grid_all |> 
+  #   mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
+  #                                   closeness_candidate == 1 & population_candidate == 1 &
+  #                                   entropy_candidate == 1 & transit_candidate == 1,
+  #                                 1, 0)) |> 
+  #   mutate(all_candidate = as.numeric(all_candidate)) |> 
+  #   mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate))
+  #   
+  # }
   
   # for map legend purposes
   grid_all = grid_all |> 
+    rowwise() |> # make sure the operator occurs on each row
+    mutate(score = sum(degree_candidate, betweenness_candidate, closeness_candidate, 
+                       population_candidate, entropy_candidate, transit_candidate, na.rm = TRUE)) |> 
     mutate(all_candidate = factor(all_candidate, levels = c(0,1), labels = c(0,1)),
            score = factor(score, levels = c(0:6), labels = c(0:6)))
   
@@ -563,7 +559,8 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
   
 
   grid_selection = grid_all |>
-  dplyr::filter(all_candidate == 1)
+  dplyr::filter(all_candidate == 1) |>
+    mutate(complexity = "complex")
 
 
   
@@ -580,8 +577,9 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
     
     print("Including transit complexity")
     
+    #classify complexity as "very complex" if transit is 3 or 4
     grid_selection = grid_selection |>
-      dplyr::filter(transit %in% c(3,4))
+      mutate(complexity = ifelse(transit %in% c(3,4), "very complex", "complex"))
     
   }
  

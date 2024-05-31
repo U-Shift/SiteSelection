@@ -19,5 +19,5 @@ mapview::mapview(grid_all, zcol="all_candidate")
 mapview::mapview(grid_all, zcol="score") #ranked
 
 targets::tar_load(site_selection)
-mapview::mapview(site_selection, zcol="entropy")
+mapview::mapview(site_selection, zcol="complexity")
 
