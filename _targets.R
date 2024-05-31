@@ -11,9 +11,10 @@ GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1
 cellsize_input = c(400, 400)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
 build_osm = FALSE           # clean osm road network again?
+analysis = TRUE             # export input parameters and results to a xls file? default: FALSE
 
 # Thresholds
-population_min = mean       # mean or median? default: mean
+population_min = median       # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
 betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
@@ -123,6 +124,12 @@ list(
    
   tar_target(
     name = site_selection,
-    command = get_site_selection(CITY = CITY_input, grid_all, GEOJSON_name = GEOJSON_input, GEOJSON))
+    command = get_site_selection(CITY = CITY_input, grid_all, GEOJSON_name = GEOJSON_input, GEOJSON)),
+  
+  tar_target(
+    name = analysis_save,
+    command = export_analysis(grid_all, site_selection, CITY_input, GEOJSON, GEOJSON_input, analysis,
+                              cellsize_input, square_input, build_osm, degree_min, betweeness_range,
+                              closeness_range, population_min, entropy_min, freq_bus))
 )
   
