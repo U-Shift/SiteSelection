@@ -700,7 +700,7 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     
     analysis_table = readRDS("analysis/analysis_table.Rds")  
     # analysis_table = analysis_row # first run
-    analysis_table = bind_rows(anaysis_table, analysis_row)
+    analysis_table = bind_rows(analysis_table, analysis_row)
     saveRDS(analysis_table, "analysis/analysis_table.Rds")
     
     openxlsx::write.xlsx(analysis_table, file = "analysis/analysis_table.xlsx", overwrite = TRUE)
