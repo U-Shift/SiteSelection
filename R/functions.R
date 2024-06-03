@@ -619,7 +619,7 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     print("Exporting analysis...")
     
     analysis_row = data.frame(timestamp = Sys.time()) |> 
-      mutate(CITY = CITY_input,
+      mutate(CITY = ifelse(GEOJSON == FALSE, CITY_input, NA),
              GEOJSON_name = ifelse(GEOJSON == TRUE, GEOJSON_input, NA),
              cellsize_a = cellsize_input[1],
              cellsize_b = cellsize_input[2],
