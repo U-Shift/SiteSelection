@@ -2,6 +2,7 @@
 
 
 library(tidyverse)
+library(sf)
 road_network_clean = sf::st_read("outputdata/map1/road_network_clean.shp")
 grid = sf::st_read("outputdata/map1/grid.geojson")
 congested_tags = c("motorway", "motorway_link", "trunk", "trunk_link",
