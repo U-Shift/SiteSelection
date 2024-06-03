@@ -4,7 +4,9 @@
 library(tidyverse)
 road_network_clean = sf::st_read("outputdata/map1/road_network_clean.shp")
 grid = sf::st_read("outputdata/map1/grid.geojson")
-congested_tags = c("primary", "primary_link", "secondary", "secondary_link", "tertiary", "tertiary_link") # 
+congested_tags = c("motorway", "motorway_link", "trunk", "trunk_link",
+                   "primary", "primary_link", "secondary", "secondary_link",
+                   "tertiary", "tertiary_link") # 
 
 traffic_vector_grid = st_intersection(road_network_clean, grid)
 
@@ -21,8 +23,8 @@ traffic_cells = grid |>
 
 # vizualise
 road_network_clean = road_network_clean |> 
-  mutate(congested_tags = ifelse(highway %in% congested_tags, "primary, secondary, terciary", "other"))
-road_network_clean$congested_tags = factor(road_network_clean$congested_tags, levels = c("primary, secondary, terciary", "other")) # for viz purpouse only
+  mutate(congested_tags = ifelse(highway %in% congested_tags, "primary, secondary, tertiary", "other"))
+road_network_clean$congested_tags = factor(road_network_clean$congested_tags, levels = c("primary, secondary, tertiary", "other")) # for viz purpouse only
 
 mapview::mapview(traffic_cells, zcol="classification", alpha.regions = 0.2) +
   mapview::mapview(road_network_clean, zcol="congested_tags")
