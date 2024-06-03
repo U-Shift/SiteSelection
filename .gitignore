@@ -41,6 +41,7 @@ outputdata/
 inputdata/*
 !inputdata/map1.geojson
 analysis/*
+/analysis/*
 traffic.log
 SiteSelection.qgz
 _targets/meta/meta*
