@@ -9,10 +9,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **SiteSelection** aims to find areas for a dynamic street re-allocation experiment.
 
-It consist in a process of multi criteria to select the cell locations of a giver city or neighborhood where the street space is more disputed by different transport modes and street activities. 
+It consist in a process of multi criteria to select the cell locations of a giver city or neighbourhood where the street space is more disputed by different transport modes and street activities. 
 SiteSelection is a full script that uses a dynamic pipeline, and gathers and processes information on:
 
-* Road network centrality measures (betweeness, closeness, degree)
+* Road network centrality measures (betweenness, closeness, degree)
 * Population density
 * POI and activities
 * Public Transit demand
@@ -33,6 +33,14 @@ Data needed for other locations:
 
 
 ## Setup
+
+### Installation
+
+```{r eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("u-shift/SiteSelection")
+```
+
 
 ### Requirements
 
@@ -75,7 +83,7 @@ And you should have something like this
 
 ```{r echo=FALSE}
 # requires targets
-knitr::include_graphics("img/tar_viz_run.png")
+knitr::include_graphics("man/img/tar_viz_run.png")
 ```
 
 ```{r eval=FALSE}
@@ -86,13 +94,13 @@ tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") #ranked cells
 ```
 ```{r echo=FALSE}
-knitr::include_graphics("img/tar_result.png")
+knitr::include_graphics("man/img/tar_result.png")
 ```
 
 If you want to see the filtered cells (candidates), you can load the `site_selection` object and plot it, with *complex* and *very complex* cells (transit layer considered).
 
 ```{r echo=FALSE}
-knitr::include_graphics("img/complexity.png")
+knitr::include_graphics("man/img/complexity.png")
 ```
 
 
@@ -102,7 +110,7 @@ When the process is not complete, you may have an error like this
 tar_visnetwork()
 ```
 ```{r echo=FALSE}
-knitr::include_graphics("img/tar_viz_werror.png")
+knitr::include_graphics("man/img/tar_viz_werror.png")
 ```
 
 ### Work with non-administrative boundary

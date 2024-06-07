@@ -5,12 +5,12 @@ SiteSelection
 experiment.
 
 It consist in a process of multi criteria to select the cell locations
-of a giver city or neighborhood where the street space is more disputed
+of a giver city or neighbourhood where the street space is more disputed
 by different transport modes and street activities. SiteSelection is a
 full script that uses a dynamic pipeline, and gathers and processes
 information on:
 
-- Road network centrality measures (betweeness, closeness, degree)
+- Road network centrality measures (betweenness, closeness, degree)
 - Population density
 - POI and activities
 - Public Transit demand
@@ -35,6 +35,13 @@ Data needed for other locations:
 - Administrative boundaries
 
 ## Setup
+
+### Installation
+
+``` r
+# install.packages("devtools")
+devtools::install_github("u-shift/SiteSelection")
+```
 
 ### Requirements
 
@@ -76,7 +83,7 @@ tar_visnetwork(targets_only = TRUE) # or false, to show objects
 
 And you should have something like this
 
-<img src="img/tar_viz_run.png" width="1767" />
+<img src="man/img/tar_viz_run.png" width="1767" />
 
 ``` r
 tar_make()
@@ -86,13 +93,13 @@ tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") #ranked cells
 ```
 
-<img src="img/tar_result.png" width="629" />
+<img src="man/img/tar_result.png" width="629" />
 
 If you want to see the filtered cells (candidates), you can load the
 `site_selection` object and plot it, with *complex* and *very complex*
 cells (transit layer considered).
 
-<img src="img/complexity.png" width="660" />
+<img src="man/img/complexity.png" width="660" />
 
 When the process is not complete, you may have an error like this
 
@@ -100,7 +107,7 @@ When the process is not complete, you may have an error like this
 tar_visnetwork()
 ```
 
-<img src="img/tar_viz_werror.png" width="689" />
+<img src="man/img/tar_viz_werror.png" width="689" />
 
 ### Work with non-administrative boundary
 
