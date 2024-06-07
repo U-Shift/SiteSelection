@@ -37,6 +37,5 @@ Imports:
     openxlsx
 Suggests:
     mapview,
-    sfnetworks,
-    viznetwork
+    sfnetworks
 URL: https://u-shift.github.io/SiteSelection/
