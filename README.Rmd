@@ -128,4 +128,4 @@ Valença, G., Moura, F., & Morais de Sá, A. (2023). Where is it complex to real
 
 
 Please refer to this work as:  
-Félix R, Gabriel V (2024). *SiteSelection: A script for a site selection for the Streets4All Project*. R package version 0.1, https://github.com/U-Shift/SiteSelection/. 
+Félix R, Gabriel V (2024). *SiteSelection: An R script to find complex areas for the Streets4All Project*. R package version 0.2, https://github.com/U-Shift/SiteSelection/. 
