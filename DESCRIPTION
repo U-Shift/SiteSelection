@@ -38,4 +38,5 @@ Imports:
 Suggests:
     mapview,
     sfnetworks
-URL: https://u-shift.github.io/SiteSelection/
+URL: https://u-shift.github.io/SiteSelection/,
+    https://github.com/U-Shift/SiteSelection

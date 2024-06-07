@@ -5,7 +5,7 @@ SiteSelection
 experiment.
 
 It consist in a process of multi criteria to select the cell locations
-of a giver city or neighbourhood where the street space is more disputed
+of a given city or neighbourhood where the street space is more disputed
 by different transport modes and street activities. SiteSelection is a
 full script that uses a dynamic pipeline, and gathers and processes
 information on:
