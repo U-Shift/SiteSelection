@@ -1,3 +1,18 @@
+#' @import sf
+#' @import ggplot2
+#' @import leaflet
+#' @import lubridate
+#' @import qgisprocess
+#' @import readr
+#' @import scales
+#' @import stringr
+#' @import targets
+#' @import tibble
+#' @import tidyr
+#' @import dplyr
+#' @importFrom stats frequency median quantile sd
+#' @importFrom utils methods
+
 # functions all in one
 
 

@@ -91,7 +91,7 @@ knitr::include_graphics("img/tar_result.png")
 
 If you want to see the filtered cells (candidates), you can load the `site_selection` object and plot it, with *complex* and *very complex* cells (transit layer considered).
 
-```{r}
+```{r echo=FALSE}
 knitr::include_graphics("img/complexity.png")
 ```
 
@@ -119,7 +119,7 @@ It includes sequential runs with all inputs, outputs, and variable statistics.
 
 _Work in Progress..._
 
-## Citation
+## About
 
 This work is part of [Streets4All Project](https://streets4all.tecnico.ulisboa.pt), developed at the University of Lisbon and at the University of Coimbra, and funded by Fundação para a Ciência e Tecnologia (PT).
 

@@ -2,10 +2,11 @@ Package: SiteSelection
 Title: An R script to find complex areas for the Streets4All Project
 Version: 0.2.0
 Authors@R: 
-    person("Rosa", "Felix", , "rosamfelix@@tecnico.ulisboa.pt", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-5642-6006"))
+  c(person("Rosa", "Félix", , "rosamfelix@@tecnico.ulisboa.pt", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5642-6006")),
     person("Gabriel", "Valença", , "gabrielvalenca@tecnico.ulisboa.pt", role = "aut",
-           comment = c(ORCID = "0000-0002-3684-3005"))
+           comment = c(ORCID = "0000-0002-3684-3005")))
+Maintainer: Rosa Félix <rosamfelix@tecnico.ulisboa.pt>
 Description: SiteSelection aims to find areas for a dynamic street
     re-allocation experiment.  It consist in a process of multi criteria
     to select the cell locations of a giver city or neighborhood where the
@@ -18,3 +19,24 @@ Depends:
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Imports:
+    dplyr,
+    ggplot2,
+    leaflet,
+    lubridate,
+    qgisprocess,
+    readr,
+    scales,
+    sf,
+    sfheaders,
+    stplanr,
+    stringr,
+    tibble,
+    tidyr,
+    targets,
+    openxlsx
+Suggests:
+    mapview,
+    sfnetworks,
+    viznetwork
+URL: https://u-shift.github.io/SiteSelection/

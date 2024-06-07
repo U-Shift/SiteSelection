@@ -92,10 +92,6 @@ If you want to see the filtered cells (candidates), you can load the
 `site_selection` object and plot it, with *complex* and *very complex*
 cells (transit layer considered).
 
-``` r
-knitr::include_graphics("img/complexity.png")
-```
-
 <img src="img/complexity.png" width="660" />
 
 When the process is not complete, you may have an error like this
@@ -123,7 +119,7 @@ statistics.
 
 *Work in Progress…*
 
-## Citation
+## About
 
 This work is part of [Streets4All
 Project](https://streets4all.tecnico.ulisboa.pt), developed at the

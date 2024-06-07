@@ -1,0 +1,23 @@
+url: https://u-shift.github.io/SiteSelection/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+navbar:
+  structure:
+    left:
+    - intro
+    - reference
+    - articles
+    - news
+    right:
+    - search
+    - github
+home:
+  links:
+  - text: Streets4All
+    href: https://streets4all.tecnico.ulisboa.pt
+footer:
+  structure:
+    left: developed_by
+    right: built_with
+
