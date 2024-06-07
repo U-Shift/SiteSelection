@@ -83,7 +83,7 @@ And you should have something like this
 
 ```{r echo=FALSE}
 # requires targets
-knitr::include_graphics("man/img/tar_viz_run.png")
+knitr::include_graphics("man/figures/tar_viz_run.png")
 ```
 
 ```{r eval=FALSE}
@@ -94,13 +94,13 @@ tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") #ranked cells
 ```
 ```{r echo=FALSE}
-knitr::include_graphics("man/img/tar_result.png")
+knitr::include_graphics("man/figures/tar_result.png")
 ```
 
 If you want to see the filtered cells (candidates), you can load the `site_selection` object and plot it, with *complex* and *very complex* cells (transit layer considered).
 
 ```{r echo=FALSE}
-knitr::include_graphics("man/img/complexity.png")
+knitr::include_graphics("man/figures/complexity.png")
 ```
 
 
@@ -110,7 +110,7 @@ When the process is not complete, you may have an error like this
 tar_visnetwork()
 ```
 ```{r echo=FALSE}
-knitr::include_graphics("man/img/tar_viz_werror.png")
+knitr::include_graphics("man/figures/tar_viz_werror.png")
 ```
 
 ### Work with non-administrative boundary

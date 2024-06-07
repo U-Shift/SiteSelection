@@ -83,7 +83,7 @@ tar_visnetwork(targets_only = TRUE) # or false, to show objects
 
 And you should have something like this
 
-<img src="man/img/tar_viz_run.png" width="1767" />
+<img src="man/figures/tar_viz_run.png" width="1767" />
 
 ``` r
 tar_make()
@@ -93,13 +93,13 @@ tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") #ranked cells
 ```
 
-<img src="man/img/tar_result.png" width="629" />
+<img src="man/figures/tar_result.png" width="629" />
 
 If you want to see the filtered cells (candidates), you can load the
 `site_selection` object and plot it, with *complex* and *very complex*
 cells (transit layer considered).
 
-<img src="man/img/complexity.png" width="660" />
+<img src="man/figures/complexity.png" width="660" />
 
 When the process is not complete, you may have an error like this
 
@@ -107,7 +107,7 @@ When the process is not complete, you may have an error like this
 tar_visnetwork()
 ```
 
-<img src="man/img/tar_viz_werror.png" width="689" />
+<img src="man/figures/tar_viz_werror.png" width="689" />
 
 ### Work with non-administrative boundary
 
