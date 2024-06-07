@@ -125,20 +125,20 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_visnetwork.html" class="external-link">tar_visnetwork</a></span><span class="op">(</span>targets_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># or false, to show objects</span></span></code></pre></div>
 <p>And you should have something like this</p>
-<p><img src="man/img/tar_viz_run.png" width="1767"></p>
+<p><img src="reference/figures/tar_viz_run.png" width="1767"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># let it run</span></span>
 <span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_load.html" class="external-link">tar_load</a></span><span class="op">(</span><span class="va">grid_all</span><span class="op">)</span></span>
 <span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html" class="external-link">mapview</a></span><span class="op">(</span><span class="va">grid_all</span>, zcol<span class="op">=</span><span class="st">"score"</span><span class="op">)</span> <span class="co">#ranked cells</span></span></code></pre></div>
-<p><img src="man/img/tar_result.png" width="629"></p>
+<p><img src="reference/figures/tar_result.png" width="629"></p>
 <p>If you want to see the filtered cells (candidates), you can load the <code>site_selection</code> object and plot it, with <em>complex</em> and <em>very complex</em> cells (transit layer considered).</p>
-<p><img src="man/img/complexity.png" width="660"></p>
+<p><img src="reference/figures/complexity.png" width="660"></p>
 <p>When the process is not complete, you may have an error like this</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_visnetwork.html" class="external-link">tar_visnetwork</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="man/img/tar_viz_werror.png" width="689"></p>
+<p><img src="reference/figures/tar_viz_werror.png" width="689"></p>
 </div>
 <div class="section level3">
 <h3 id="work-with-non-administrative-boundary">Work with non-administrative boundary<a class="anchor" aria-label="anchor" href="#work-with-non-administrative-boundary"></a>
