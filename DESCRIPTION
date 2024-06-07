@@ -1,0 +1,18 @@
+Package: SiteSelection
+Title: An R script to find complex areas for the Streets4All Project
+Version: 0.2.0
+Authors@R: c(
+    person(given = "Rosa", family = "Felix", email = "rosamfelix@@tecnico.ulisboa.pt", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5642-6006")),
+    person(given = "Gabriel", family = "Valença", email = "gabrielvalenca@tecnico.ulisboa.pt", role = c("aut"),
+           comment = c(ORCID = "0000-0002-3684-3005"))
+  )
+Description: SiteSelection aims to find areas for a dynamic street re-allocation experiment.
+  It consist in a process of multi criteria to select the cell locations of a giver city or neighborhood where the street space is more disputed by different transport modes and street activities.
+  SiteSelection is a full script that uses a dynamic pipeline, by using targets R package.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Depends:
+    R (>= 3.6.0)
