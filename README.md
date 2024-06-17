@@ -6,9 +6,10 @@ experiment.
 
 It consist in a process of multi criteria to select the cell locations
 of a given city or neighbourhood where the street space is more disputed
-by different transport modes and street activities. SiteSelection is a
-full script that uses a dynamic pipeline, and gathers and processes
-information on:
+by different transport modes and street activities.
+
+SiteSelection is a full script that uses a dynamic pipeline, and gathers
+and processes information on:
 
 - Road network centrality measures (betweenness, closeness, degree)
 - Population density
