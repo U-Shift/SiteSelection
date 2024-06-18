@@ -42,6 +42,7 @@ inputdata/*
 !inputdata/map1.geojson
 analysis/*
 /analysis/*
+!analysis/analysis_table_loop.Rds
 traffic.log
 SiteSelection.qgz
 _targets/meta/meta*

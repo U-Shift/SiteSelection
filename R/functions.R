@@ -24,6 +24,8 @@ select_city = function(CITY, GEOJSON, GEOJSON_name){
     
     CITY = CITY
     
+    message("Processing city: ", CITY)
+    
   } else {
     
     CITY = GEOJSON_name
@@ -55,6 +57,7 @@ get_citylimit = function(CITY, GEOJSON, GEOJSON_name) {
     
     }else{
       
+      CITY = CITY
   
     if(file.exists(paste0("outputdata/", CITY, "/CITYlimit.geojson"))){
       
@@ -713,12 +716,12 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     if (!dir.exists("analysis")) {
       dir.create("analysis")}
     
-    analysis_table = readRDS("analysis/analysis_table.Rds")  
+    analysis_table = readRDS("analysis/analysis_table_loop.Rds")  
     # analysis_table = analysis_row # first run
     analysis_table = bind_rows(analysis_table, analysis_row)
-    saveRDS(analysis_table, "analysis/analysis_table.Rds")
+    saveRDS(analysis_table, "analysis/analysis_table_loop.Rds")
     
-    openxlsx::write.xlsx(analysis_table, file = "analysis/analysis_table.xlsx", overwrite = TRUE)
+    openxlsx::write.xlsx(analysis_table, file = "analysis/analysis_table_loop.xlsx", overwrite = TRUE)
     
   }
 

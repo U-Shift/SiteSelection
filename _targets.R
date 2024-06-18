@@ -5,7 +5,7 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Lisboa"       # Municipality name in Portugal
+# Sys.getenv("SELECTED_CITY") = "Lisboa"       # Municipality name in Portugal
 GEOJSON = FALSE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
 cellsize_input = c(400, 400)# in meters
@@ -65,24 +65,29 @@ if(!file.exists("outputdata")){
 list(
   tar_target(
     name = CITY,
-    command = select_city(CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON)),
+    command = select_city(CITY = Sys.getenv("SELECTED_CITY"), GEOJSON_name = GEOJSON_input, GEOJSON),
+    cue = tar_cue(mode = "always")),
   tar_target(
     name = CITYlimit,
-    command = get_citylimit(CITY, GEOJSON, GEOJSON_name = GEOJSON_input)),
+    command = get_citylimit(CITY = Sys.getenv("SELECTED_CITY"), GEOJSON, GEOJSON_name = GEOJSON_input),
+    cue = tar_cue(mode = "always")),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input)),
+    command = make_grid(CITYlimit, CITY = Sys.getenv("SELECTED_CITY"), cellsize = cellsize_input, square = square_input),
+    cue = tar_cue(mode = "always")),
   tar_target(
     name = road_network,
-    command = get_osm(CITYlimit, CITY)),
+    command = get_osm(CITYlimit, CITY = Sys.getenv("SELECTED_CITY")),
+    cue = tar_cue(mode = "always")),
   tar_target(
     name = road_network_clean,
-    command = clean_osm(road_network, CITY, build_osm),
+    command = clean_osm(road_network, CITY = Sys.getenv("SELECTED_CITY"), build_osm),
+    cue = tar_cue(mode = "always")),
     # deployment = "worker", #paralell processing
-  ),
   tar_target(
     name = centrality_nodes,
-    command = get_centrality(road_network_clean, CITY)),
+    command = get_centrality(road_network_clean, CITY = Sys.getenv("SELECTED_CITY")),
+    cue = tar_cue(mode = "always")),
   tar_target(
     name = centrality_grid,
     command = get_centrality_grid(centrality_nodes, grid)),
@@ -118,18 +123,21 @@ list(
   
   tar_target(
     name = grid_all,
-    command = make_grid_all(grid, CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON,
+    command = make_grid_all(grid, CITY = Sys.getenv("SELECTED_CITY"), GEOJSON_name = GEOJSON_input, GEOJSON,
                             classify_candidates_transit, classify_candidates_landuse,
-                            classify_candidates_centrality, classify_candidates_density)),
+                            classify_candidates_centrality, classify_candidates_density),
+    cue = tar_cue(mode = "always")),
    
   tar_target(
     name = site_selection,
-    command = get_site_selection(CITY = CITY_input, grid_all, GEOJSON_name = GEOJSON_input, GEOJSON)),
+    command = get_site_selection(CITY = Sys.getenv("SELECTED_CITY"), grid_all, GEOJSON_name = GEOJSON_input, GEOJSON),
+    cue = tar_cue(mode = "always")),
   
   tar_target(
     name = analysis_save,
-    command = export_analysis(grid_all, site_selection, CITY_input, GEOJSON, GEOJSON_input, analysis,
+    command = export_analysis(grid_all, site_selection, Sys.getenv("SELECTED_CITY"), GEOJSON, GEOJSON_input, analysis,
                               cellsize_input, square_input, build_osm, degree_min, betweeness_range,
-                              closeness_range, population_min, entropy_min, freq_bus))
+                              closeness_range, population_min, entropy_min, freq_bus),
+    cue = tar_cue(mode = "always"))
 )
   

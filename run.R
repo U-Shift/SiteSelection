@@ -9,10 +9,46 @@ targets::tar_manifest()
 targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
 
-targets::tar_make()
-# targets::tar_crew() # parallel processing stats
+library(dplyr)
+# CENSUSpoint = sf::st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/CENSUSpoint.gpkg", quiet = TRUE)
+# CENSUSpop = CENSUSpoint |> 
+#   sf::st_drop_geometry() |>
+#   select(Concelho, N_INDIVIDUOS) |>
+#   group_by(Concelho) |>
+#   summarise(population = sum(N_INDIVIDUOS))
+# 
+# CAOPcidades = CAOP_municipios |> 
+#   sf::st_drop_geometry() |>
+#   mutate(Cidadona = toupper(Concelho)) |>
+#   left_join(CENSUSpop, by = c("Cidadona" = "Concelho"))
+# saveRDS(CAOPcidades, "inputdata/CAOPcidades.Rds")
 
-# targets::tar_meta(fields = error, complete_only = TRUE) # debugging
+CAOPcidades = readRDS("inputdata/CAOPcidades.Rds")
+cidades = CAOPcidades |> 
+  filter(population >= 25000) |> # set here desired population min
+  select(Concelho) |> 
+  arrange(Concelho)
+cidades = cidades$Concelho |> order()
+
+sample = c("Almada", "Viseu", "Tavira")
+
+# clean and fresh analysis table
+analysis_table_loop = readRDS("analysis/analysis_table_loop.Rds")
+analysis_table_loop = analysis_table_loop[-c(1:nrow(analysis_table_loop)),]
+saveRDS(analysis_table_loop, "analysis/analysis_table_loop.Rds")
+
+
+# run loop for all cities
+# FIRST SET THE DESIRED 
+for (cidade in cidades) { # change for sample for testing with more than one
+  Sys.setenv(SELECTED_CITY = cidade)
+  # Sys.setenv(SELECTED_CITY = "Tavira") #test with only one case
+  targets::tar_make()
+}
+
+analysis_table_loop = readRDS("analysis/analysis_table_loop.Rds")
+
+
 
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="all_candidate")
