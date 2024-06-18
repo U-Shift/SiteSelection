@@ -28,7 +28,7 @@ cidades = CAOPcidades |>
   filter(population >= 25000) |> # set here desired population min
   select(Concelho) |> 
   arrange(Concelho)
-cidades = cidades$Concelho |> order()
+cidades = cidades$Concelho
 
 sample = c("Almada", "Viseu", "Tavira")
 
