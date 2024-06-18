@@ -38,12 +38,21 @@ analysis_table_loop = analysis_table_loop[-c(1:nrow(analysis_table_loop)),]
 saveRDS(analysis_table_loop, "analysis/analysis_table_loop.Rds")
 
 
+# CONTINUE FROM HERE IF BREAKS --------------------------------------------
+
+# run only remaining
+already_done = readRDS("analysis/analysis_table_loop.Rds")
+cidades_fwd = cidadesT |> filter(!Concelho %in% already_done$CITY)
+cidades_fwd = cidades_fwd$Concelho
+
 # run loop for all cities
-# FIRST SET THE DESIRED 
-for (cidade in cidades) { # change for sample for testing with more than one
+#### FIRST SET THE DESIRED SETTINGS AT _targets.R ####
+for (cidade in cidades_fwd) { # change for sample for testing with more than one, or cities for all
   Sys.setenv(SELECTED_CITY = cidade)
   # Sys.setenv(SELECTED_CITY = "Tavira") #test with only one case
   targets::tar_make()
+  print("wait a bit")
+  Sys.sleep(100) # wait 1 min before next, so we can get overpass api limits
 }
 
 analysis_table_loop = readRDS("analysis/analysis_table_loop.Rds")
