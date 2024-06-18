@@ -40,6 +40,7 @@ database/
 outputdata/
 inputdata/*
 !inputdata/map1.geojson
+!inputdata/CAOPcidades.Rds
 analysis/*
 /analysis/*
 !analysis/analysis_table_loop.Rds
