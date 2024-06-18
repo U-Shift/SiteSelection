@@ -24,11 +24,11 @@ library(dplyr)
 # saveRDS(CAOPcidades, "inputdata/CAOPcidades.Rds")
 
 CAOPcidades = readRDS("inputdata/CAOPcidades.Rds")
-cidades = CAOPcidades |> 
+cidadesT = CAOPcidades |> 
   filter(population >= 25000) |> # set here desired population min
   select(Concelho) |> 
   arrange(Concelho)
-cidades = cidades$Concelho
+cidades = cidadesT$Concelho
 
 sample = c("Almada", "Viseu", "Tavira")
 
@@ -48,8 +48,8 @@ cidades_fwd = cidades_fwd$Concelho
 # run loop for all cities
 #### FIRST SET THE DESIRED SETTINGS AT _targets.R ####
 for (cidade in cidades_fwd) { # change for sample for testing with more than one, or cities for all
-  Sys.setenv(SELECTED_CITY = cidade)
-  # Sys.setenv(SELECTED_CITY = "Tavira") #test with only one case
+  # Sys.setenv(SELECTED_CITY = cidade)
+  Sys.setenv(SELECTED_CITY = "Amarante") #test with only one case
   targets::tar_make()
   print("wait a bit")
   Sys.sleep(100) # wait 1 min before next, so we can get overpass api limits
