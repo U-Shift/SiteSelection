@@ -57,7 +57,11 @@ for (cidade in cidades_fwd) { # change for sample for testing with more than one
 
 analysis_table_loop = readRDS("analysis/analysis_table_loop.Rds")
 
-
+# join population
+analysis_table_loop_wpop = analysis_table_loop |> 
+  left_join(CAOPcidades |> select(Concelho, population),
+            by = c("CITY" = "Concelho"))
+saveRDS(analysis_table_loop_wpop, "analysis/analysis_table_loop_wpop.Rds")
 
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="all_candidate")
