@@ -25,8 +25,9 @@ library(dplyr)
 
 CAOPcidades = readRDS("inputdata/CAOPcidades.Rds")
 cidadesT = CAOPcidades |> 
-  filter(population >= 25000) |> # set here desired population min
+  filter(population >= 20000) |> # set here desired population min
   select(Concelho) |> 
+  distinct(Concelho) |> 
   arrange(Concelho)
 cidades = cidadesT$Concelho
 
