@@ -53,7 +53,7 @@ cidades_fwd = cidades_fwd$Concelho
 # run loop for all cities
 #### FIRST SET THE DESIRED SETTINGS AT _targets.R ####
 for (cidade in sample) { # change for sample for testing with more than one, or cities for all
-  Sys.setenv(SELECTED_CITY = cidade)
+  Sys.setenv(SELECTED_CITY = cidades_fwd)
   # Sys.setenv(SELECTED_CITY = "Amarante") #test with only one case
   targets::tar_make()
   # print("wait a bit")
