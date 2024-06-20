@@ -14,11 +14,11 @@ build_osm = FALSE           # clean osm road network again?
 analysis = TRUE             # export input parameters and results to a xls file? default: FALSE
 
 # Thresholds
-population_min = median       # mean or median? default: mean
+population_min = mean       # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
-betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
+betweeness_range = 0.25     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
-entropy_min = 0.35          # value to exclude (lower) default: 0.5
+entropy_min = 0.50          # value to exclude (lower) default: 0.5
 freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
 
 #########################################
