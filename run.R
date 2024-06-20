@@ -24,6 +24,7 @@ library(dplyr)
 # saveRDS(CAOPcidades, "inputdata/CAOPcidades.Rds")
 
 CAOPcidades = readRDS("inputdata/CAOPcidades.Rds")
+CAOPcidades = CAOPcidades[-197,] #remove extra ourem
 cidadesT = CAOPcidades |> 
   filter(population >= 20000) |> # set here desired population min
   select(Concelho) |> 
