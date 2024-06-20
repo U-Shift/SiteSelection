@@ -40,19 +40,19 @@ sample = c("Almada", "Viseu", "Tavira")
 
 
 # CONTINUE FROM HERE IF BREAKS --------------------------------------------
-
-# run only remaining
-already_done = readRDS("analysis/analysis_table_loop.Rds")
-already_done = already_done |>
-  filter(cellsize_a == 400) |>
-  select(CITY)
-cidades_fwd = cidadesT |>
-  filter(!Concelho %in% already_done$CITY)
-cidades_fwd = cidades_fwd$Concelho
+# 
+# # run only remaining
+# already_done = readRDS("analysis/analysis_table_loop.Rds")
+# already_done = already_done |>
+#   filter(cellsize_a == 400) |>
+#   select(CITY)
+# cidades_fwd = cidadesT |>
+#   filter(!Concelho %in% already_done$CITY)
+# cidades_fwd = cidades_fwd$Concelho
 
 # run loop for all cities
 #### FIRST SET THE DESIRED SETTINGS AT _targets.R ####
-for (cidade in cidades_fwd) { # change for sample for testing with more than one, or cities for all
+for (cidade in cidades) { # change for sample for testing with more than one, or cities for all
   Sys.setenv(SELECTED_CITY = cidade)
   # Sys.setenv(SELECTED_CITY = "Amarante") #test with only one case
   targets::tar_make()
