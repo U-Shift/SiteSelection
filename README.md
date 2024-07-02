@@ -140,6 +140,6 @@ to reallocate road space? *Environment and Planning B: Urban Analytics
 and City Science*, 0(0). <https://doi.org/10.1177/23998083231217770>.
 
 Please refer to this work as:  
-Félix R, Gabriel V (2024). *SiteSelection: An R script to find complex
+Félix R, Valença G (2024). *SiteSelection: An R script to find complex
 areas for the Streets4All Project*. R package version 0.2,
 <https://github.com/U-Shift/SiteSelection/>.
