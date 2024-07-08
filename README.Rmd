@@ -7,16 +7,16 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**SiteSelection** aims to find areas for a dynamic street re-allocation experiment.
+**SiteSelection** aims to find complex zones to reallocate street space in the city, characterized by having limited and disputed spaces. These zones are also areas that have the potential for reallocating space dynamically over time, especially when multimodal demands are complementary. 
 
-It consist in a process of multi criteria to select the cell locations of a given city or neighbourhood where the street space is more disputed by different transport modes and street activities. 
+It consists in a process of multi criteria to select the cell locations of a given city or neighbourhood where the street space is more disputed by different transport modes and street activities. 
 
 SiteSelection is a full script that uses a dynamic pipeline, and gathers and processes information on:
 
 * Road network centrality measures (betweenness, closeness, degree)
 * Population density
 * POI and activities
-* Public Transit demand
+* Public Transit Frequency
 * Traffic levels (_TBC_)
 
 ## Sources
