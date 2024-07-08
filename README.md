@@ -1,10 +1,13 @@
 SiteSelection
 ================
 
-**SiteSelection** aims to find areas for a dynamic street re-allocation
-experiment.
+**SiteSelection** aims to find complex zones to reallocate street space
+in the city, characterized by having limited and disputed spaces. These
+zones are also areas that have the potential for reallocating space
+dynamically over time, especially when multimodal demands are
+complementary.
 
-It consist in a process of multi criteria to select the cell locations
+It consists in a process of multi criteria to select the cell locations
 of a given city or neighbourhood where the street space is more disputed
 by different transport modes and street activities.
 
@@ -14,7 +17,7 @@ and processes information on:
 - Road network centrality measures (betweenness, closeness, degree)
 - Population density
 - POI and activities
-- Public Transit demand
+- Public Transit Frequency
 - Traffic levels (*TBC*)
 
 ## Sources
