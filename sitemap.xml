@@ -1,21 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/404.html</loc>
-  </url>
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/index.html</loc>
-  </url>
-  <url>
-    <loc>https://u-shift.github.io/SiteSelection/reference/index.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://u-shift.github.io/SiteSelection/404.html</loc></url>
+<url><loc>https://u-shift.github.io/SiteSelection/LICENSE-text.html</loc></url>
+<url><loc>https://u-shift.github.io/SiteSelection/LICENSE.html</loc></url>
+<url><loc>https://u-shift.github.io/SiteSelection/authors.html</loc></url>
+<url><loc>https://u-shift.github.io/SiteSelection/index.html</loc></url>
+<url><loc>https://u-shift.github.io/SiteSelection/reference/index.html</loc></url>
 </urlset>
+
