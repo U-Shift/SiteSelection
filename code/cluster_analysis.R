@@ -75,7 +75,7 @@ rect.hclust(modelc, 10, border = "red")
 
 modelw <- hclust(distance, "ward.D2")
 plot(modelw, labels = df$CITY, xlab = "Distance - Ward method", cex=0.6, hang = -1)
-rect.hclust(modelw, 9, border = "orange")
+rect.hclust(modelw, 9, border = "red")
 
 #5 Centroid method
 
