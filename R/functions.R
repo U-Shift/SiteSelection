@@ -10,6 +10,7 @@
 #' @import tibble
 #' @import tidyr
 #' @import dplyr
+#' @import h3jsr
 #' @importFrom stats frequency median quantile sd
 #' @importFrom utils methods
 
@@ -86,9 +87,24 @@ get_citylimit = function(CITY, GEOJSON, GEOJSON_name) {
 
 # make_grid ---------------------------------------------------------------
 
-make_grid = function(CITYlimit, CITY, cellsize_input, square_input)  {
+make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_res)  {
   
-  
+  if (use_h3 == TRUE){
+    
+    grid = CITYlimit |>  
+      polygon_to_cells(res = h3_res, simple = FALSE)  # res = 9 is 500m
+    grid = grid$h3_addresses |>
+      cell_to_polygon(simple = FALSE)
+    mutate(ID = seq(1:nrow(.))) # give an ID to each cell
+    grid = grid |>
+      mutate(ID = seq(1:nrow(grid)))  # give an ID to each cell
+    h3_index = grid |> st_drop_geometry() # save h3_address for later
+    grid = grid |>
+      select(-h3_address)
+    
+    saveRDS(h3_index, paste0("outputdata/", CITY, "/h3_index.Rds"))
+    
+  } else {
   CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
   # cellsize = c(200, 200) #200x200m
 
@@ -103,7 +119,7 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input)  {
     st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
-  
+  }
  
   st_write(grid, paste0("outputdata/", CITY, "/grid.geojson"), delete_dsn = TRUE)
   
@@ -508,7 +524,10 @@ find_transit_candidates = function(transit_grid, freq_bus) {
 
 # grid_all ----------------------------------------------------------------
 
-make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name, centrality_candidates, density_candidates, transit_candidates, landuse_candidates) {
+make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name,
+                         centrality_candidates, density_candidates,
+                         transit_candidates, landuse_candidates,
+                         use_h3) {
   
   grid_all = grid |> 
       left_join(centrality_candidates |> st_drop_geometry(), by = "ID") |>
@@ -520,6 +539,14 @@ make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name, centrality_candidate
     
   # if there is no transit stops, all_candidate does not sum the transit_candidate
   # if (max(grid_all$transit_candidate, na.rm = TRUE) == 0){
+  
+  if (use_h3 == TRUE){
+    
+    h3_index = readRDS(paste0("outputdata/", CITY, "/h3_index.Rds"))
+    
+    grid_all = grid_all |> 
+      left_join(h3_index, by = "ID")
+  }
     
     grid_all = grid_all |> 
     mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
@@ -628,7 +655,7 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
 # export analysis and variable inputs ------------------------------------------------
 
 export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSON_input, analysis,
-                           cellsize_input, square_input, build_osm, degree_min, betweeness_range,
+                           cellsize_input, square_input, use_h3, h3_res, build_osm, degree_min, betweeness_range,
                            closeness_range, population_min, entropy_min, freq_bus) {
   
   if (analysis == TRUE){
@@ -638,9 +665,10 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     analysis_row = data.frame(timestamp = Sys.time()) |> 
       mutate(CITY = ifelse(GEOJSON == FALSE, CITY_input, NA),
              GEOJSON_name = ifelse(GEOJSON == TRUE, GEOJSON_input, NA),
-             cellsize_a = cellsize_input[1],
-             cellsize_b = cellsize_input[2],
-             square = square_input,
+             h3_res = ifelse(use_h3 == TRUE, h3_res, NA),
+             cellsize_a = ifelse(use_h3 == FALSE, cellsize_input[1], NA),
+             cellsize_b = ifelse(use_h3 == FALSE, cellsize_input[2], NA),
+             square = ifelse(use_h3 == FALSE, square_input, "hex h3"),
              build_osm = build_osm,
              degree_min = ifelse(methods(degree_min)[1] == "mean.Date", "mean", "median"),
              betweeness_range = betweeness_range,

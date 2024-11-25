@@ -10,6 +10,8 @@ GEOJSON = FALSE             # use a different limit? made with https://geojson.i
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
 cellsize_input = c(400, 400)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
+use_h3 = TRUE               # use h3 to create universal grid?
+h3_res = 9                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
 build_osm = FALSE           # clean osm road network again?
 analysis = TRUE             # export input parameters and results to a xls file? default: FALSE
 
@@ -33,7 +35,7 @@ library(targets)
 # Set target options:
 tar_option_set(
   packages = c("tibble", "dplyr", "tidyr", "sf", "sfheaders", "stplanr", "osmdata", "sfnetworks",
-               "tidygraph", "scales", "qgisprocess"), # packages that your targets need to run
+               "tidygraph", "scales", "qgisprocess", "h3jsr"), # packages that your targets need to run
   format = "rds", # default storage format
   storage = "worker",
   retrieval = "worker",
@@ -71,7 +73,7 @@ list(
     command = get_citylimit(CITY, GEOJSON, GEOJSON_name = GEOJSON_input)),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input)),
+    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input, h3_hex = use_h3, h3_res = h3_res)),
   tar_target(
     name = road_network,
     command = get_osm(CITYlimit, CITY)),
@@ -118,7 +120,7 @@ list(
   
   tar_target(
     name = grid_all,
-    command = make_grid_all(grid, CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON,
+    command = make_grid_all(grid, CITY = CITY_input, GEOJSON_name = GEOJSON_input, GEOJSON, use_h3,
                             classify_candidates_transit, classify_candidates_landuse,
                             classify_candidates_centrality, classify_candidates_density)),
    
@@ -129,7 +131,7 @@ list(
   tar_target(
     name = analysis_save,
     command = export_analysis(grid_all, site_selection, CITY_input, GEOJSON, GEOJSON_input, analysis,
-                              cellsize_input, square_input, build_osm, degree_min, betweeness_range,
+                              cellsize_input, square_input, use_h3, build_osm, degree_min, betweeness_range,
                               closeness_range, population_min, entropy_min, freq_bus))
 )
   
