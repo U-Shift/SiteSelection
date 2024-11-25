@@ -3,7 +3,7 @@
 
 library(tidyverse)
 library(sf)
-
+library(h3jsr)
 
 
 # Get a polygon with the city boundaries ------------------------------------------------------
@@ -36,3 +36,23 @@ GRID = st_make_grid(CITYlimit_meters,
 mapgrid = mapview::mapview(GRID, alpha.regions = 0.2)
 
 
+
+# use h3 pkg --------------------------------------------------------------
+# Resolution: https://h3geo.org/docs/core-library/restable/ 
+# h3_res = 10 # 150m diameter
+h3_res = 9 # 400m diameter
+# h3_res = 8 # 1060m diameter
+
+GRID_h3 = CITYlimit |>  
+  polygon_to_cells(res = h3_res, simple = FALSE)  # res = 9 is 500m
+GRID_h3 = GRID_h3$h3_addresses |>
+  cell_to_polygon(simple = FALSE)
+  mutate(ID = seq(1:nrow(.))) # give an ID to each cell
+GRID_h3 = GRID_h3 |>
+  mutate(ID = seq(1:nrow(GRID_h3)))  # give an ID to each cell
+h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
+GRID_h3 = GRID_h3 |>
+  select(-h3_address)
+
+mapgrid_h3 = mapview::mapview(GRID_h3, alpha.regions = 0.2)
+mapgrid_h3
