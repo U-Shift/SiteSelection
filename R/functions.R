@@ -95,7 +95,7 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
       polygon_to_cells(res = h3_res, simple = FALSE)  # res = 9 is 500m
     grid = grid$h3_addresses |>
       cell_to_polygon(simple = FALSE)
-    mutate(ID = seq(1:nrow(.))) # give an ID to each cell
+    # mutate(ID = seq(1:nrow(.))) # give an ID to each cell
     grid = grid |>
       mutate(ID = seq(1:nrow(grid)))  # give an ID to each cell
     h3_index = grid |> st_drop_geometry() # save h3_address for later

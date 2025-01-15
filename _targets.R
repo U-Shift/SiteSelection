@@ -13,7 +13,7 @@ square_input = TRUE         # TRUE = squares, FALSE = hexagons
 use_h3 = TRUE               # use h3 to create universal grid?
 h3_res = 9                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
 build_osm = FALSE           # clean osm road network again?
-analysis = TRUE             # export input parameters and results to a xls file? default: FALSE
+analysis = FALSE             # export input parameters and results to a xls file? default: FALSE
 
 # Thresholds
 population_min = median       # mean or median? default: mean
@@ -73,7 +73,7 @@ list(
     command = get_citylimit(CITY, GEOJSON, GEOJSON_name = GEOJSON_input)),
   tar_target(
     name = grid,
-    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input, h3_hex = use_h3, h3_res = h3_res)),
+    command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input, use_h3 = use_h3, h3_res = h3_res)),
   tar_target(
     name = road_network,
     command = get_osm(CITYlimit, CITY)),
