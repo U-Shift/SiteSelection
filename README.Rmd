@@ -133,7 +133,7 @@ _Work in Progress..._
 This work is part of [Streets4All Project](https://streets4all.tecnico.ulisboa.pt), developed at the University of Lisbon and at the University of Coimbra, and funded by Fundação para a Ciência e Tecnologia (PT).
 
 The concept is based in:  
-Valença, G., Moura, F., & Morais de Sá, A. (2023). Where is it complex to reallocate road space? *Environment and Planning B: Urban Analytics and City Science*, 0(0). https://doi.org/10.1177/23998083231217770.
+Valença, G., Moura, F., & Morais de Sá, A. (2024). Where is it complex to reallocate road space? *Environment and Planning B: Urban Analytics and City Science*, 51(6). https://doi.org/10.1177/23998083231217770.
 
 
 Please refer to this work as:  
