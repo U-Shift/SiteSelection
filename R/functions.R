@@ -360,6 +360,9 @@ get_density_grid = function(grid, CITYcensus) {
     summarise(population = sum(N_INDIVIDUOS)) |> 
     ungroup()
   
+  # ## DEBUG
+  # saveRDS(density_grid, paste0("outputdata/", "Chaves", "/density_grid.Rds"))
+  
 }
 
 
@@ -535,19 +538,14 @@ make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name,
       left_join(transit_candidates |>
                   # select(-frequency) |> TO-DO tidy this
                   st_drop_geometry(), by = "ID") |>
-      left_join(landuse_candidates, by = "ID") 
-    
+      left_join(landuse_candidates |> st_drop_geometry(), by = "ID") 
+  
+  ## DEBUG  
+  # st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all_DEBUG.gpkg"), delete_dsn = TRUE)
+  
   # if there is no transit stops, all_candidate does not sum the transit_candidate
   # if (max(grid_all$transit_candidate, na.rm = TRUE) == 0){
   
-  if (use_h3 == TRUE){
-    
-    h3_index = readRDS(paste0("outputdata/", CITY, "/h3_index.Rds"))
-    
-    grid_all = grid_all |> 
-      left_join(h3_index, by = "ID")
-  }
-    
     grid_all = grid_all |> 
     mutate(all_candidate = ifelse(degree_candidate == 1 & betweenness_candidate == 1 &
                                       closeness_candidate == 1 & population_candidate == 1 &
@@ -567,7 +565,16 @@ make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name,
   #   mutate(all_candidate = ifelse(is.na(all_candidate), 0, all_candidate))
   #   
   # }
-  
+ 
+  # add h3 info 
+  if (use_h3 == TRUE){
+    
+    h3_index = readRDS(paste0("outputdata/", CITY, "/h3_index.Rds"))
+    
+    grid_all = grid_all |> 
+      left_join(h3_index, by = "ID") # add hex codes
+  }
+    
   # for map legend purposes
   grid_all = grid_all |> 
     rowwise() |> # make sure the operator occurs on each row

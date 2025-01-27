@@ -5,12 +5,12 @@
 
 
 # Set defaults HERE ######################
-CITY_input = "Lisboa"       # Municipality name in Portugal
+CITY_input = "Entroncamento"       # Municipality name in Portugal
 GEOJSON = FALSE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
-cellsize_input = c(400, 400)# in meters
+cellsize_input = c(600, 600)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
-use_h3 = TRUE               # use h3 to create universal grid?
+use_h3 = FALSE               # use h3 to create universal grid?
 h3_res = 9                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
 build_osm = FALSE           # clean osm road network again?
 analysis = FALSE             # export input parameters and results to a xls file? default: FALSE
