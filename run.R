@@ -5,6 +5,9 @@
 # See https://books.ropensci.org/targets/hpc.html
 # to learn about your options.
 
+# use version >= 1.8.0 !
+# devtools::install_version("targets",version = "1.8.0")
+
 targets::tar_manifest()
 targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
@@ -21,3 +24,5 @@ mapview::mapview(grid_all, zcol="score") #ranked
 targets::tar_load(site_selection)
 mapview::mapview(site_selection, zcol="complexity")
 
+
+tar_meta(grid_all)$error
