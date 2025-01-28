@@ -131,7 +131,7 @@ list(
   tar_target(
     name = analysis_save,
     command = export_analysis(grid_all, site_selection, CITY_input, GEOJSON, GEOJSON_input, analysis,
-                              cellsize_input, square_input, use_h3, build_osm, degree_min, betweeness_range,
+                              cellsize_input, square_input, use_h3, h3_res, build_osm, degree_min, betweeness_range,
                               closeness_range, population_min, entropy_min, freq_bus))
 )
   

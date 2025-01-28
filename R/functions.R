@@ -528,10 +528,10 @@ find_transit_candidates = function(transit_grid, freq_bus) {
 
 # grid_all ----------------------------------------------------------------
 
-make_grid_all = function(grid, CITY, GEOJSON, GEOJSON_name,
-                         centrality_candidates, density_candidates,
+make_grid_all = function(grid, CITY, GEOJSON_name, GEOJSON, use_h3,
                          transit_candidates, landuse_candidates,
-                         use_h3) {
+                         centrality_candidates, density_candidates
+                         ) {
   
   grid_all = grid |> 
       left_join(centrality_candidates |> st_drop_geometry(), by = "ID") |>
@@ -673,10 +673,10 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     analysis_row = data.frame(timestamp = Sys.time()) |> 
       mutate(CITY = ifelse(GEOJSON == FALSE, CITY_input, NA),
              GEOJSON_name = ifelse(GEOJSON == TRUE, GEOJSON_input, NA),
+             square = ifelse(use_h3 == FALSE, square_input, "hex h3"),
              h3_res = ifelse(use_h3 == TRUE, h3_res, NA),
              cellsize_a = ifelse(use_h3 == FALSE, cellsize_input[1], NA),
              cellsize_b = ifelse(use_h3 == FALSE, cellsize_input[2], NA),
-             square = ifelse(use_h3 == FALSE, square_input, "hex h3"),
              build_osm = build_osm,
              degree_min = ifelse(methods(degree_min)[1] == "mean.Date", "mean", "median"),
              betweeness_range = betweeness_range,
