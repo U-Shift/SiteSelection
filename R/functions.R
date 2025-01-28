@@ -11,6 +11,7 @@
 #' @import tidyr
 #' @import dplyr
 #' @import h3jsr
+#' @import openxlsx
 #' @importFrom stats frequency median quantile sd
 #' @importFrom utils methods
 
