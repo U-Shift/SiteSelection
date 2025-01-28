@@ -1,4 +1,5 @@
 #' @import sf
+#' @import sfnetworks
 #' @import ggplot2
 #' @import leaflet
 #' @import lubridate
@@ -8,6 +9,7 @@
 #' @import stringr
 #' @import targets
 #' @import tibble
+#' @import tidygraph
 #' @import tidyr
 #' @import dplyr
 #' @import h3jsr
@@ -240,6 +242,7 @@ clean_osm = function(road_network, CITY, build_osm) {
   # cleaning the unnecessary nodes, using tidygraph and sfnetworks
   road_network_clean = as_sfnetwork(road_network_clean)
   
+ 
   road_network_clean = convert(road_network_clean, to_spatial_smooth) |> 
     activate(edges) |> 
     as_tibble() |>
@@ -751,8 +754,8 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     if (!dir.exists("analysis")) {
       dir.create("analysis")}
     
-    analysis_table = readRDS("analysis/analysis_table.Rds")  
-    # analysis_table = analysis_row # first run
+    # analysis_table = readRDS("analysis/analysis_table.Rds")  
+    analysis_table = analysis_row # first run
     analysis_table = bind_rows(analysis_table, analysis_row)
     saveRDS(analysis_table, "analysis/analysis_table.Rds")
     
