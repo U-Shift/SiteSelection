@@ -39,6 +39,7 @@ Imports:
     targets,
     openxlsx
 Suggests:
+    curl (>= 6.0.1),
     mapview
 URL: https://u-shift.github.io/SiteSelection/,
     https://github.com/U-Shift/SiteSelection
