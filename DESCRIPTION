@@ -15,7 +15,7 @@ Description: SiteSelection aims to find areas for a dynamic street
     pipeline, by using targets R package.
 License: MIT + file LICENSE
 Depends:
-    R (>= 3.6.0)
+    R (>= 4.1.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
