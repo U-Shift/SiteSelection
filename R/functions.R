@@ -757,11 +757,17 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
              max_score = max(as.numeric(grid_all$score), na.rm = TRUE))
     
     if (!dir.exists("analysis")) {
-      dir.create("analysis")}
+      dir.create("analysis")
+    }
     
-    # analysis_table = readRDS("analysis/analysis_table.Rds")  
-    analysis_table = analysis_row # first run
-    analysis_table = bind_rows(analysis_table, analysis_row)
+    if (!file.exists("analysis/analysis_table.Rds")) {
+      analysis_table = analysis_row # first run
+    }
+    else {
+      analysis_table = readRDS("analysis/analysis_table.Rds")
+      analysis_table = bind_rows(analysis_table, analysis_row)
+    }
+    
     saveRDS(analysis_table, "analysis/analysis_table.Rds")
     
     openxlsx::write.xlsx(analysis_table, file = "analysis/analysis_table.xlsx", overwrite = TRUE)
