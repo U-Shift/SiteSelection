@@ -61,15 +61,17 @@ forget to save the file before run!):
 
 ``` r
 # Set defaults HERE ######################
-CITY_input = "Almada"       # Municipality name in Portugal
-GEOJSON = TRUE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
+CITY_input = "Lisboa"       # Municipality name in Portugal
+GEOJSON = FALSE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
-cellsize_input = c(400, 400)# in meters
+cellsize_input = c(600, 600)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
-build_osm = FALSE           # build and clean osm road network again?
-analysis = FALSE            # export input parameters and results to a xls file? default: FALSE
+use_h3 = FALSE              # use h3 to create universal grid?
+h3_res = 8                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
+build_osm = FALSE           # download and clean osm road network again?
+analysis = TRUE            # export input parameters and results to a xls file? default: FALSE
 
-# Thresholds
+# Thresholds for candidate selection
 population_min = median     # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
 betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
@@ -138,9 +140,9 @@ University of Lisbon and at the University of Coimbra, and funded by
 Fundação para a Ciência e Tecnologia (PT).
 
 The concept is based in:  
-Valença, G., Moura, F., & Morais de Sá, A. (2023). Where is it complex
+Valença, G., Moura, F., & Morais de Sá, A. (2024). Where is it complex
 to reallocate road space? *Environment and Planning B: Urban Analytics
-and City Science*, 0(0). <https://doi.org/10.1177/23998083231217770>.
+and City Science*, 51(6). <https://doi.org/10.1177/23998083231217770>.
 
 Please refer to this work as:  
 Félix R, Valença G (2024). *SiteSelection: An R script to find complex
