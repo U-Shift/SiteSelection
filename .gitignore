@@ -41,7 +41,7 @@ database/
 outputdata/
 inputdata/*
 !inputdata/map1.geojson
-analysis/*
+analysis/
 /analysis/*
 traffic.log
 SiteSelection.qgz
