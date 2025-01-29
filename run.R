@@ -12,7 +12,7 @@ targets::tar_manifest()
 targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
 
-targets::tar_meta_delete() # delete previous runs (clear cache)
+# targets::tar_meta_delete() # delete previous runs (clear cache)
 targets::tar_make() # run the pipeline!
 # targets::tar_crew() # parallel processing stats
 
