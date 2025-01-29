@@ -11,7 +11,7 @@ targets::tar_visnetwork()
 targets::tar_visnetwork(targets_only = TRUE)
 
 # Run the pipeline
-# targets::tar_meta_delete() # delete previous runs (clear cache)
+targets::tar_meta_delete() # delete previous runs (clear cache)
 targets::tar_make() # run the pipeline!
 # targets::tar_crew() # parallel processing stats
 
@@ -19,7 +19,7 @@ targets::tar_make() # run the pipeline!
 # Load the output data
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="all_candidate")
-mapview::mapview(grid_all, zcol="score") #ranked
+mapview::mapview(grid_all, zcol="score") # ranked
 
 targets::tar_load(site_selection)
 mapview::mapview(site_selection, zcol="complexity")
