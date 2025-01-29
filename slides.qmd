@@ -1,0 +1,68 @@
+---
+title: "SiteSelection"
+subtitle: "An open-source tool to identify complex areas for street space reallocation"
+author: "Rosa Félix, Gabriel Valença, Filipe Moura, Ana Morais de Sá"
+affiliation: "CERIS, Instituto Superior Técnico - University of Lisbon"
+    # - name: "Rosa Félix"
+    #   email: rosamfelix@tecnico.pt
+    #   url: http://www.rosafelix.bike
+    #   orcid: 0000-0002-5642-6006
+    #   affiliation: "Instituto Superior Técnico - University of Lisbon"
+    # - name: "Gabriel Valença"
+    #   email: gabrielvalenca@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0002-3684-3005
+    # - name: "Filipe Moura"
+    #   email: fmoura@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0001-7749-8490
+    # - name: "Ana Morais de Sá"
+    #   email: ana.morais.sa@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0003-0591-9369
+    #   # affiliation: "Instituto Superior Técnico - University of Lisbon"
+execute-dir: project
+format:
+  revealjs: 
+    theme: default
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    logo: img/ist-ceris.png
+    # css: styles.css
+    footer: '21^st^ GET meeting, Alcobaça 2025'
+resources:
+  - demo.pdf
+# editor: visual
+repo-url: https://github.com/U-Shift/EITcourse
+---
+
+## Problem {background-color="cyan"}
+
+Quarto enables you to weave together content and executable code into a finished presentation.
+To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+
+## SiteSelection methods
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+
+## Processes
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code.
+You can embed code like this:
+
+```{r}
+
+targets::tar_visnetwork(targets_only = TRUE)
+```
+
+```{r}
+#| eval: false
+targets::tar_load(grid_all)
+mapview::mapview(grid_all, zcol="score") # ranked
+```
+
