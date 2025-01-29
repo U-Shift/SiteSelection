@@ -132,11 +132,12 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
 
 # get_osm -----------------------------------------------------------------
 
-get_osm = function(CITYlimit, CITY) {
+get_osm = function(CITYlimit, CITY, build_osm) {
   
- if(file.exists(paste0("outputdata/", CITY, "/road_network.gpkg"))){
+ if(build_osm == FALSE &
+   file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
     
-    road_network = st_read(paste0("outputdata/", CITY, "/road_network.gpkg"), quiet = TRUE)
+    road_network = st_read(paste0("outputdata/", CITY, "/road_network.shp"), quiet = TRUE)
   
   }
     
@@ -178,7 +179,7 @@ get_osm = function(CITYlimit, CITY) {
   road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
   
  
-  st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE, quiet = TRUE)
+  st_write(road_network, paste0("outputdata/", CITY, "/road_network.shp"), delete_dsn = TRUE, quiet = TRUE)
   
   }
   
@@ -212,10 +213,10 @@ clean_osm = function(road_network, CITY, build_osm) {
   
   input = st_read(paste0("outputdata/", CITY, "/road_network.shp"), quiet = TRUE) #because of the fid column
   
-  #delete exiting outputs
-  if (file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
-    file.remove(paste0("outputdata/", CITY, "/road_network.shp"))
-  }
+  # # delete existing outputs
+  # if (file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
+  #   file.remove(paste0("outputdata/", CITY, "/road_network.shp"))
+  # }
   
   output_path = paste0("outputdata/", CITY, "/road_network_clean.shp")
   
@@ -227,13 +228,14 @@ clean_osm = function(road_network, CITY, build_osm) {
     threshold = c("0", "0.00000100", "0.00000100", "0", "0"), 
     output = output_path, # need to be defined otherwise it saves in tmp.gpkg and makes the error with fid (# ERROR 1: failed to execute insert : UNIQUE constraint failed: outpute935bd152d284569afb314c88e8fce09.fid)
     error = qgis_tmp_vector(),
-    GRASS_OUTPUT_TYPE_PARAMETER = "auto"
+    GRASS_OUTPUT_TYPE_PARAMETER = "auto",
     # 'GRASS_REGION_PARAMETER':None, 
     # 'GRASS_SNAP_TOLERANCE_PARAMETER':-1, 
     # 'GRASS_MIN_AREA_PARAMETER':0.0001, 
     # 'GRASS_VECTOR_DSCO':'', 
     # 'GRASS_VECTOR_LCO':'', 
     # 'GRASS_VECTOR_EXPORT_NOCAT':False
+    .quiet = TRUE
   )
   
   road_network_clean = sf::st_read(output[["output"]][1], quiet = TRUE)
