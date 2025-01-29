@@ -197,10 +197,10 @@ clean_osm = function(road_network, CITY, build_osm) {
     
   } else {
   
-  options(qgisprocess.path="/usr/bin/qgis_process.bin")
-  qgis_configure()
+  # options(qgisprocess.path="/usr/bin/qgis_process.bin") # if not defined
   
-  # qgis_plugins() #não tem o disconnected islands
+    # qgis_configure() # to enable plugguins. we only need to use Grass
+    # qgis_plugins() #não tem o disconnected islands
   
   # algorithms = qgis_algorithms()
   # algorithms %>% filter(grepl(pattern = "clean", x = algorithm, ignore.case = TRUE))
@@ -236,7 +236,7 @@ clean_osm = function(road_network, CITY, build_osm) {
     # 'GRASS_VECTOR_EXPORT_NOCAT':False
   )
   
-  road_network_clean = sf::st_read(output[["output"]][1])
+  road_network_clean = sf::st_read(output[["output"]][1], quiet = TRUE)
   # %>% select(-fid_2)
 
   # cleaning the unnecessary nodes, using tidygraph and sfnetworks
