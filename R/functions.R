@@ -132,7 +132,8 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
 
 get_osm = function(CITYlimit, CITY, build_osm) {
   
- if(build_osm == FALSE &
+ if(
+   # build_osm == FALSE & # ISTO PARECE ESTAR A FAZER COM QUE SEJA SEMPRE DESCARREGADO O OSM
    file.exists(paste0("outputdata/", CITY, "/road_network.shp"))){
     
     road_network = st_read(paste0("outputdata/", CITY, "/road_network.shp"), quiet = TRUE)
