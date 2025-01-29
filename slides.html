@@ -29,7 +29,27 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto.css">
   <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -350,16 +370,25 @@ Rosa Félix, Gabriel Valença, Filipe Moura, Ana Morais de Sá
 </div>
 
 </section>
-<section id="problem" class="slide level2" data-background-color="cyan">
+<section id="siteselection" class="slide level2">
+<h2>SiteSelection</h2>
+<blockquote>
+<p>SiteSelection&nbsp;aims to find complex zones to reallocate street space in the city, characterized by having limited and disputed spaces. These zones are also areas that have the potential for reallocating space dynamically over time, especially when multimodal demands are complementary.</p>
+</blockquote>
+</section>
+<section id="problem" class="slide level2" data-background-color="none">
 <h2>Problem</h2>
-<p>Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <a href="https://quarto.org/docs/presentations/" class="uri">https://quarto.org/docs/presentations/</a>.</p>
+<p><strong>Using <em>point and click</em> software to process data…</strong></p>
+<p>This is fine for a single case study.</p>
+<p>But what it you want to replicate the <strong>exactly</strong> same process for 400 other locations?</p>
+<p><img data-src="images/clipboard-1066373156.png">{.absolute=“” fig-align=“center”}</p>
 </section>
 <section id="siteselection-methods" class="slide level2">
 <h2>SiteSelection methods</h2>
 <p>When you click the <strong>Render</strong> button a document will be generated that includes:</p>
 <ul>
 <li>Content authored with markdown</li>
-<li>Output from executable code</li>
+<li>Output from executable code <span class="citation" data-cites="Valenca24">(<a href="#/about" role="doc-biblioref" onclick="">Valença, Moura, and Sá 2024</a>)</span></li>
 </ul>
 </section>
 <section id="processes" class="slide level2">
@@ -367,14 +396,32 @@ Rosa Félix, Gabriel Valença, Filipe Moura, Ana Morais de Sá
 <p>When you click the <strong>Render</strong> button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="visNetwork html-widget html-fill-item" id="htmlwidget-31239be5aabb2d90760c" style="width:960px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-31239be5aabb2d90760c">{"x":{"nodes":{"name":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem"],"description":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"status":["errored","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","outdated","outdated","outdated","outdated","outdated"],"seconds":[12.31,8.06,16.15,0.06,0,0,0,0.14,0.21,19.24,22.75,299.32,1.08,1.77,null,null,null,null,null],"bytes":[0,59,76784,16974,2181,2684,1747,1999,3636,2480,171151,2477127,1965419,1442,null,null,null,null,null],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"color":["#C93312","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#78B7C5","#78B7C5","#78B7C5","#78B7C5","#78B7C5"],"id":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"level":[5,1,3,2,5,5,5,4,3,4,3,3,4,4,10,6,7,8,9],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot"]},"edges":{"from":["landuse_grid","CITYlimit","centrality_grid","grid_all","site_selection","CITYcensus","grid","grid","points_transit","CITY","road_network","CITY","CITY","CITYlimit","centrality_nodes","grid","CITY","road_network_clean","CITYcensus","grid","transit_grid","CITY","CITYlimit","density_grid","grid_all","classify_candidates_centrality","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","grid","CITYlimit"],"to":["classify_candidates_landuse","points_transit","classify_candidates_centrality","analysis_save","analysis_save","density_grid","density_grid","transit_grid","transit_grid","road_network_clean","road_network_clean","CITYlimit","grid","grid","centrality_grid","centrality_grid","centrality_nodes","centrality_nodes","landuse_grid","landuse_grid","classify_candidates_transit","road_network","road_network","classify_candidates_density","site_selection","grid_all","grid_all","grid_all","grid_all","grid_all","CITYcensus"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Errored","Up to date","Outdated","Stem"],"color":["#C93312","#354823","#78B7C5","#899DA4"],"shape":["dot","dot","dot","dot"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+<div class="visNetwork html-widget html-fill-item" id="htmlwidget-b07cf33d3dfa73f1c1f7" style="width:960px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-b07cf33d3dfa73f1c1f7">{"x":{"nodes":{"name":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem"],"description":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"status":["errored","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","outdated","outdated","outdated","outdated","outdated"],"seconds":[12.31,8.06,16.15,0.06,0,0,0,0.14,0.21,19.24,22.75,299.32,1.08,1.77,null,null,null,null,null],"bytes":[0,59,76784,16974,2181,2684,1747,1999,3636,2480,171151,2477127,1965419,1442,null,null,null,null,null],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"color":["#C93312","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#78B7C5","#78B7C5","#78B7C5","#78B7C5","#78B7C5"],"id":["centrality_nodes","CITY","CITYcensus","CITYlimit","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","density_grid","grid","landuse_grid","points_transit","road_network","road_network_clean","transit_grid","analysis_save","centrality_grid","classify_candidates_centrality","grid_all","site_selection"],"level":[5,1,3,2,5,5,5,4,3,4,3,3,4,4,10,6,7,8,9],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot"]},"edges":{"from":["landuse_grid","CITYlimit","centrality_grid","grid_all","site_selection","CITYcensus","grid","grid","points_transit","CITY","road_network","CITY","CITY","CITYlimit","centrality_nodes","grid","CITY","road_network_clean","CITYcensus","grid","transit_grid","CITY","CITYlimit","density_grid","grid_all","classify_candidates_centrality","classify_candidates_density","classify_candidates_landuse","classify_candidates_transit","grid","CITYlimit"],"to":["classify_candidates_landuse","points_transit","classify_candidates_centrality","analysis_save","analysis_save","density_grid","density_grid","transit_grid","transit_grid","road_network_clean","road_network_clean","CITYlimit","grid","grid","centrality_grid","centrality_grid","centrality_nodes","centrality_nodes","landuse_grid","landuse_grid","classify_candidates_transit","road_network","road_network","classify_candidates_density","site_selection","grid_all","grid_all","grid_all","grid_all","grid_all","CITYcensus"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Errored","Up to date","Outdated","Stem"],"color":["#C93312","#354823","#78B7C5","#899DA4"],"shape":["dot","dot","dot","dot"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
+</section>
+<section id="options" class="slide level2">
+<h2>Options</h2>
+</section>
+<section id="about" class="slide level2 smaller scrollable">
+<h2>About</h2>
+<p>This work is part of&nbsp;<a href="https://streets4all.tecnico.ulisboa.pt/">Streets4All Project</a>, developed at the University of Lisbon and at the University of Coimbra, and funded by Fundação para a Ciência e Tecnologia (<em>PTDC/ECI-TRA/3120/2021</em>).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="https://streets4all.tecnico.ulisboa.pt/"><img data-src="images/clipboard-3372171257.png" class="quarto-figure quarto-figure-center"></a></p>
+</figure>
+</div>
+<p>The concept is based in:</p>
 <div class="quarto-auto-generated-content">
 <p><img src="img/ist-ceris.png" class="slide-logo"></p>
 <div class="footer footer-default">
 <p>21<sup>st</sup> GET meeting, Alcobaça 2025</p>
+</div>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Valenca24" class="csl-entry" role="listitem">
+Valença, Gabriel, Filipe Moura, and Ana Morais de Sá. 2024. <span>“Where Is It Complex to Reallocate Road Space?”</span> <em>Environment and Planning B: Urban Analytics and City Science</em> 51 (6): 1290–1307. <a href="https://doi.org/10.1177/23998083231217770">https://doi.org/10.1177/23998083231217770</a>.
 </div>
 </div>
 </section>
