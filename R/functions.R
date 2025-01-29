@@ -108,18 +108,19 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
     saveRDS(h3_index, paste0("outputdata/", CITY, "/h3_index.Rds"))
     
   } else {
-  CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
-  # cellsize = c(200, 200) #200x200m
-
-  grid = st_make_grid(CITYlimit_meters,
-                      cellsize = cellsize_input, 
-                      square = square_input 
-  ) |> 
-    st_sf() |> #convert sfc to sf |> 
-    st_join(CITYlimit_meters, left = FALSE) |> 
-    mutate(ID = seq(1:nrow(.))) |> # give an ID to each cell
-    select(ID, geometry) |> 
-    st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
+    CITYlimit_meters = st_transform(CITYlimit, 3857) #projected
+    # cellsize = c(200, 200) #200x200m
+    
+    grid = st_make_grid(CITYlimit_meters,
+                        cellsize = cellsize_input,
+                        square = square_input) |>
+      st_sf() |> #convert sfc to sf |>
+      st_join(CITYlimit_meters, left = FALSE)
+      # mutate(ID = seq(1:nrow(.))) # give an ID to each cell
+    grid = grid |>
+      mutate(ID = seq(1:nrow(grid))) |> # give an ID to each cell
+      select(ID) |> # and geometry also comes
+      st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
   }
