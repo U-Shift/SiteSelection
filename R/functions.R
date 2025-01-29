@@ -97,10 +97,9 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
     grid = CITYlimit |>  
       polygon_to_cells(res = h3_res, simple = FALSE)  # res = 9 is 500m
     grid = grid$h3_addresses |>
-      cell_to_polygon(simple = FALSE)
-    # mutate(ID = seq(1:nrow(.))) # give an ID to each cell
-    grid = grid |>
-      mutate(ID = seq(1:nrow(grid)))  # give an ID to each cell
+      cell_to_polygon(simple = FALSE) |> 
+      rowid_to_column(var = "ID") # rowname as ID
+    
     h3_index = grid |> st_drop_geometry() # save h3_address for later
     grid = grid |>
       select(-h3_address)
@@ -115,10 +114,8 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
                         cellsize = cellsize_input,
                         square = square_input) |>
       st_sf() |> #convert sfc to sf |>
-      st_join(CITYlimit_meters, left = FALSE)
-      # mutate(ID = seq(1:nrow(.))) # give an ID to each cell
-    grid = grid |>
-      mutate(ID = seq(1:nrow(grid))) |> # give an ID to each cell
+      st_join(CITYlimit_meters, left = FALSE) |> 
+      rowid_to_column(var = "ID") |> 
       select(ID) |> # and geometry also comes
       st_transform(st_crs(CITYlimit)) # go back to WGS48 if needed
 
