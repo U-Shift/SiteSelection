@@ -331,6 +331,7 @@ get_centrality_grid = function(centrality_nodes, grid) {
       betweenness = mean(betweenness),
       closeness = mean(closeness)
     ) %>%
+    ungroup() |> 
     mutate(
       degree = rescale(degree),
       betweenness = rescale(betweenness),
@@ -375,6 +376,8 @@ get_density_grid = function(grid, CITYcensus) {
 # get_landuse -------------------------------------------------------------
 
 get_landuse = function(grid, CITYcensus) {
+  
+  options(dplyr.summarise.inform = FALSE) # supress annoying warning
   
   # get OSM POIs with 6 categories
   points_poi = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg", quiet = TRUE)
