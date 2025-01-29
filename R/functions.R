@@ -54,7 +54,7 @@ get_citylimit = function(CITY, GEOJSON, GEOJSON_name) {
       print("Dir already exists!")
     }
     
-    st_write(CITYlimit, paste0(output_dir_gj, "/CITYlimit.geojson"), delete_dsn = TRUE)
+    st_write(CITYlimit, paste0(output_dir_gj, "/CITYlimit.geojson"), delete_dsn = TRUE, quiet = TRUE)
     
     
     }else{
@@ -80,7 +80,7 @@ get_citylimit = function(CITY, GEOJSON, GEOJSON_name) {
       print("Dir already exists!")
     }
     
-    st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE)
+    st_write(CITYlimit, paste0(output_dir, "/CITYlimit.geojson"), delete_dsn = TRUE, quiet = TRUE)
    
     }
   }
@@ -124,7 +124,7 @@ make_grid = function(CITYlimit, CITY, cellsize_input, square_input, use_h3, h3_r
   # mapgrid = mapview::mapview(grid, alpha.regions = 0.2)
   }
  
-  st_write(grid, paste0("outputdata/", CITY, "/grid.geojson"), delete_dsn = TRUE)
+  st_write(grid, paste0("outputdata/", CITY, "/grid.geojson"), delete_dsn = TRUE, quiet = TRUE)
   
 }
 
@@ -178,7 +178,7 @@ get_osm = function(CITYlimit, CITY) {
   road_network = road_network %>% select(osm_id, highway, geometry) # keep some variables
   
  
-  st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE)
+  st_write(road_network, paste0("outputdata/", CITY, "/road_network.gpkg"), delete_dsn = TRUE, quiet = TRUE)
   
   }
   
@@ -208,7 +208,7 @@ clean_osm = function(road_network, CITY, build_osm) {
   
   input = road_network %>% 
     # mutate(fid_2 = as.integer(1:nrow(road_network))) %>% 
-    st_write(paste0("outputdata/", CITY, "/road_network.shp"), delete_dsn = TRUE)
+    st_write(paste0("outputdata/", CITY, "/road_network.shp"), delete_dsn = TRUE, quiet = TRUE)
   
   input = st_read(paste0("outputdata/", CITY, "/road_network.shp"), quiet = TRUE) #because of the fid column
   
@@ -250,7 +250,7 @@ clean_osm = function(road_network, CITY, build_osm) {
     mutate(edgeID = c(1:n())) |> 
     st_as_sf()
   
-  st_write(road_network_clean, output_path, delete_dsn = TRUE)
+  st_write(road_network_clean, output_path, delete_dsn = TRUE, quiet = TRUE)
   
   # see trafficcalmr::osm_consolidate as an option!
   # https://saferactive.github.io/trafficalmr/reference/osm_consolidate.html
@@ -309,7 +309,7 @@ get_centrality = function(road_network_clean, CITY) {
   
   centrality_nodes = sf::st_read(output_centrality[["output"]][1]) %>% select(-eigenvector)
   
-  st_write(centrality_nodes, output_path, delete_dsn = TRUE)
+  st_write(centrality_nodes, output_path, delete_dsn = TRUE, quiet = TRUE)
   
   }
 }
@@ -593,12 +593,12 @@ make_grid_all = function(grid, CITY, GEOJSON_name, GEOJSON, use_h3,
   
   if (GEOJSON == TRUE){
     
-    st_write(grid_all, dsn = paste0("outputdata/", GEOJSON_name, "/grid_all.gpkg"), delete_dsn = TRUE)  
+    st_write(grid_all, dsn = paste0("outputdata/", GEOJSON_name, "/grid_all.gpkg"), delete_dsn = TRUE, quiet = TRUE)  
     
   }
   else {
     
-    st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE)  
+    st_write(grid_all, dsn = paste0("outputdata/", CITY, "/grid_all.gpkg"), delete_dsn = TRUE, quiet = TRUE)  
     
   }
   
@@ -630,7 +630,7 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
     
   } else {
     
-    print("Including transit complexity")
+    print("Including transit complexity !")
     
     #classify complexity as "very complex" if transit is 3 or 4
     grid_selection = grid_selection |>
@@ -650,12 +650,12 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
   
   if (GEOJSON == TRUE){
     
-    st_write(grid_selection, dsn = paste0("outputdata/", GEOJSON_name, "/site_selection.gpkg"), delete_dsn = TRUE)  
+    st_write(grid_selection, dsn = paste0("outputdata/", GEOJSON_name, "/site_selection.gpkg"), delete_dsn = TRUE, quiet = TRUE)  
     
   }
   else {
     
-  st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE)
+  st_write(grid_selection, dsn = paste0("outputdata/", CITY, "/site_selection.gpkg"), delete_dsn = TRUE, quiet = TRUE)
   }
   
   return(grid_selection)
