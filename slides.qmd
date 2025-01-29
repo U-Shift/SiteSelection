@@ -32,8 +32,6 @@ format:
     logo: img/ist-ceris.png
     # css: styles.css
     footer: '21^st^ GET meeting, Alcobaça 2025'
-resources:
-  - demo.pdf
 # editor: visual
 bibliography: paper/NECTAR/mybibfile.bib
 repo-url: https://github.com/U-Shift/EITcourse
@@ -41,7 +39,7 @@ repo-url: https://github.com/U-Shift/EITcourse
 
 ## SiteSelection
 
-> SiteSelection aims to find complex zones to reallocate street space in the city, characterized by having limited and disputed spaces.
+> SiteSelection aims to find **complex zones** to reallocate street space in the city, characterized by having limited and disputed spaces.
 > These zones are also areas that have the potential for reallocating space dynamically over time, especially when multimodal demands are complementary.
 
 ## Problem {background-color="none"}
@@ -67,12 +65,12 @@ When you click the **Render** button a presentation will be generated that inclu
 You can embed code like this:
 
 ```{r}
-
 targets::tar_visnetwork(targets_only = TRUE)
 ```
 
+## Map
+
 ```{r}
-#| eval: false
 targets::tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") # ranked
 ```
@@ -81,6 +79,7 @@ mapview::mapview(grid_all, zcol="score") # ranked
 
 ```{r}
 #| eval: false
+#| echo: true
 # Thresholds for candidate selection
 population_min = median     # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
