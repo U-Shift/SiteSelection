@@ -679,7 +679,7 @@ export_analysis = function(grid_all, grid_selection, CITY_input, GEOJSON, GEOJSO
     analysis_row = data.frame(timestamp = Sys.time()) |> 
       mutate(CITY = ifelse(GEOJSON == FALSE, CITY_input, NA),
              GEOJSON_name = ifelse(GEOJSON == TRUE, GEOJSON_input, NA),
-             square = ifelse(use_h3 == FALSE, square_input, "hex h3"),
+             square = ifelse(use_h3 == FALSE, as.character(square_input), "hex h3"),
              h3_res = ifelse(use_h3 == TRUE, h3_res, NA),
              cellsize_a = ifelse(use_h3 == FALSE, cellsize_input[1], NA),
              cellsize_b = ifelse(use_h3 == FALSE, cellsize_input[2], NA),
