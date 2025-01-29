@@ -309,7 +309,7 @@ get_centrality = function(road_network_clean, CITY) {
     GRASS_VECTOR_EXPORT_NOCAT = FALSE
   )
   
-  centrality_nodes = sf::st_read(output_centrality[["output"]][1]) %>% select(-eigenvector)
+  centrality_nodes = sf::st_read(output_centrality[["output"]][1], quiet = TRUE) %>% select(-eigenvector)
   
   st_write(centrality_nodes, output_path, delete_dsn = TRUE, quiet = TRUE)
   
