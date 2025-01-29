@@ -6,17 +6,17 @@
 
 # Set defaults HERE ######################
 CITY_input = "Entroncamento"       # Municipality name in Portugal
-GEOJSON = FALSE             # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
+GEOJSON = TRUE              # use a different limit? made with https://geojson.io/ and saved in inputdata/*.geojson
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
 cellsize_input = c(600, 600)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
-use_h3 = FALSE               # use h3 to create universal grid?
+use_h3 = FALSE              # use h3 to create universal grid?
 h3_res = 9                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
-build_osm = FALSE           # clean osm road network again?
-analysis = FALSE             # export input parameters and results to a xls file? default: FALSE
+build_osm = TRUE            # download and clean osm road network again?
+analysis = FALSE            # export input parameters and results to a xls file? default: FALSE
 
-# Thresholds
-population_min = median       # mean or median? default: mean
+# Thresholds for candidate selection
+population_min = median     # mean or median? default: mean
 degree_min = mean           # mean or median? default: mean
 betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
@@ -76,7 +76,7 @@ list(
     command = make_grid(CITYlimit, CITY, cellsize = cellsize_input, square = square_input, use_h3 = use_h3, h3_res = h3_res)),
   tar_target(
     name = road_network,
-    command = get_osm(CITYlimit, CITY)),
+    command = get_osm(CITYlimit, CITY, build_osm)),
   tar_target(
     name = road_network_clean,
     command = clean_osm(road_network, CITY, build_osm),
