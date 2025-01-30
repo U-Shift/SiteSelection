@@ -68,13 +68,16 @@ A process of multi criteria to select the **cell locations** of a given city or 
 
 **Using *point and click* software to fetch and process data...**
 
-This is fine for a single case study.
+This is fine for a single case study 😀
 
 . . .
 
-But what it you want to replicate the **exactly** same process for 400 other locations?
+But what it you want to replicate the **exactly** same process for **400** other locations? 🤯
 
-![](images/clipboard-1066373156.png){fig-align="center"}
+![](images/clipboard-1066373156.png){fig-align="center" width="600"}
+
+::: footer
+:::
 
 ## `SiteSelection`
 
@@ -140,8 +143,7 @@ For different contexts, we can have different cut thresholds... *Under assessmen
 
 -   Squares
 -   Hexagons
--   Universal [h3 hexagon grid](https://h3geo.org/) - useful to include other variables
-<!-- -   All can **vary resolution** -->
+-   Universal [h3 hexagon grid](https://h3geo.org/) - useful to include other variables <!-- -   All can **vary resolution** -->
 
 ::: {layout-ncol="3"}
 ![](images/clipboard-772809911.png){width="280"}
@@ -155,11 +157,25 @@ For different contexts, we can have different cut thresholds... *Under assessmen
 
 ### **Work with non-administrative boundary**
 
-You can set another polygon limit to the analysis.\
-Just [create a .geojson file](https://geojson.io/) with the area of interest and save it in the `inputdata` folder.\
-Then, set the `GEOJSON = TRUE` and `GEOJSON_input` to the name of the file, without the extension.
+-   Set another polygon limit to the analysis
+-   [create a `.geojson` file](https://geojson.io/) with the area of interest
+
+```{r}
+GEOJSON = TRUE          # use a different limit? in inputdata/*.geojson
+GEOJSON_input = "map1"  # name of the file if GEOJSON = TRUE. default: "map1"
+```
+
+::: {layout-ncol="2"}
+```{r}
+mapview::mapview("inputdata/map1.geojson")
+# mapview::mapview("outputdata/map1/grid_all.gpkg", zcol="score")
+```
 
 ![](images/clipboard-3611128328.png)
+:::
+
+::: footer
+:::
 
 ## Options
 
