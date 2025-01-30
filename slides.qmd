@@ -35,16 +35,16 @@ format:
 # editor: visual
 bibliography: paper/NECTAR/mybibfile.bib
 repo-url: https://github.com/U-Shift/EITcourse
-cache: true
+# cache: true
 ---
 
 ## Complex areas
 
 -   Space is limited, and there is **competition** 🚶‍♂️🚗🚲🚌🎍
 
--   The need for **more sustainable**, efficient, and equitable **space distribution** is growing
+-   Growing need for **more sustainable**, efficient, and equitable **space distribution**
 
--   Challenge of **reallocating** street space in urban environments, dynamically
+-   Challenge of **reallocating** street space, dynamically over time
 
 . . .
 
@@ -95,11 +95,11 @@ But what it you want to replicate the **exactly** same process for **400** other
 
 **Open-source tool**: an `R` package 📦
 
-## Processes
+<!-- ## Processes -->
 
-```{r}
-targets::tar_visnetwork()
-```
+<!-- ```{r} -->
+<!-- targets::tar_visnetwork() -->
+<!-- ``` -->
 
 ## Processes
 
@@ -225,7 +225,7 @@ analysis = TRUE # export input parameters and results to a xls file? default: FA
 
 . . .
 
--   And be use for other purposes! out of the *Streets4All* scope
+-   And be used for other purposes! out of the *Streets4All* scope
 
 ## Thank you
 
