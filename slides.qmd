@@ -141,7 +141,7 @@ For different contexts, we can have different cut thresholds... *Under assessmen
 -   Squares
 -   Hexagons
 -   Universal [h3 hexagon grid](https://h3geo.org/) - useful to include other variables
--   All can **vary resolution**
+<!-- -   All can **vary resolution** -->
 
 ::: {layout-ncol="3"}
 ![](images/clipboard-772809911.png){width="280"}
@@ -173,9 +173,9 @@ analysis = TRUE # export input parameters and results to a xls file? default: FA
 
 ## Demo
 
--   Other case study
 -   Modify a network parameter
 -   Modify the grid type or resolution
+-   Other case study
 
 ## Conclusions
 
