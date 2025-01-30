@@ -31,7 +31,7 @@ format:
     preview-links: auto
     logo: img/ist-ceris.png
     # css: styles.css
-    footer: '21^st^ GET meeting, Alcobaça 2025'
+    footer: '22^nd^ GET meeting, Alcobaça 2025'
 # editor: visual
 bibliography: paper/NECTAR/mybibfile.bib
 repo-url: https://github.com/U-Shift/EITcourse
@@ -188,11 +188,14 @@ analysis = TRUE # export input parameters and results to a xls file? default: FA
 
 ![](images/clipboard-2210141522.png)
 
-## Demo
+## Live demo
 
 -   Modify a network parameter
+
 -   Modify the grid type or resolution
+
 -   Other case study
+
 
 ## Conclusions
 
