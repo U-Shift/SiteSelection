@@ -35,7 +35,7 @@ format:
 # editor: visual
 bibliography: paper/NECTAR/mybibfile.bib
 repo-url: https://github.com/U-Shift/EITcourse
-# cache: true
+# cache: true # erro com os mapviews
 ---
 
 ## Complex areas
@@ -122,11 +122,11 @@ Returns a ranked list of complex areas based on their need for space reallocatio
 
 #### Thresholds for candidate selection
 
-``` {.r code-line-numbers="1|2-4|5|6"}
-population_min = median     # mean or median? default: mean
+``` {.r code-line-numbers="1-3|4|5|6"}
 degree_min = mean           # mean or median? default: mean
 betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # percentile to exclude (upper and lower) default: 0.25
+population_min = median     # mean or median? default: mean
 entropy_min = 0.35          # value to exclude (lower) default: 0.5
 freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service 
 ```
@@ -247,4 +247,4 @@ This work is part of [Streets4All Project](https://streets4all.tecnico.ulisboa.
 This work is part of the research activity carried out at Civil Engineering Research and Innovation for Sustainability (CERIS) and has been funded by Fundação para a Ciência e a Tecnologia (FCT), Portugal in the framework of project UIDB/04625/2020, project PTDC/ECI-TRA/3120/2021, and project 2022,07909,CEECIND/CP1713/CT0017.
 :::
 
-</br> The concept is based in:
+</br> The concept is based on:
