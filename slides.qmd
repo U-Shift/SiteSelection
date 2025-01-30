@@ -52,7 +52,7 @@ repo-url: https://github.com/U-Shift/EITcourse
 
 ## Combination of several types of data
 
-A process of multi criteria to select the **cell locations** of a given city or neighbourhood where the street space is more disputed by different transport modes and street activities.
+A process to select the **cell locations** that meet a set o criteria for a given city or neighbourhood where the street space is more disputed.
 
 ::: incremental
 -   Population density (census)
