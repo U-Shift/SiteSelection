@@ -70,11 +70,12 @@ A process of multi criteria to select the **cell locations** of a given city or 
 
 This is fine for a single case study 😀
 
+![](images/clipboard-1066373156.png){fig-align="center" width="600"}
+
 . . .
 
 But what it you want to replicate the **exactly** same process for **400** other locations? 🤯
 
-![](images/clipboard-1066373156.png){fig-align="center" width="600"}
 
 ::: footer
 :::
