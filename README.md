@@ -134,7 +134,7 @@ file, without the extension.
 By default, the grid is created with squares. You can change it to
 hexagons by setting `square_input = FALSE` in `_targets.R`.
 
-<img src="images/clipboard-3306234436.png" width="188" />
+<img src="man/figures/hex_grid.png" width="268" />
 
 You can also use the universal [h3 hexagon grid](https://h3geo.org/) by
 setting `use_h3 = TRUE` and changing the resolution in `h3_res`.
