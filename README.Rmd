@@ -7,17 +7,18 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**SiteSelection** aims to find complex zones to reallocate street space in the city, characterized by having limited and disputed spaces. These zones are also areas that have the potential for reallocating space dynamically over time, especially when multimodal demands are complementary. 
+**SiteSelection** aims to find complex zones to reallocate street space in the city, characterized by having limited and disputed spaces.
+These zones are also areas that have the potential for reallocating space dynamically over time, especially when multimodal demands are complementary.
 
-It consists in a process of multi criteria to select the cell locations of a given city or neighbourhood where the street space is more disputed by different transport modes and street activities. 
+It consists in a process of multi criteria to select the cell locations of a given city or neighbourhood where the street space is more disputed by different transport modes and street activities.
 
 SiteSelection is a full script that uses a dynamic pipeline, and gathers and processes information on:
 
-* Road network centrality measures (betweenness, closeness, degree)
-* Population density
-* POI and activities
-* Public Transit Frequency
-* Traffic levels (_TBC_)
+-   Road network centrality measures (betweenness, closeness, degree)
+-   Population density
+-   POI and activities
+-   Public Transit Frequency
+-   Traffic levels (*TBC*)
 
 ## Sources
 
@@ -27,11 +28,10 @@ Although it is easy to run for any location in Portugal, you may adapt the code 
 
 Data needed for other locations:
 
-* Census data (population and buildings)
-* POIs (see [data_extract.R](https://github.com/U-Shift/SiteSelection/blob/fc0bce07acf3b60ce0bfe1d26511acd7c2d5c083/code/data_extract.R#L146))
-* GTFS data (see [transit.R](https://github.com/U-Shift/SiteSelection/blob/main/code/transit.R))
-* Administrative boundaries
-
+-   Census data (population and buildings)
+-   POIs (see [data_extract.R](https://github.com/U-Shift/SiteSelection/blob/fc0bce07acf3b60ce0bfe1d26511acd7c2d5c083/code/data_extract.R#L146))
+-   GTFS data (see [transit.R](https://github.com/U-Shift/SiteSelection/blob/main/code/transit.R))
+-   Administrative boundaries
 
 ## Setup
 
@@ -42,12 +42,11 @@ Data needed for other locations:
 devtools::install_github("u-shift/SiteSelection")
 ```
 
-
 ### Requirements
 
-*   QGis and [`qgis_process`](https://r-spatial.github.io/qgisprocess/) installed and working
-*   [`targets`](https://books.ropensci.org/targets/) R package.
-*   [`siteselection`]() R package [_under development_].
+-   QGis and [`qgis_process`](https://r-spatial.github.io/qgisprocess/) installed and working
+-   [`targets`](https://books.ropensci.org/targets/) R package.
+-   [`siteselection`]() R package [*under development*].
 
 ### Change defaults
 
@@ -96,6 +95,7 @@ tar_make()
 tar_load(grid_all)
 mapview::mapview(grid_all, zcol="score") #ranked cells
 ```
+
 ```{r echo=FALSE}
 knitr::include_graphics("man/figures/tar_result.png")
 ```
@@ -106,37 +106,64 @@ If you want to see the filtered cells (candidates), you can load the `site_selec
 knitr::include_graphics("man/figures/complexity.png")
 ```
 
-
 When the process is not complete, you may have an error like this
 
 ```{r eval=FALSE}
 tar_visnetwork()
 ```
+
 ```{r echo=FALSE}
 knitr::include_graphics("man/figures/tar_viz_werror.png")
 ```
 
+### Work with other cities
+
+You can change the city to any other in Portugal.
+
+*Other locations are work in Progress...*
+
 ### Work with non-administrative boundary
 
-You can set another polygon limit to the analysis.  
-Just [create a .geojson file](https://geojson.io/) with the area of interest and save it in the `inputdata` folder.  
+You can set another polygon limit to the analysis.\
+Just [create a .geojson file](https://geojson.io/) with the area of interest and save it in the `inputdata` folder.\
 Then, set the `GEOJSON = TRUE` and `GEOJSON_input` to the name of the file, without the extension.
 
+### Use other grids
+
+By default, the grid is created with squares.
+You can change it to hexagons by setting `square_input = FALSE` in `_targets.R`.
+
+![](images/clipboard-3306234436.png){width="188"}
+
+You can also use the universal [h3 hexagon grid](https://h3geo.org/) by setting `use_h3 = TRUE` and changing the resolution in `h3_res`.
 
 ### Analysis
 
-If you want to analyze the results in detail, set `analysis = TRUE` in `_targets.R` and load the analysis/analysis.table.Rds or .xlsx.
+If you want to analyze the results in detail, set `analysis = TRUE` in `_targets.R` and load the `analysis/analysis.table.Rds` or `.xlsx`.
 It includes sequential runs with all inputs, outputs, and variable statistics.
-
-_Work in Progress..._
 
 ## About
 
+### Project
+
 This work is part of [Streets4All Project](https://streets4all.tecnico.ulisboa.pt), developed at the University of Lisbon and at the University of Coimbra, and funded by Fundação para a Ciência e Tecnologia (PT).
 
-The concept is based in:  
-Valença, G., Moura, F., & Morais de Sá, A. (2024). Where is it complex to reallocate road space? *Environment and Planning B: Urban Analytics and City Science*, 51(6). https://doi.org/10.1177/23998083231217770.
+The concept is based in:\
+Valença, G., Moura, F., & Morais de Sá, A.
+(2024).
+Where is it complex to reallocate road space?
+*Environment and Planning B: Urban Analytics and City Science*, 51(6).
+<https://doi.org/10.1177/23998083231217770>.
 
+### Presentation
 
-Please refer to this work as:  
-Félix R, Valença G (2024). *SiteSelection: An R script to find complex areas for the Streets4All Project*. R package version 0.2, https://github.com/U-Shift/SiteSelection/. 
+This work was presented at the [GET 2025 conference](https://www.getransportes.org/), January 2025.
+\
+**Slides**: <https://u-shift.github.io/SiteSelection/slides>
+
+### Cite
+
+Please refer to this work as:\
+Félix R, Valença G (2024).
+*SiteSelection: An R script to find complex areas for the Streets4All Project*.
+R package version 0.2, <https://github.com/U-Shift/SiteSelection/>.

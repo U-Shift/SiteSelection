@@ -115,6 +115,12 @@ tar_visnetwork()
 
 <img src="man/figures/tar_viz_werror.png" width="689" />
 
+### Work with other cities
+
+You can change the city to any other in Portugal.
+
+*Other locations are work in Progress…*
+
 ### Work with non-administrative boundary
 
 You can set another polygon limit to the analysis.  
@@ -123,16 +129,26 @@ interest and save it in the `inputdata` folder.
 Then, set the `GEOJSON = TRUE` and `GEOJSON_input` to the name of the
 file, without the extension.
 
+### Use other grids
+
+By default, the grid is created with squares. You can change it to
+hexagons by setting `square_input = FALSE` in `_targets.R`.
+
+<img src="images/clipboard-3306234436.png" width="188" />
+
+You can also use the universal [h3 hexagon grid](https://h3geo.org/) by
+setting `use_h3 = TRUE` and changing the resolution in `h3_res`.
+
 ### Analysis
 
 If you want to analyze the results in detail, set `analysis = TRUE` in
-`_targets.R` and load the analysis/analysis.table.Rds or .xlsx. It
+`_targets.R` and load the `analysis/analysis.table.Rds` or `.xlsx`. It
 includes sequential runs with all inputs, outputs, and variable
 statistics.
 
-*Work in Progress…*
-
 ## About
+
+### Project
 
 This work is part of [Streets4All
 Project](https://streets4all.tecnico.ulisboa.pt), developed at the
@@ -143,6 +159,14 @@ The concept is based in:
 Valença, G., Moura, F., & Morais de Sá, A. (2024). Where is it complex
 to reallocate road space? *Environment and Planning B: Urban Analytics
 and City Science*, 51(6). <https://doi.org/10.1177/23998083231217770>.
+
+### Presentation
+
+This work was presented at the [GET 2025
+conference](https://www.getransportes.org/), January 2025.  
+**Slides**: <https://u-shift.github.io/SiteSelection/slides>
+
+### Cite
 
 Please refer to this work as:  
 Félix R, Valença G (2024). *SiteSelection: An R script to find complex
