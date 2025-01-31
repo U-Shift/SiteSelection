@@ -1,0 +1,254 @@
+---
+title: "SiteSelection"
+subtitle: "An open-source tool to identify complex areas for street space reallocation"
+author: "Rosa Félix, Gabriel Valença, Filipe Moura, Ana Morais de Sá"
+affiliation: "CERIS, Instituto Superior Técnico - University of Lisbon"
+    # - name: "Rosa Félix"
+    #   email: rosamfelix@tecnico.pt
+    #   url: http://www.rosafelix.bike
+    #   orcid: 0000-0002-5642-6006
+    #   affiliation: "Instituto Superior Técnico - University of Lisbon"
+    # - name: "Gabriel Valença"
+    #   email: gabrielvalenca@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0002-3684-3005
+    # - name: "Filipe Moura"
+    #   email: fmoura@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0001-7749-8490
+    # - name: "Ana Morais de Sá"
+    #   email: ana.morais.sa@tecnico.pt
+    #   url: https://ushift.tecnico.ulisboa.pt/team-gabriel-valenca/
+    #   orcid: 0000-0003-0591-9369
+    #   # affiliation: "Instituto Superior Técnico - University of Lisbon"
+execute-dir: project
+format:
+  revealjs: 
+    theme: default
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    logo: img/ist-ceris.png
+    # css: styles.css
+    footer: '22^nd^ GET meeting, Alcobaça 2025'
+# editor: visual
+bibliography: paper/NECTAR/mybibfile.bib
+repo-url: https://github.com/U-Shift/EITcourse
+# cache: true # erro com os mapviews
+---
+
+## Complex areas
+
+-   Space is limited, and there is **competition** 🚶‍♂️🚗🚲🚌🎍
+
+-   Growing need for **more sustainable**, efficient, and equitable **space distribution**
+
+-   Challenge of **reallocating** street space, dynamically over time
+
+. . .
+
+-   Complexity of identifying areas where intervention makes sense [@Valenca24]
+
+## Combination of several types of data
+
+A process to select the **cell locations** that meet a set o criteria for a given city or neighbourhood where the street space is more disputed.
+
+::: incremental
+-   Population density (census)
+-   POIs and activities
+-   Public Transit Frequency (GTFS for bus and tram)
+-   Road network centrality measures
+    -   betweenness, closeness, and degree
+:::
+
+<!-- ![](images/clipboard-1767020115.png){.absolute bottom="300" right="50" width="600"} -->
+
+## Problem {background-color="none"}
+
+**Using *point and click* software to fetch and process data...**
+
+This is fine for a single case study 😀
+
+![](images/clipboard-1066373156.png){fig-align="center" width="600"}
+
+. . .
+
+But what it you want to replicate the **exactly** same process for **400** other locations? 🤯
+
+
+::: footer
+:::
+
+## `SiteSelection`
+
+> SiteSelection aims to identify **complex areas** suitable for street space reallocation.
+
+. . .
+
+**GIS tools:** methods to process existing geo-data and classify areas based on key metrics like road network centrality, population density, and public transport frequency.
+
+. . .
+
+**Data Sources**: open data such as *OpenStreetMap* road network and POIs, Census data, GTFS for public transport, administrative areas
+
+. . .
+
+**Open-source tool**: an `R` package 📦
+
+<!-- ## Processes -->
+
+<!-- ```{r} -->
+<!-- targets::tar_visnetwork() -->
+<!-- ``` -->
+
+## Processes
+
+```{r}
+targets::tar_visnetwork(targets_only = TRUE)
+```
+
+## Map
+
+```{r}
+targets::tar_load(grid_all)
+mapview::mapview(grid_all, zcol="score", alpha = 0.7) # ranked
+```
+
+::: {style="font-size: 80%;"}
+Returns a ranked list of complex areas based on their need for space reallocation (0 - no complexity, 6 - very complex)
+:::
+
+## Options
+
+#### Thresholds for candidate selection
+
+``` {.r code-line-numbers="1-3|4|5|6"}
+degree_min = mean           # mean or median? default: mean
+betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
+closeness_range = 0.25      # percentile to exclude (upper and lower) default: 0.25
+population_min = median     # mean or median? default: mean
+entropy_min = 0.35          # value to exclude (lower) default: 0.5
+freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service 
+```
+
+![](images/clipboard-1269564533.png){fig-align="center"}
+
+::: {.callout-warning appearance="simple"}
+For different contexts, we can have different cut thresholds... *Under assessment*
+:::
+
+## Options
+
+### Grid types
+
+-   Squares
+-   Hexagons
+-   Universal [h3 hexagon grid](https://h3geo.org/) - useful to include other variables <!-- -   All can **vary resolution** -->
+
+::: {layout-ncol="3"}
+![](images/clipboard-772809911.png){width="280"}
+
+![](images/clipboard-3306234436.png)
+
+![](images/clipboard-2647626512.png){width="280"}
+:::
+
+## Options
+
+### **Work with non-administrative boundary**
+
+-   Set another polygon limit to the analysis
+-   [create a `.geojson` file](https://geojson.io/) with the area of interest
+
+```{r}
+GEOJSON = TRUE          # use a different limit? in inputdata/*.geojson
+GEOJSON_input = "map1"  # name of the file if GEOJSON = TRUE. default: "map1"
+```
+
+::: {layout-ncol="2"}
+```{r}
+mapview::mapview("inputdata/map1.geojson")
+# mapview::mapview("outputdata/map1/grid_all.gpkg", zcol="score")
+```
+
+![](images/clipboard-3611128328.png)
+:::
+
+::: footer
+:::
+
+## Options
+
+Keep track of your analysis and export results
+
+```{r}
+analysis = TRUE # export input parameters and results to a xls file? default: FALSE
+```
+
+![](images/clipboard-2210141522.png)
+
+## Live demo
+
+-   Modify a network parameter
+
+-   Modify the grid type or resolution
+
+-   Other case study
+
+
+## Conclusions
+
+::: incremental
+-   Repeated processes and analysis, human error proof 🛡️
+-   Super fast 🚀
+    -   It would normally take days to run everything 😵
+    -   \~1min for a city
+    -   for 200 cities em Portugal \< 45 min
+:::
+
+## Conclusions
+
+::: incremental
+-   Change one parameter and re-run **only what is needed**
+-   Scalable and expandable, for other custom conditions and functions
+-   Replicable for other locations 🌎🌍🌏
+    -   We included scripts to prepare data (census, GTFS)
+-   Open source 📡
+:::
+
+## Future developments and applications
+
+-   Each function can standalone in the package
+
+    -   `get_census()`
+    -   `get_osm()`, `clean_osm()`
+    -   `get_centrality()`
+    -   `make_grid()`
+    -   `get_transit()`
+
+. . .
+
+-   And be used for other purposes! out of the *Streets4All* scope
+
+## Thank you
+
+#### More: [u-shift.github.io/SiteSelection](https://u-shift.github.io/SiteSelection)
+
+![contributions are welcome!](images/clipboard-4136130744.png){fig-align="center"}
+
+::: {align="center"}
+**Rosa Félix -** [rosamfelix\@tecnico.pt](maito:)
+:::
+
+## About
+
+This work is part of [Streets4All Project](https://streets4all.tecnico.ulisboa.pt/), developed at the University of Lisbon and at the University of Coimbra, and funded by Fundação para a Ciência e Tecnologia (*PTDC/ECI-TRA/3120/2021*).
+
+[![](images/clipboard-3372171257.png){fig-align="center"}](https://streets4all.tecnico.ulisboa.pt/)
+
+::: {style="font-size: 40%;"}
+This work is part of the research activity carried out at Civil Engineering Research and Innovation for Sustainability (CERIS) and has been funded by Fundação para a Ciência e a Tecnologia (FCT), Portugal in the framework of project UIDB/04625/2020, project PTDC/ECI-TRA/3120/2021, and project 2022,07909,CEECIND/CP1713/CT0017.
+:::
+
+</br> The concept is based on:
