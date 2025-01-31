@@ -1,8 +1,8 @@
 bibentry(
   bibtype  = "Manual",
-  title    =  {SiteSelection: An R script to find complex areas for the Streets4All Project},
-  author   = {Rosa Félix and Gabriel Valença},
-  year     = {2024},
-  note     = {R package version 0.3},
-  url   = {https://u-shift.github.io/SiteSelection/}
+  title    =  "SiteSelection: An R script to find complex areas for the Streets4All Project",
+  author   = personList(person("Rosa Félix"), person("Gabriel Valença")),
+  year     = "2024",
+  note     = "R package version 0.3",
+  url   = "https://u-shift.github.io/SiteSelection/"
 )
