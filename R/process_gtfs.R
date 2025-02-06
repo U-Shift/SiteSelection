@@ -4,6 +4,8 @@ library(tidyverse)
 library(lubridate)
 library(tidytransit)
 
+source("R/gtfs_create_shapes.R")
+
 # methods
 
 #' Process GTFS file
@@ -24,15 +26,23 @@ process_gtfs <- function(gtfs_url, area, date) {
 
   # Open GTFS with tidytransit library and filter by date
   print("> Openning it for processing...")
-  gtfs <- read_gtfs(destfile)
+  gtfs <- tidytransit::read_gtfs(destfile)
   print(sprintf("> Openned GTFS for %s (ID %s)!", gtfs$agency$agency_name, gtfs$agency$agency_id))
   
   # Fix GTFS 
-  stopsNPrev <- length(gtfs$stop_times$trip_id)
-  gtfs$stop_times <- gtfs$stop_times[!is.na(gtfs$stop_times$arrival_time), ] # Cascais GTFS has stop_times with empty arrival/departure times, which raises an error at filter_feed_by_date method
-  stopsNAfter <- length(gtfs$stop_times$trip_id)
+  ## If no shapes.txt, create them automatically with GTFSwizard
+  if (!("shapes" %in% names(gtfs))) {
+    print("> !! shapes.txt missing, using GTFSwizard to build it...") 
+    destfile_new <- gtfs_create_shapes(destfile)
+    print(sprintf("> !! shapes.txt created, created new GTFS ZIP with it at %s, proceeding analysis...", destfile_new)) 
+    gtfs <- tidytransit::read_gtfs(destfile_new)
+  }
   
-  if (stopsNPrev != stopsNAfter) {print(sprintf("> FIXED GTFS, there were %d stop times without arrival time!", stopsNPrev-stopsNAfter))}
+  ## Clean empty stop_times arrival/departure (happened with Cascais GTFS) which raises an error at filter_feed_by_date method
+  stopsNPrev <- length(gtfs$stop_times$trip_id)
+  gtfs$stop_times <- gtfs$stop_times[!is.na(gtfs$stop_times$arrival_time), ] 
+  stopsNAfter <- length(gtfs$stop_times$trip_id)
+  if (stopsNPrev != stopsNAfter) {print(sprintf("> !! FIXED GTFS, there were %d stop times without arrival time!", stopsNPrev-stopsNAfter))}
   
   print(sprintf("> Analysing reference date %s...", date))
   gtfs_date <- filter_feed_by_date(
