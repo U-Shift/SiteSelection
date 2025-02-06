@@ -148,24 +148,18 @@ process_gtfs <- function(gtfs_url, area, date) {
 
 # main()
 
-request <- tribble(
-  ~area, ~date, ~url,
-  "barreiro", "2025-02-05", "https://www.tcbarreiro.pt/front/files/sample_gtfs/GTFS-TCB_24.zip", # VALIDATED against CityMapper
-  "braga", "2025-02-05", "https://tub.pt/developer/gtfs/feed/tub.zip", # VALIDATED against previous version
-  "lisboa", "2025-02-05", "https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS", # VALIDATED against CityMapper
-  "AML", "2025-02-05", "https://api.carrismetropolitana.pt/gtfs", # VALIDATED against CityMapper
-  "cascais", "2025-02-05", "https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download", # VALIDATED against previous version
-  "porto", "2025-02-05", "https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/1e0f4315-3694-42b0-a8ce-5218ad4742e5/download/horarios_gtfs_stcp_06_01_2025.zip" # VALIDATED against previous version
-)
+request <- read.csv("database/gtfs/gtfs_sources.csv") |>
+  filter((Type == "Urban" | Type == "Inter-urban") & Ignore!=1)
+
 output_file <- "database/transit/bus_stop_frequency.gpkg"
 
 aggregated_frequencies <- data.frame()
 
-for (area in request$area) {
+for (area in request$Area) {
   frequencies <- process_gtfs(
-    request$url[request$area == area],
+    request$URL[request$Area == area],
     area,
-    request$date[request$area == area]
+    request$ReferenceDate[request$Area == area]
   )
   
   assign(sprintf("frequencies_%s", area), frequencies)
