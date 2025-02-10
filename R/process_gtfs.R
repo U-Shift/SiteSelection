@@ -5,15 +5,16 @@ library(lubridate)
 library(tidytransit)
 
 source("R/gtfs_download.R")
+source("R/calendar_nextBusinessWednesday.R")
 
 # methods
 
 #' Process GTFS file
 #' @param gtfs_url The url of the GTFS zip file
 #' @param area String with area name
-#' @param date Reference date to consider when analysing the GTFS file
+#' @param date Reference date to consider when analysing the GTFS file. Defaults to next business wednesday
 #' @param route_types Restricts analysis to defined route_types, defaults to those that have conflicts on urban environments: tram and bus
-process_gtfs <- function(gtfs_url, area, date, route_types=list(0,3,5,11)) {
+process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) {
   print(sprintf("Analysing GTFS for %s...", area))
 
   # DOWNLOAD GTFS and store it locally
@@ -28,6 +29,10 @@ process_gtfs <- function(gtfs_url, area, date, route_types=list(0,3,5,11)) {
   # FILTER GTFS to focus on only 
   
   ## Consider transit data for one day only
+  if (is.null(date)) {
+    date = calendar_nextBusinessWednesday()
+    print(sprintf("> Reference date not provided, considering next business wednesday: %s...", date))
+  }
   print(sprintf("> Filtering by reference date %s...", date))
   gtfs_date <- filter_feed_by_date(
     gtfs, extract_date = date
@@ -161,8 +166,7 @@ aggregated_frequencies <- data.frame()
 for (area in request$Area) {
   frequencies <- process_gtfs(
     request$URL[request$Area == area],
-    area,
-    request$ReferenceDate[request$Area == area]
+    area
   )
   
   assign(sprintf("frequencies_%s", area), frequencies)
