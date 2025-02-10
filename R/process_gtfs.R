@@ -4,47 +4,27 @@ library(tidyverse)
 library(lubridate)
 library(tidytransit)
 
-source("R/gtfs_create_shapes.R")
+source("R/gtfs_download.R")
 
 # methods
 
 #' Process GTFS file
 #' @param gtfs_url The url of the GTFS zip file
-#' @param city String with area name
+#' @param area String with area name
 #' @param date Reference date to consider when analysing the GTFS file
 #' @param route_types Restricts analysis to defined route_types, defaults to those that have conflicts on urban environments: tram and bus
 process_gtfs <- function(gtfs_url, area, date, route_types=list(0,3,5,11)) {
   print(sprintf("Analysing GTFS for %s...", area))
 
   # DOWNLOAD GTFS and store it locally
-  if (!dir.exists("database/transit")) {
-    dir.create("database/transit", recursive = TRUE)
-  }
-  print(sprintf("> Downloading GTFS file..."))
-  destfile <- sprintf("database/transit/%s_gtfs.zip", area)
-  download.file(gtfs_url, destfile = destfile)
-  print(sprintf("> GTFS downloaded and stored at %s!", destfile))
-
+  destfile = gtfs_download(gtfs_url, area)
+  
   # Open GTFS with tidytransit library and filter by date
-  print("> Openning it for processing...")
+  print(sprintf("> Openning it for processing (%s)...", destfile))
   gtfs <- tidytransit::read_gtfs(destfile)
   print(sprintf("> Openned GTFS for %s (ID %s)!", gtfs$agency$agency_name, gtfs$agency$agency_id))
   
-  # FIX GTFS 
-  ## If no shapes.txt, create them automatically with GTFSwizard
-  if (!("shapes" %in% names(gtfs))) {
-    print("> !! shapes.txt missing, using GTFSwizard to build it...") 
-    destfile_new <- gtfs_create_shapes(destfile)
-    print(sprintf("> !! shapes.txt created, created new GTFS ZIP with it at %s, proceeding analysis...", destfile_new)) 
-    gtfs <- tidytransit::read_gtfs(destfile_new)
-  }
-  
-  ## Clean empty stop_times arrival/departure (happened with Cascais GTFS) which raises an error at filter_feed_by_date method
-  stopsNPrev <- length(gtfs$stop_times$trip_id)
-  gtfs$stop_times <- gtfs$stop_times[!is.na(gtfs$stop_times$arrival_time), ] 
-  stopsNAfter <- length(gtfs$stop_times$trip_id)
-  if (stopsNPrev != stopsNAfter) {print(sprintf("> !! FIXED GTFS, there were %d stop times without arrival time!", stopsNPrev-stopsNAfter))}
-  
+
   # FILTER GTFS to focus on only 
   
   ## Consider transit data for one day only
