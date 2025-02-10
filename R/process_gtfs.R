@@ -10,12 +10,13 @@ source("R/gtfs_create_shapes.R")
 
 #' Process GTFS file
 #' @param gtfs_url The url of the GTFS zip file
-#' @param city String with zity name
+#' @param city String with area name
 #' @param date Reference date to consider when analysing the GTFS file
-process_gtfs <- function(gtfs_url, area, date) {
+#' @param route_types Restricts analysis to defined route_types, defaults to those that have conflicts on urban environments: tram and bus
+process_gtfs <- function(gtfs_url, area, date, route_types=list(0,3,5,11)) {
   print(sprintf("Analysing GTFS for %s...", area))
 
-  # Download GTFS and store it locally
+  # DOWNLOAD GTFS and store it locally
   if (!dir.exists("database/transit")) {
     dir.create("database/transit", recursive = TRUE)
   }
@@ -29,7 +30,7 @@ process_gtfs <- function(gtfs_url, area, date) {
   gtfs <- tidytransit::read_gtfs(destfile)
   print(sprintf("> Openned GTFS for %s (ID %s)!", gtfs$agency$agency_name, gtfs$agency$agency_id))
   
-  # Fix GTFS 
+  # FIX GTFS 
   ## If no shapes.txt, create them automatically with GTFSwizard
   if (!("shapes" %in% names(gtfs))) {
     print("> !! shapes.txt missing, using GTFSwizard to build it...") 
@@ -44,7 +45,10 @@ process_gtfs <- function(gtfs_url, area, date) {
   stopsNAfter <- length(gtfs$stop_times$trip_id)
   if (stopsNPrev != stopsNAfter) {print(sprintf("> !! FIXED GTFS, there were %d stop times without arrival time!", stopsNPrev-stopsNAfter))}
   
-  print(sprintf("> Analysing reference date %s...", date))
+  # FILTER GTFS to focus on only 
+  
+  ## Consider transit data for one day only
+  print(sprintf("> Filtering by reference date %s...", date))
   gtfs_date <- filter_feed_by_date(
     gtfs, extract_date = date
   )
@@ -53,8 +57,27 @@ process_gtfs <- function(gtfs_url, area, date) {
     length(gtfs_date$routes$route_id),
     length(gtfs_date$stops$stop_id)
   ))
-
-  # Organize the table calculating the frequencies per bus stop
+  
+  # Consider trips for defined modes only
+  if (!is.null(route_types)) {
+    print(sprintf("> Filtering by route types %s...", toString(route_types)))
+    routesNBefore <- length(gtfs_date$routes$route_id)
+    tripsNBefore <- length(gtfs_date$trips$trip_id)
+    
+    routes_ids <- gtfs_date$routes[gtfs_date$routes$route_type %in% route_types, ]$route_id
+    trips_ids <- gtfs_date$trips[gtfs_date$trips$route_id %in% routes_ids, ]$trip_id
+    gtfs_date <- filter_feed_by_trips(gtfs_date, trips_ids)
+        
+    routesNAfter = length(gtfs_date$routes$route_id)
+    tripsNAfter = length(gtfs_date$trips$trip_id)
+    print(sprintf("> Removed %d routes, representing %d trips, proceding analysis...", routesNBefore-routesNAfter, tripsNBefore-tripsNAfter))
+  }
+  
+  if (length(gtfs_date$trips$trip_id)==0) {
+    stop("No trips found after filtering! Make sure you have a valid GTFS!")
+  }
+    
+  # PROCESS GTFS, generating table calculating the frequencies per bus stop
 
   ## Service pattern
 
