@@ -10,7 +10,8 @@ metroLisboa,2025-02-05,https://www.metrolisboa.pt/google_transit/googleTransit.z
 fertagus,2025-02-05,https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip,1,Urban,,
 ,,,,,,
 braga,2025-02-05,https://tub.pt/developer/gtfs/feed/tub.zip,1,Urban,Validated against previous version,https://tub.pt/downloads/
-porto,2025-02-05,https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/1e0f4315-3694-42b0-a8ce-5218ad4742e5/download/horarios_gtfs_stcp_06_01_2025.zip,1,Urban,Validated against previous version,https://opendata.porto.digital/de/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp/resource/1e0f4315-3694-42b0-a8ce-5218ad4742e5
+stcp,2025-02-05,https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/1e0f4315-3694-42b0-a8ce-5218ad4742e5/download/horarios_gtfs_stcp_06_01_2025.zip,1,Urban,Validated against previous version,https://opendata.porto.digital/de/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp/resource/1e0f4315-3694-42b0-a8ce-5218ad4742e5
+metroPorto,2025-02-05,https://www.metrodoporto.pt/metrodoporto/uploads/document/file/693/google_transit_v2.zip,1,Urban,,https://www.metrodoporto.pt/pages/337
 ,,,,,,
 CIMMT,2025-02-05,https://drive.google.com/uc?export=download&id=1v9eGjezOzbaBQi-Aa5c15tZXcSiiDwqA,1,Inter-urban,"Meio, Transportes do Médio Tejo. Validated against Google Maps",https://www.transit.land/operators/o-e-rmtejo
 ,,,,,,
@@ -25,5 +26,7 @@ portimao,2025-02-05,https://drive.google.com/uc?export=download&id=1Ii02y25MCOil
 ,,,,,,
 funchal,2025-02-05,http://www.horariosdofunchal.pt/google_transit.zip,1,Urban,Horários do Funchal,https://www.transit.land/operators/o-etgc-hf~urbano
 ,,,,,,
-CIMRL,2025-02-05,https://drive.google.com/uc?export=download&id=192Qat2jJKyv5hhO8T3eVT70M5NB0dtXC,1,Inter-urban,Rodoviária do Lis,https://www.transit.land/operators/o-ez-rdlis
+CIMRL,2025-02-05,https://drive.google.com/uc?export=download&id=192Qat2jJKyv5hhO8T3eVT70M5NB0dtXC,1,Inter-urban,Rodoviária do Lis. Inclui Rápidas de Leiria.,https://www.transit.land/operators/o-ez-rdlis
 leiria,2025-02-05,https://drive.google.com/uc?export=download&id=1NqcOk8IrlV73TBonJAxpzIUTjaAjF27M,1,Urban,Mobilis,https://www.transit.land/operators/o-ez1-rdlis
+,,,,,,
+lousada,2025-02-05,https://dadosabertos.cm-lousada.pt/datasets/GTFS_CIMTS_UT3.zip,0,Inter-urban,Transporte Público Rodoviário (Município de Lousada),https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/195
