@@ -34,7 +34,7 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
     print(sprintf("> Reference date not provided, considering next business wednesday: %s...", date))
   }
   print(sprintf("> Filtering by reference date %s...", date))
-  gtfs_date <- filter_feed_by_date(
+  gtfs_date <- tidytransit::filter_feed_by_date(
     gtfs, extract_date = date
   )
   print(sprintf("> There are %d routes operating %d trips on %d stops...", 
@@ -51,7 +51,7 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
     
     routes_ids <- gtfs_date$routes[gtfs_date$routes$route_type %in% route_types, ]$route_id
     trips_ids <- gtfs_date$trips[gtfs_date$trips$route_id %in% routes_ids, ]$trip_id
-    gtfs_date <- filter_feed_by_trips(gtfs_date, trips_ids)
+    gtfs_date <- tidytransit::filter_feed_by_trips(gtfs_date, trips_ids)
         
     routesNAfter = length(gtfs_date$routes$route_id)
     tripsNAfter = length(gtfs_date$trips$trip_id)
@@ -71,12 +71,12 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
   ### Alternative docs: https://cran.r-project.org/web/packages/tidytransit/tidytransit.pdf, page 20
   ### Creates $.$servicepatterns with unique id per pattern
   ### Creates $.$dates_servicepatterns matching each individual date covered by the GTFS with the corresponding id
-  pattern_gtfs <- set_servicepattern(gtfs_date)
+  pattern_gtfs <- tidytransit::set_servicepattern(gtfs_date)
   print(sprintf("> Identified %d service patterns matching date: %s", length(pattern_gtfs$.$servicepatterns$servicepattern_id), paste(pattern_gtfs$.$servicepatterns$service_id, collapse=", ")))
   ### WARNING: every time we run this, random ids will be generated for the service patterns
 
   ## Convert stops and shapes to simple features
-  pattern_gtfs <- gtfs_as_sf(pattern_gtfs)
+  pattern_gtfs <- tidytransit::gtfs_as_sf(pattern_gtfs)
   pattern_gtfs$shapes$length <- st_length(pattern_gtfs$shapes) # Compute length for each shape
 
   shape_lengths <- pattern_gtfs$shapes |> 
@@ -119,7 +119,7 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
   frame = data.frame()
 
   for (i in 6:23) {
-    stop_frequency <- get_stop_frequency(
+    stop_frequency <- tidytransit::get_stop_frequency(
       gtfs_date,
       start_time = sprintf("%.2d:00:00", i),
       end_time = sprintf("%.2d:59:59", i),
@@ -157,7 +157,7 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
 # main()
 
 request <- read.csv("database/gtfs/gtfs_sources.csv") |>
-  filter((Type == "Urban" | Type == "Inter-urban") & Ignore!=1)
+  subset((Type == "Urban" | Type == "Inter-urban") & Ignore!=1)
 
 output_file <- "database/transit/bus_stop_frequency.gpkg"
 
