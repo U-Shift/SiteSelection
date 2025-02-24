@@ -1,51 +1,50 @@
-# imports 
-library(sf)
-library(tidyverse)
-library(lubridate)
-library(tidytransit)
-
-source("R/gtfs_download.R")
-source("R/calendar_nextBusinessWednesday.R")
-
-# methods
-
 #' Process GTFS file
-#' @param gtfs_url The url of the GTFS zip file
-#' @param area String with area name
-#' @param date Reference date to consider when analysing the GTFS file. Defaults to next business wednesday
-#' @param route_types Restricts analysis to defined route_types, defaults to those that have conflicts on urban environments: tram and bus
-process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) {
-  print(sprintf("Analysing GTFS for %s...", area))
-
-  # DOWNLOAD GTFS and store it locally
-  destfile = gtfs_download(gtfs_url, area)
-  
-  # Open GTFS with tidytransit library and filter by date
-  print(sprintf("> Openning it for processing (%s)...", destfile))
-  gtfs <- tidytransit::read_gtfs(destfile)
-  print(sprintf("> Openned GTFS for %s (ID %s)!", gtfs$agency$agency_name, gtfs$agency$agency_id))
-  
-
-  # FILTER GTFS to focus on only 
+#' 
+#' Get aggregated frequency per hour for each bus stop.
+#' 
+#' @param gtfs tidygtfs. GTFS loaded using tidytransit::read_gtfs. 
+#' @param date Reference date to consider when analysing the GTFS file. Defaults to next business wednesday.
+#' @param route_types Restricts analysis to defined route_types, defaults to those that have conflicts on urban environments: tram and bus.
+#' @param prepend_agency Boolean. When true, stop_id is prepended with agency_id to avoid duplicate stop ids from multiple GTFS merging.
+#' 
+#' @details
+#' This method analyses the GTFS feed for a representative day, generating for each stop the number of services aggregated per hour.
+#' 
+#' @returns A `data.frame` object with the following columns:
+#' - `stop_id`, the `stop_id` attribute from `stops.txt` file;
+#' - `hour`, the hour for which the frequency applies (24 hour format);
+#' - `frequency`, the number of services provided at the stop for the corresponding 60 minutes period;
+#' - `geometry`, the stop coordinates.
+#' 
+#' @examples
+#' gtfs <- tidytransit::read_gtfs("gtfs.zip")
+#' frequency_analysis <- gtfs_frequency(gtfs)
+#'
+#' 
+#' @seealso [tidytransit::read_gtfs()]
+#' 
+#' @import sf
+#' @import tidyverse
+#' @import lubridate
+#' @import tidytransit
+#' 
+#' @export
+gtfs_frequency <- function(gtfs, date=NULL, route_types=list(0,3,5,11), prepend_agency=TRUE) {
+  message(sprintf("Analysing GTFS..."))
   
   ## Consider transit data for one day only
   if (is.null(date)) {
     date = calendar_nextBusinessWednesday()
-    print(sprintf("> Reference date not provided, considering next business wednesday: %s...", date))
+    message(sprintf("> Reference date not provided, considering next business wednesday: %s...", date))
   }
-  print(sprintf("> Filtering by reference date %s...", date))
+  message(sprintf("> Filtering by reference date %s...", date))
   gtfs_date <- tidytransit::filter_feed_by_date(
     gtfs, extract_date = date
   )
-  print(sprintf("> There are %d routes operating %d trips on %d stops...", 
-    length(gtfs_date$trips$trip_id),
-    length(gtfs_date$routes$route_id),
-    length(gtfs_date$stops$stop_id)
-  ))
-  
+
   # Consider trips for defined modes only
   if (!is.null(route_types)) {
-    print(sprintf("> Filtering by route types %s...", toString(route_types)))
+    message(sprintf("> Filtering by route types %s...", toString(route_types)))
     routesNBefore <- length(gtfs_date$routes$route_id)
     tripsNBefore <- length(gtfs_date$trips$trip_id)
     
@@ -55,8 +54,14 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
         
     routesNAfter = length(gtfs_date$routes$route_id)
     tripsNAfter = length(gtfs_date$trips$trip_id)
-    print(sprintf("> Removed %d routes, representing %d trips, proceding analysis...", routesNBefore-routesNAfter, tripsNBefore-tripsNAfter))
+    message(sprintf("> Removed %d routes, representing %d trips, proceding analysis...", routesNBefore-routesNAfter, tripsNBefore-tripsNAfter))
   }
+  
+  message(sprintf("> Found %d routes operating %d trips on %d stops...", 
+                length(gtfs_date$trips$trip_id),
+                length(gtfs_date$routes$route_id),
+                length(gtfs_date$stops$stop_id)
+  ))
   
   if (length(gtfs_date$trips$trip_id)==0) {
     stop("No trips found after filtering! Make sure you have a valid GTFS!")
@@ -72,7 +77,7 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
   ### Creates $.$servicepatterns with unique id per pattern
   ### Creates $.$dates_servicepatterns matching each individual date covered by the GTFS with the corresponding id
   pattern_gtfs <- tidytransit::set_servicepattern(gtfs_date)
-  print(sprintf("> Identified %d service patterns matching date: %s", length(pattern_gtfs$.$servicepatterns$servicepattern_id), paste(pattern_gtfs$.$servicepatterns$service_id, collapse=", ")))
+  message(sprintf("> Identified %d service patterns matching date: %s", length(pattern_gtfs$.$servicepatterns$servicepattern_id), paste(pattern_gtfs$.$servicepatterns$service_id, collapse=", ")))
   ### WARNING: every time we run this, random ids will be generated for the service patterns
 
   ## Convert stops and shapes to simple features
@@ -147,34 +152,11 @@ process_gtfs <- function(gtfs_url, area, date=NULL, route_types=list(0,3,5,11)) 
     st_as_sf(crs = 4326, coords = c("stop_lon", "stop_lat"))
   
   ## Prepend stop_id with GTFS.agency.agency_id to avoid duplicate stop ids from multiple GTFS merging
-  table$stop_id <- paste0(sprintf("%s_", gtfs$agency$agency_id), table$stop_id)
+  if (prepend_agency) {
+    table$stop_id <- paste0(sprintf("%s_", gtfs$agency$agency_id), table$stop_id)
+  }
 
-  print("Finished GTFS analysis!")
+  message("Finished GTFS analysis!")
   
   return(table)
 }
-
-# main()
-
-request <- read.csv("database/gtfs/gtfs_sources.csv") |>
-  subset((Type == "Urban" | Type == "Inter-urban") & Ignore!=1)
-
-output_file <- "database/transit/bus_stop_frequency.gpkg"
-
-aggregated_frequencies <- data.frame()
-
-for (area in request$Area) {
-  frequencies <- process_gtfs(
-    request$URL[request$Area == area],
-    area
-  )
-  
-  assign(sprintf("frequencies_%s", area), frequencies)
-  
-  aggregated_frequencies <- rbind(aggregated_frequencies, frequencies)
-}
-
-print(sprintf("Finished processing! Storing output to %s...", output_file))
-st_write(aggregated_frequencies, output_file, append=FALSE) # append=FALSE for overwrite
-
-print("Done! :)")

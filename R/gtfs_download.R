@@ -1,50 +1,50 @@
-library(tidytransit, include.only = c("read_gtfs", "write_gtfs"))
-
-source("R/gtfs_create_shapes.R")
-
-#' Download GTFS file, fixing any irregularities. Returns zip location on local storage.
-#' @param gtfs_url The url of the GTFS zip file
-#' @param area String with area name
-#' @param validateAndFix If true, GTFS file is validated and fixes applied if does not comply with standards
-gtfs_download <- function(gtfs_url, area, validateAndFix=TRUE) {
+#' GTFS download and fix
+#' 
+#' Download GTFS file fixing any irregularities.
+#' @param gtfs_location String. The location of the GTFS zip file. Either local or URL.
+#' @param zipfile String. Path to the zip file the feed should be written to. The file is overwritten if it already exists.
+#' 
+#' @details
+#' In addition to downloading the GTFS feed zip file, this method validates its integrity and applies the proper corrections if it does not comply with the following validations:
+#' - `stop_times.txt` with empty `arrival_time` or `departure_time`, filtering rows that do not comply;
+#' - Feeds with missing `shapes.txt` file, generating it with `SiteSelection::gtfs_create_shapes`.
+#' 
+#' @seealso [SiteSelection::gtfs_create_shapes()]
+#' 
+#' @examples
+#' gtfs_download("https://operator.com/gtfs.zip", "operator_gtfs.zip")
+#' 
+#' @import tidytransit
+#' 
+#' @export
+gtfs_download <- function(gtfs_location, zipfile) {
   
-  print(sprintf("Downloading GTFS file for %s, at %s...", area, gtfs_url))
+  message(sprintf("Downloading GTFS file for %s...", gtfs_location))
         
-  # DOWNLOAD GTFS and store it locally
-  if (!dir.exists("database/transit")) {
-    dir.create("database/transit", recursive = TRUE)
+  # DOWNLOAD GTFS
+  if (!dir.exists(dirname(zipfile))) {
+    dir.create(dirname(zipfile), recursive = TRUE)
+  }
+  gtfs <- tidytransit::read_gtfs(gtfs_location)
+  
+  # VALIDATE integrity
+  
+  ## Clean empty stop_times arrival/departure (happened with Cascais GTFS) which raises an error at filter_feed_by_date method
+  stopsNPrev <- length(gtfs$stop_times$trip_id)
+  gtfs$stop_times <- gtfs$stop_times[!is.na(gtfs$stop_times$arrival_time), ] 
+  stopsNAfter <- length(gtfs$stop_times$trip_id)
+  if (stopsNPrev != stopsNAfter) {
+    warning(sprintf("> FIXED GTFS, there were %d stop times without arrival time!", stopsNPrev-stopsNAfter))
   }
   
-  destfile <- sprintf("database/transit/%s_gtfs.zip", area)
-  download.file(gtfs_url, destfile = destfile)
-  print(sprintf("> GTFS downloaded and stored at %s!", destfile))
+  # STORE GTFS (zip generated here, because next validation uses GTFSWizard and not tidytransit, which are incompatible)
+  tidytransit::write_gtfs(gtfs, zipfile)
   
-  # Validate if any fixes required
-  if (validateAndFix) {
-    
-    gtfs <- tidytransit::read_gtfs(destfile)
-    
-    ## Clean empty stop_times arrival/departure (happened with Cascais GTFS) which raises an error at filter_feed_by_date method
-    stopsNPrev <- length(gtfs$stop_times$trip_id)
-    gtfs$stop_times <- gtfs$stop_times[!is.na(gtfs$stop_times$arrival_time), ] 
-    stopsNAfter <- length(gtfs$stop_times$trip_id)
-    if (stopsNPrev != stopsNAfter) {
-      filtered_location = sprintf("%s/%s_stopTimesCleaned.zip", dirname(destfile), tools::file_path_sans_ext(basename(destfile)))
-      print(sprintf("> !! FIXED GTFS, there were %d stop times without arrival time! Generated new GTFS at %s...", stopsNPrev-stopsNAfter, filtered_location))
-      tidytransit::write_gtfs(gtfs, filtered_location)
-      destfile <- filtered_location
-    }
-    
-    ## If no shapes.txt, create them automatically with GTFSwizard
-    if (!("shapes" %in% names(gtfs))) {
-      print("> !! shapes.txt missing, using GTFSwizard to build it...") 
-      destfile_new <- gtfs_create_shapes(destfile)
-      print(sprintf("> !! CREATED shapes.txt. Generated new GTFS ZIP with it at %s, proceeding analysis...", destfile_new)) 
-      gtfs <- tidytransit::read_gtfs(destfile_new)
-      destfile <- destfile_new
-    }
-    
+  ## If no shapes.txt, create them automatically with GTFSwizard
+  if (!("shapes" %in% names(gtfs))) {
+    gtfs_create_shapes(zipfile, zipfile)
+    warning(sprintf("> CREATED shapes.txt, the file as missing!")) 
   }
-  
-  return(destfile)
+    
+  return(zipfile)
 }

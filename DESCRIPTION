@@ -1,6 +1,6 @@
 Package: SiteSelection
 Title: An R script to find complex areas for the Streets4All Project
-Version: 0.2.0
+Version: 0.4.0
 Authors@R: 
   c(person("Rosa", "Félix", , "rosamfelix@@tecnico.ulisboa.pt", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5642-6006")),
@@ -23,6 +23,8 @@ Imports:
     dplyr,
     ggplot2,
     h3jsr,
+    httr,
+    jsonlite,
     leaflet,
     lubridate,
     qgisprocess,
@@ -35,11 +37,15 @@ Imports:
     stringr,
     tibble,
     tidygraph,
+    tidytransit,
+    tidyverse,
     tidyr,
     targets,
     openxlsx
 Suggests:
     curl (>= 6.0.1),
-    mapview
+    knitr,
+    mapview,
+    rmarkdown
 URL: https://u-shift.github.io/SiteSelection/,
     https://github.com/U-Shift/SiteSelection
