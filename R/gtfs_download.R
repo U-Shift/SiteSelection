@@ -12,7 +12,9 @@
 #' @seealso [SiteSelection::gtfs_create_shapes()]
 #' 
 #' @examples
+#' \dontrun{
 #' gtfs_download("https://operator.com/gtfs.zip", "operator_gtfs.zip")
+#' }
 #' 
 #' @import tidytransit
 #' 

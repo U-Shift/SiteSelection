@@ -14,9 +14,11 @@
 #'
 #' 
 #' @examples
+#' \dontrun{
 #' gtfs1 <- GTFSwizard::read_gtfs("gtfs1.zip")
 #' gtfs2 <- GTFSwizard::read_gtfs("gtfs2.zip")
 #' gtfs_unify(list(gtfs1, gtfs2), "gtfs_unified.zip", TRUE)
+#' }
 #' 
 #' @seealso [GTFSwizard::read_gtfs()]
 #' @seealso [gtfsrouter::gtfs_transfer_table()]

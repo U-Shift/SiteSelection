@@ -36,8 +36,10 @@ Get aggregated frequency per hour for each bus stop.
 This method analyses the GTFS feed for a representative day, generating for each stop the number of services aggregated per hour.
 }
 \examples{
+\dontrun{
 gtfs <- tidytransit::read_gtfs("gtfs.zip")
 frequency_analysis <- gtfs_frequency(gtfs)
+}
 
 
 }

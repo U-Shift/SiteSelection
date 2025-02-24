@@ -33,9 +33,11 @@ Merge multiple GTFS into a single aggregated file.
 When generating transfers, those already existing in each GTFS file are kept, extended with new ones computed based on the stops network of the final aggregated version. This computation is executed with \code{gtfsrouter::gtfs_transfer_table}, with the parameters \code{d_limit=transfer_distance}, \code{min_transfer_time=transfer_time} and \code{network_times=transfer_street_routing}. The other parameters are applied the library default values.
 }
 \examples{
+\dontrun{
 gtfs1 <- GTFSwizard::read_gtfs("gtfs1.zip")
 gtfs2 <- GTFSwizard::read_gtfs("gtfs2.zip")
 gtfs_unify(list(gtfs1, gtfs2), "gtfs_unified.zip", TRUE)
+}
 
 }
 \seealso{

@@ -22,6 +22,8 @@ RoxygenNote: 7.3.2
 Imports:
     dplyr,
     ggplot2,
+    gtfsrouter,
+    GTFSwizard,
     h3jsr,
     httr,
     jsonlite,
@@ -41,7 +43,8 @@ Imports:
     tidyverse,
     tidyr,
     targets,
-    openxlsx
+    openxlsx,
+    zip
 Suggests:
     curl (>= 6.0.1),
     knitr,

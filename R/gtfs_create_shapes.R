@@ -10,7 +10,9 @@
 #' @seealso [GTFSwizard::get_shapes()]
 #' 
 #' @examples
+#' \dontrun{
 #' gtfs_create_shapes("gtfs_withoutShapes.zip", "gtfs_withShapes.zip")
+#' }
 #' 
 #' @import zip
 #' @import GTFSwizard

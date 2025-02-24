@@ -18,7 +18,9 @@ Opens GTFS and generates shapes based on stop considering straight lines connect
 Shapes is created using \code{GTFSwizard::get_shapes} method.
 }
 \examples{
+\dontrun{
 gtfs_create_shapes("gtfs_withoutShapes.zip", "gtfs_withShapes.zip")
+}
 
 }
 \seealso{

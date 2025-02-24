@@ -22,7 +22,9 @@ In addition to downloading the GTFS feed zip file, this method validates its int
 }
 }
 \examples{
+\dontrun{
 gtfs_download("https://operator.com/gtfs.zip", "operator_gtfs.zip")
+}
 
 }
 \seealso{

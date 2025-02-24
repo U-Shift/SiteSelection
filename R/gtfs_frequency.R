@@ -17,8 +17,10 @@
 #' - `geometry`, the stop coordinates.
 #' 
 #' @examples
+#' \dontrun{
 #' gtfs <- tidytransit::read_gtfs("gtfs.zip")
 #' frequency_analysis <- gtfs_frequency(gtfs)
+#' }
 #'
 #' 
 #' @seealso [tidytransit::read_gtfs()]
