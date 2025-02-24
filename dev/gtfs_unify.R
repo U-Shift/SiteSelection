@@ -1,7 +1,7 @@
 library(GTFSwizard)
 library(SiteSelection)
 
-request <- read.csv("inst/extdata/gtfs_sources_pt.csv") |>
+request <- read.csv(system.file("extdata", "gtfs_sources_pt.csv", package = "SiteSelection")) |>
   subset(ID %in% list("barreiro", "cascais"))
 
 
