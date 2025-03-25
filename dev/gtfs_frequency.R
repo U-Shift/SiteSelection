@@ -2,9 +2,9 @@ library(SiteSelection)
 library(tidytransit)
 
 request <- read.csv(system.file("extdata", "gtfs_sources_pt.csv", package = "SiteSelection")) |>
-  subset(ID == "metroLisboa")
+  subset(ID == "cp")
 
-output_file <- "database/transit/bus_stop_frequency_metro.gpkg"
+output_file <- "database/transit/bus_stop_frequency_cp.gpkg"
 
 aggregated_frequencies <- data.frame()
 
