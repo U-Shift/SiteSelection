@@ -74,8 +74,8 @@ This is fine for a single case study 😀
 
 . . .
 
-But what it you want to replicate the **exactly** same process for **400** other locations? 🤯
-
+But what it you want to replicate the **exactly** same process for **400** other locations?
+🤯
 
 ::: footer
 :::
@@ -99,7 +99,9 @@ But what it you want to replicate the **exactly** same process for **400** other
 <!-- ## Processes -->
 
 <!-- ```{r} -->
+
 <!-- targets::tar_visnetwork() -->
+
 <!-- ``` -->
 
 ## Processes
@@ -135,8 +137,18 @@ freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service
 ![](images/clipboard-1269564533.png){fig-align="center"}
 
 ::: {.callout-warning appearance="simple"}
-For different contexts, we can have different cut thresholds... *Under assessment*
+For different contexts, we can have different cut thresholds...
+*Under assessment*
 :::
+
+## Options
+
+#### Thresholds for candidate selection
+
+Bus frequency levels:
+
+![](images/clipboard-313664294.png){fig-align="center"}
+
 
 ## Options
 
@@ -195,7 +207,6 @@ analysis = TRUE # export input parameters and results to a xls file? default: FA
 -   Modify the grid type or resolution
 
 -   Other case study
-
 
 ## Conclusions
 

@@ -636,10 +636,15 @@ get_site_selection = function(grid_all, CITY, GEOJSON, GEOJSON_name) {
     
     print("Including transit complexity !")
     
-    #classify complexity as "very complex" if transit is 3 or 4
+    # classify complexity as "very complex" if transit is 4
     grid_selection = grid_selection |>
-      mutate(complexity = ifelse(transit %in% c(3,4), "very complex", "complex"))
-    
+      mutate(
+        complexity = case_when(
+          transit == 3 ~ "complex",
+          transit == 4 ~ "very complex",
+          TRUE ~ NA_character_
+        )
+      )
   }
  
   

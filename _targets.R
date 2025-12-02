@@ -10,8 +10,8 @@ GEOJSON = FALSE             # use a different limit? made with https://geojson.i
 GEOJSON_input = "map1"      # name of the file if GEOJSON = TRUE. default: "map1"
 cellsize_input = c(600, 600)# in meters
 square_input = TRUE         # TRUE = squares, FALSE = hexagons
-use_h3 = FALSE              # use h3 to create universal grid?
-h3_res = 8                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
+use_h3 = TRUE              # use h3 to create universal grid?
+h3_res = 9                  # h3 resolution. default: 9 (400m diameter). 8 = 1060m diameter, 10 = 150m diameter
 build_osm = FALSE           # download and clean osm road network again?
 analysis = FALSE            # export input parameters and results to a xls file? default: FALSE
 
@@ -21,7 +21,7 @@ degree_min = mean           # mean or median? default: mean
 betweeness_range = 0.40     # percentile to exclude (upper and lower) default: 0.25
 closeness_range = 0.25      # value to exclude (upper and lower) default: 0.25
 entropy_min = 0.35          # value to exclude (lower) default: 0.5
-freq_bus = c(4, 10, 20)     # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
+freq_bus = c(4, 10, 40)     # frequency of bus stops to define level of service. last 2 will remain. default: c(4, 10, 20) 
 
 #########################################
 
