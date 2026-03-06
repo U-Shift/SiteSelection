@@ -43,6 +43,7 @@ library(sf)
 library(tidyverse)
 library(lubridate)
 library(tidytransit)
+library(GTFShift)
 
 # read gtfs files
 braga_gtfs = read_gtfs("database/transit/braga_gtfs.zip")
@@ -129,30 +130,10 @@ for (mun in filter_dates$mun) {
 #### Filter by date    
     
     #Get stop frequency (missing data)
-    
-    braga_f = data.frame()
-    
-    for (i in 6:23) {
-      braga = get_stop_frequency(
-        braga_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_id_braga,
-        by_route = TRUE
-      )
-      
-      braga = braga |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      braga_f = rbind(braga_f, braga)
-    }
-    
-    braga_frequency = braga_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    braga_frequency = GTFShift::get_get_stop_frequency_hourly(
+      braga_date,
+      date = filter_dates$dates[filter_dates$mun == "braga"]
+    )
     
     
     braga_table = braga_frequency |>
@@ -211,31 +192,10 @@ for (mun in filter_dates$mun) {
     
     
 # Filter by date and get stop frequency
-    
-    lisbon_f = data.frame()
-    
-    for (i in 6:23) {
-      lisbon = get_stop_frequency(
-        lisbon_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_id_lisbon,
-        by_route = TRUE
-      )
-      
-      lisbon = lisbon |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      lisbon_f = rbind(lisbon_f, lisbon)
-    }
-    
-    
-    lisbon_frequency = lisbon_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    lisbon_frequency = GTFShift::get_get_stop_frequency_hourly(
+      lisbon_date,
+      date = filter_dates$dates[filter_dates$mun == "lisbon"]
+    )
     
     
     lisbon_table = lisbon_frequency |>
@@ -358,37 +318,10 @@ service_pattern_summary_aml = service_pattern_summary_aml |>
   filter(servicepattern_id %in% c("s_d38ffee", "s_0973a74", "s_70dfe23", "s_fff1bcb", "s_bc376dc"))
 
 #join selected service patterns ids with the frequencies per bus stop
-    
-    aml_f = data.frame()
-    
-    for (i in 6:23) {
-      aml = get_stop_frequency(
-        aml_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = c(
-          service_ids_aml_1,
-          service_ids_aml_2,
-          service_ids_aml_3,
-          service_ids_aml_12,
-          service_ids_aml_18
-        ),
-        by_route = TRUE
-      )
-      
-      aml = aml |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      aml_f = rbind(aml_f, aml)
-    }
-    
-    
-    aml_frequency = aml_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    aml_frequency = GTFShift::get_get_stop_frequency_hourly(
+      aml_date,
+      date = filter_dates$dates[filter_dates$mun == "aml"]
+    )
     
     
     aml_table = aml_frequency |>
@@ -441,31 +374,10 @@ service_pattern_summary_aml = service_pattern_summary_aml |>
     
     
     # Filter by date and get stop frequency
-    
-    cascais_f = data.frame()
-    
-    for (i in 6:23) {
-      cascais = get_stop_frequency(
-        cascais_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_ids_cascais,
-        by_route = TRUE
-      )
-      
-      cascais = cascais |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      cascais_f = rbind(cascais_f, cascais)
-    }
-    
-    
-    cascais_frequency = cascais_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    cascais_frequency = GTFShift::get_get_stop_frequency_hourly(
+      cascais_date,
+      date = filter_dates$dates[filter_dates$mun == "cascais"]
+    )
     
     
     cascais_table = cascais_frequency |>
@@ -518,31 +430,10 @@ service_pattern_summary_aml = service_pattern_summary_aml |>
       pull(service_id)
     
 # Filter by date and get stop frequency
-    
-    barreiro_f = data.frame()
-    
-    for (i in 6:23) {
-      barreiro = get_stop_frequency(
-        barreiro_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_ids_barreiro,
-        by_route = TRUE
-      )
-      
-      barreiro = barreiro |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      barreiro_f = rbind(barreiro_f, barreiro)
-    }
-    
-    
-    barreiro_frequency = barreiro_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    barreiro_frequency = GTFShift::get_get_stop_frequency_hourly(
+      barreiro_date,
+      date = filter_dates$dates[filter_dates$mun == "barreiro"]
+    )
     
     
     barreiro_table = barreiro_frequency |>
@@ -594,31 +485,10 @@ service_pattern_summary_aml = service_pattern_summary_aml |>
       pull(service_id)
     
 # Filter by date and get stop frequency
-    
-    agueda_f = data.frame()
-    
-    for (i in 6:23) {
-      agueda = get_stop_frequency(
-        agueda_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_ids_agueda,
-        by_route = TRUE
-      )
-      
-      agueda = agueda |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      agueda_f = rbind(agueda_f, agueda)
-    }
-    
-    
-    agueda_frequency = agueda_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    agueda_frequency = GTFShift::get_get_stop_frequency_hourly(
+      agueda_date,
+      date = filter_dates$dates[filter_dates$mun == "agueda"]
+    )
     
     
     agueda_table = agueda_frequency |>
@@ -671,31 +541,10 @@ service_pattern_summary_aml = service_pattern_summary_aml |>
     
 
 # Filter by date and get stop frequency
-    
-    porto_f = data.frame()
-    
-    for (i in 6:23) {
-      porto = get_stop_frequency(
-        porto_date,
-        start_time = ifelse(i < 10, paste0(i, ":00:00"), paste0(i, ":00:00")),
-        end_time = ifelse(i < 10, paste0("0", i, ":59:59"), paste0(i, ":59:59")),
-        service_ids = service_ids_porto,
-        by_route = TRUE
-      )
-      
-      porto = porto |>
-        group_by(stop_id) |>
-        summarise(frequency = sum(n_departures)) |>
-        mutate(hour = i)
-      agueda_f = rbind(porto_f, porto)
-    }
-    
-    
-    porto_frequency = porto_f |>
-      ungroup() |>
-      group_by(stop_id, hour) |>
-      summarise(frequency = sum(frequency)) |>
-      ungroup()
+    porto_frequency = GTFShift::get_get_stop_frequency_hourly(
+      porto_date,
+      date = filter_dates$dates[filter_dates$mun == "porto"]
+    )
     
     
     porto_table = porto_frequency |>

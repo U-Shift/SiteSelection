@@ -37,9 +37,12 @@ Imports:
     tidygraph,
     tidyr,
     targets,
-    openxlsx
+    openxlsx,
+    GTFShift
 Suggests:
     curl (>= 6.0.1),
     mapview
+Remotes:
+    - U-Shift/GTFShift
 URL: https://u-shift.github.io/SiteSelection/,
     https://github.com/U-Shift/SiteSelection
